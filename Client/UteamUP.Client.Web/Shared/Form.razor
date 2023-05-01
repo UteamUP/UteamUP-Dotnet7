@@ -1,0 +1,67 @@
+﻿@using UteamUP.Client.Components.Enums
+@namespace UteamUP.Client.Web.Shared
+
+@inject NavigationManager NavigationManager
+
+<div class="add-asset-container">
+    <HorizonButton Icon="@Icons.BackArrow" Appearance="ButtonAppearance.Secondary" OnClick="@(() => NavigationManager.NavigateTo(BackUrl))">Back</HorizonButton>
+
+    <div class="form">
+        <h2>@Title</h2>
+
+        @if (Steps != null)
+        {
+            <HorizonStepper ActiveStepIndex="@ActiveStepIndex" Steps="@Steps"/>
+        }
+
+        @ChildContent
+
+        @if (Steps != null)
+        {
+            <div class="buttons-container">
+                @if (ActiveStepIndex != 0)
+                {
+                    <HorizonButton Icon="@Icons.BackArrow" Appearance="ButtonAppearance.Secondary" OnClick="OnClickBackButton">Back</HorizonButton>
+                }
+
+
+                @if (ActiveStepIndex == Steps.Count - 1)
+                {
+                    <HorizonButton OnClick="OnClickSubmitButton">Submit</HorizonButton>
+                }
+                else
+                {
+                    <HorizonButton OnClick="OnClickContinueButton">Continue</HorizonButton>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string BackUrl { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public IDictionary<string, bool>? Steps { get; set; }
+
+    [Parameter]
+    public int ActiveStepIndex { get; set; }
+
+    [Parameter]
+    public EventCallback OnClickContinueButton { get; set; }
+
+    [Parameter]
+    public EventCallback OnClickBackButton { get; set; }
+
+    [Parameter]
+    public EventCallback OnClickSubmitButton { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+}

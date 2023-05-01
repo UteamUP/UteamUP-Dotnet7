@@ -1,0 +1,15 @@
+﻿@namespace UteamUP.Client.Components.Table.Components
+<div class="grouped-pill">
+    @Title
+    <button @onclick="() => OnRemove.InvokeAsync(Title)">
+        <HorizonIcon Icon="@Icons.Cross" Width="16" Height="16" />
+    </button>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnRemove { get; set; }
+}

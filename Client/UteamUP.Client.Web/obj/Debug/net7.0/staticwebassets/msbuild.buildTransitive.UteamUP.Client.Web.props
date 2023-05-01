@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../buildMultiTargeting/UteamUP.Client.Web.props" />
+</Project>

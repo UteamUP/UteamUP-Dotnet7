@@ -1,0 +1,16 @@
+.rich-text-editor-container[b-ghmh9y0a8m]  input {
+    display: none;
+}
+
+.rich-text-editor-container ul[b-ghmh9y0a8m] {
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+.rich-text-editor-container ul li[b-ghmh9y0a8m] {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+}
+
+/*# sourceMappingURL=HorizonRichTextEditor.razor.css.map */

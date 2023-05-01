@@ -1,0 +1,11 @@
+﻿@namespace UteamUP.Client.Components.Inputs
+<svg class="@Class" width="@Width" height="@Height" viewBox="@Icon.ViewBox" fill="none" xmlns="http://www.w3.org/2000/svg">
+    @((MarkupString)@Icon.Path)
+</svg>
+
+@code {
+    [Parameter] public Icon Icon { get; set; }
+    [Parameter] public int Width { get; set; }
+    [Parameter] public int Height { get; set; }
+    [Parameter] public string Class { get; set; }
+}

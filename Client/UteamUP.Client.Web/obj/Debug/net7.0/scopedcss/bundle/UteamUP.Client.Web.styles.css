@@ -1,0 +1,35 @@
+@import '_content/Blazored.Modal/Blazored.Modal.bundle.scp.css';
+@import '_content/Blazored.Toast/Blazored.Toast.bundle.scp.css';
+@import '_content/BlazorStrap.V5/BlazorStrap.V5.bundle.scp.css';
+@import '_content/BlazorStrap/BlazorStrap.bundle.scp.css';
+@import '_content/UteamUP.Client.Components/UteamUP.Client.Components.bundle.scp.css';
+
+/* /Shared/Form.razor.rz.scp.css */
+.add-asset-container[b-3a71ygxh3m] {
+  flex: 1;
+  margin: 33px;
+  padding: 30px;
+}
+.add-asset-container .form[b-3a71ygxh3m] {
+  margin-top: 11px;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 30px;
+  width: 100%;
+}
+.add-asset-container .form[b-3a71ygxh3m]  .input-container {
+  margin-bottom: 30px;
+}
+.add-asset-container .form[b-3a71ygxh3m]  h2 {
+  margin-bottom: 40px;
+  font-weight: 600;
+  font-size: 21px;
+  color: #231f20;
+}
+.add-asset-container .form .buttons-container[b-3a71ygxh3m] {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+/*# sourceMappingURL=Form.razor.css.map */

@@ -1,0 +1,19 @@
+.status-pill {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.status-pill.active {
+    background: rgba(13, 175, 75, 0.13);
+}
+
+.status-pill.inactive {
+    background-color: red;
+}
+
+/*# sourceMappingURL=HorizonActiveStatusPill.razor.css.map */

@@ -1,0 +1,9 @@
+﻿@namespace UteamUP.Client.Components.Pills
+<div class="stop-required-pill @StopRequired.ToLower().Replace(" ", "-")">
+    @StopRequired
+</div>
+
+@code {
+    [Parameter]
+    public string StopRequired { get; set; }
+}

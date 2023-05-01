@@ -1,0 +1,9 @@
+﻿@namespace UteamUP.Client.Components.Pills
+<div class="priority-pill @Priority.ToString().ToLower()">
+    @Priority.ToString()
+</div>
+
+@code {
+    [Parameter]
+    public Priorities Priority { get; set; }
+}

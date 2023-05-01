@@ -1,0 +1,27 @@
+﻿@namespace UteamUP.Client.Web.Shared
+
+@inherits LayoutComponentBase
+
+<div class="panel-root">
+    <Navigation/>
+    @Body
+    @* <BottomNavigation NavigationItems="@NavigationItems" /> *@
+</div>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+
+    // public IEnumerable<NavigationItem> NavigationItems { get; set; } = new List<NavigationItem>()
+    // {
+    //     new(id: 1, title: "Assets", link: "assets", aliasLinks: new string[] {""}, icon: Icons.Assets),
+    //     new(id: 1, title: "Analytics", link: "analytics", icon: Icons.Analytics),
+    //     new(id: 1, title: string.Empty, link: string.Empty, icon: Icons.Assets),
+    //     new(id: 1, title: "Vendors", link: "Global-vendors", icon: Icons.World),
+    //     new(id: 1, title: "Parts", link: "Global-parts", icon: Icons.Parts)
+    // };
+}

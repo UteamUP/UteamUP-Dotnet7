@@ -1,0 +1,56 @@
+﻿@namespace UteamUP.Client.Components
+
+<div class="stepper-container">
+    @for (var i = 0; i < Steps.Count; i++)
+    {
+        <div class="step">
+            <div class="icon @(i == ActiveStepIndex ? "active" : "") @(i < ActiveStepIndex ? "completed" : "")">
+                @if (i < ActiveStepIndex)
+                {
+                    <HorizonIcon Icon="@Icons.Icons.Tick" Width="20" Height="20" />
+                }
+                else
+                {
+                    <span>@(i + 1)</span>
+                }
+            </div>
+            <span class="title @(i == ActiveStepIndex ? "active" : "") @(i < ActiveStepIndex ? "completed" : "")">@Steps.ElementAt(i).Key</span>
+            @if (i != Steps.Count - 1)
+            {
+                <hr class="@(i < ActiveStepIndex ? "completed" : "")" />
+            }
+        </div>
+    }
+
+    <svg class="CircularProgressbar " viewBox="0 0 100 100" data-test-id="CircularProgressbar">
+        <path class="CircularProgressbar-trail" d="
+      M 50,50
+      m 0,-42.5
+      a 42.5,42.5 0 1 1 0,85
+      a 42.5,42.5 0 1 1 0,-85
+    " stroke-width="15" fill-opacity="0" style="stroke: rgb(204, 204, 206); stroke-dasharray: 267.035px, 267.035px; stroke-dashoffset: 0px;"></path>
+        <path class="CircularProgressbar-path" d="
+      M 50,50
+      m 0,-42.5
+      a 42.5,42.5 0 1 1 0,85
+      a 42.5,42.5 0 1 1 0,-85
+    " stroke-width="15" fill-opacity="0" style="stroke: rgb(43, 53, 127);stroke-dasharray: 267.035px, 267.035px;stroke-dashoffset: @(267 - ((double)267 * ((double)(ActiveStepIndex + 1)/(double)Steps.Count)))px;"></path>
+        <text class="CircularProgressbar-text" x="50" y="50" style="fill: rgb(43, 53, 127);">@(ActiveStepIndex + 1) / @Steps.Count</text>
+    </svg>
+
+    <div class="step-titles-container">
+        <span class="current-step">@Steps.ElementAt(ActiveStepIndex).Key</span>
+        @if (ActiveStepIndex != Steps.Count - 1)
+        {
+            <span class="next-step">Next: Numbers</span>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IDictionary<string, bool> Steps { get; set; }
+
+    [Parameter]
+    public int ActiveStepIndex { get; set; }
+}

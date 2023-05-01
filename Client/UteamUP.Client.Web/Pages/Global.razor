@@ -1,0 +1,129 @@
+@page "/global"
+@inherits InitComponent
+
+<AuthorizeView>
+    <Authorized>
+        <div style="width: 800px; margin-left: auto; margin-right: auto;">
+            <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
+                <div style="margin-right: auto; margin-left: auto;">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <div style="padding-right: 20px;">
+                            <a href="/" type="button" class="btn btn-warning" style="width: 150px; margin: auto;">Back</a>
+                        </div>
+                        <div>
+                            <a href="/swagger/index.html" type="button" class="btn btn-secondary" style="width: 150px; margin: auto;">Swagger</a>
+                        </div>
+                    </div>
+
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <div style="padding: 10px">
+                            <a href="/create-user" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Create User</a>
+                        </div>
+                        <div style="padding: 10px">
+                            <a href="/create-tenant" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Create Tenant</a>
+                        </div>
+                        <div style="padding: 10px">
+                            <a href="/global" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Accept Invites</a>
+                        </div>
+                        <div style="padding: 10px">
+                            <a href="/global" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Activate User</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
+
+                <table class="table table-striped" style="width: 700px; margin: auto;">
+                    <thead>
+                    <tr>
+                        <td>Name</td>
+                        <td>Value</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Name</td>
+                        <td>@_name</td>
+                    </tr>
+                    <tr>
+                        <td>Oid</td>
+                        <td>@_oid</td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td>@_email</td>
+                    </tr>
+                    <tr>
+                        <td>First Login</td>
+                        <td>@_userFirstLogin</td>
+                    </tr>
+
+                    <tr>
+                        <td>Is activated</td>
+                        <td>
+                            <p>@_userActivated</p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Has user in DB</td>
+                        <td>@_userHasDatabase</td>
+                    </tr>
+                    <tr>
+                        <td>User has tenant invites</td>
+                        <td>@_userHasInvites</td>
+                    </tr>
+                    <tr>
+                        <td>Invites Count</td>
+                        <td>@_tenantInviteCount</td>
+                    </tr>
+
+                    <tr>
+                        <td>Tenant Count</td>
+                        <td>@_tenantCount</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>You must be signed in to see this content.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    string _oid = "";
+    string _name = "";
+    string? _email = "";
+
+    int _tenantCount = 0;
+    int _tenantInviteCount = 0;
+
+    bool _userActivated = false;
+    bool _userHasDatabase = false;
+    bool _userFirstLogin = false;
+    bool _userHasTenants = false;
+    bool _userHasInvites = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _tenantCount = GlobalState.Value.Tenants?.Count() ?? 0;
+        _tenantInviteCount = GlobalState.Value.TenantsInvited?.Count() ?? 0;
+        _userHasInvites = GlobalState.Value.HasTenantInvites;
+        if (GlobalState.Value.Tenants?.Count() > 0)
+        {
+            _userHasTenants = true;
+        }
+        _userFirstLogin = GlobalState.Value.FirstLogin;
+        _userHasDatabase = GlobalState.Value.HasDatabaseUser;
+        _userActivated = GlobalState.Value.IsActivated;
+
+        _oid = GlobalState.Value.Oid;
+        _name = GlobalState.Value.Name;
+        _email = GlobalState.Value.Email;
+    }
+
+}

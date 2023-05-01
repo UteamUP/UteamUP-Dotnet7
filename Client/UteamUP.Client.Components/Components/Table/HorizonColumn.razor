@@ -1,0 +1,45 @@
+﻿@namespace UteamUP.Client.Components.Table
+@using System.Linq.Expressions;
+
+@typeparam TableItem
+@implements IHorizonColumn<TableItem>
+
+@code {
+    private Func<TableItem, object> _renderCompiled;
+
+    [CascadingParameter(Name = "Table")]
+    public IHorizonTable<TableItem> Table { get; set; }
+
+    [Parameter] public string Title { get; set; }
+
+    [Parameter] public Icon TitleIcon { get; set; }
+
+    [Parameter] public Expression<Func<TableItem, object>> Field { get; set; }
+
+    [Parameter] public RenderFragment<TableItem> Template { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Table.AddColumn(this);
+    }
+
+    public string Render(TableItem data)
+    {
+        if (data == null || Field == null) return string.Empty;
+
+        if (_renderCompiled == null)
+            _renderCompiled = Field.Compile();
+
+        object value = null;
+
+        try
+        {
+            value = _renderCompiled.Invoke(data);
+        }
+        catch (NullReferenceException) { }
+
+        if (value == null) return string.Empty;
+
+        return value.ToString();
+    }
+}

@@ -1,0 +1,456 @@
+.btn-primary {
+    color: #fff;
+    background-color: #2b357f;
+    border: none;
+}
+
+.fade.modal.show {
+    padding-right: 0 !important;
+}
+
+.form-select.is-valid:not([multiple]):not([size]) {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+
+.reset-dorpDown {
+    /* button content */
+}
+
+.reset-dorpDown .dropdown-toggle {
+    background-color: none;
+    border: none;
+}
+
+.reset-dorpDown .dropdown-toggle::after {
+    content: "";
+    display: none;
+}
+
+.reset-dorpDown .btn-check:focus + .btn-success,
+.reset-dorpDown .btn-success:focus {
+    color: black;
+    background-color: #fff;
+    border: none;
+    box-shadow: none;
+}
+
+.reset-dorpDown .btn-check:checked + .btn-success:focus,
+.reset-dorpDown .btn-check:active + .btn-success:focus,
+.reset-dorpDown .btn-success:active:focus,
+.reset-dorpDown .btn-success.active:focus,
+.reset-dorpDown .show > .btn-success.dropdown-toggle:focus {
+    box-shadow: none;
+}
+
+.reset-dorpDown .btn-check:checked + .btn-success,
+.reset-dorpDown .btn-check:active + .btn-success,
+.reset-dorpDown .btn-success:active,
+.reset-dorpDown .btn-success.active,
+.reset-dorpDown .show > .btn-success.dropdown-toggle {
+    color: black;
+    background-color: #fff;
+    border: none;
+}
+
+.reset-dorpDown .btn-check:focus + .btn,
+.reset-dorpDown .btn:focus {
+    outline: 0;
+    box-shadow: none;
+}
+
+.reset-dorpDown .action-btn--content {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.reset-dorpDown .action-btn--content img {
+    margin-right: 7px;
+}
+
+.reset-dorpDown .dropdown-menu {
+    padding: 0;
+    border: none;
+}
+
+.panel-root {
+    display: flex;
+    overflow: auto;
+    flex-direction: row;
+    background-color: #e5e5e5;
+    width: 100%;
+}
+
+.panel-root .bg-gray {
+    background-color: #e5e5e5;
+}
+
+.panel-root .panel-container {
+    padding: 33px;
+    width: 100%;
+    min-height: 900px;
+    background-color: #e5e5e5;
+}
+
+.panel-root .panel-container .form-wrapper {
+    margin-top: 11px;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+.panel-root .panel-container .form-wrapper .form-title {
+    margin-bottom: 40px;
+    font-weight: 600;
+    font-size: 21px;
+    color: #231f20;
+}
+
+.panel-root .panel-container .form-wrapper .formik-title {
+    margin-bottom: 40px;
+    font-weight: 600;
+    font-size: 19px;
+    color: #231f20;
+}
+
+@media only screen and (max-width: 768px) {
+    .panel-root .panel-container {
+        padding: 24px;
+    }
+}
+
+.modal-dialog {
+    max-width: 833px;
+}
+
+.modal-dialog .form-title {
+    margin-bottom: 40px;
+    font-weight: 600;
+    font-size: 21px;
+    color: #231f20;
+}
+
+.modal-dialog .formik-title {
+    margin-bottom: 40px;
+    font-weight: 600;
+    font-size: 19px;
+    color: #231f20;
+}
+
+.modal-dialog .formik-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.modal-dialog .workorder-modal--send-email input {
+    max-width: 288px;
+    height: 45px;
+    margin: 0;
+    padding: 12.5px 32px;
+    font-weight: 600;
+    background-color: #fff;
+    border: 1px solid #c0c0c0;
+    border-radius: 5px 0px 0px 5px;
+}
+
+.modal-dialog .email-button {
+    height: 45px;
+    background-color: #206bb5;
+    color: #fff;
+    line-height: 20px;
+    padding: 12.5px 32px;
+}
+
+.modal-dialog .header-modal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    padding: 40px;
+}
+
+.modal-dialog .title-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row-reverse;
+}
+
+.modal-dialog .title-modal svg {
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+    margin-inline: 10px;
+    cursor: pointer;
+}
+
+.modal-dialog .btn-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.modal-dialog .btn-outline-primary {
+    border: 1px solid #2b357f;
+    color: "#2b357f";
+    padding: 8px 13px;
+    margin-inline: 5px;
+    border-radius: 5px;
+    background-color: white;
+}
+
+.modal-dialog .btn-outline-primary b {
+    color: #2b357f;
+    margin-inline: 10px;
+    font-weight: 400px;
+    font-size: 12px;
+}
+
+.modal-dialog .btn-outline-delete {
+    border: none;
+    padding: 9px 5px;
+    width: 100px;
+    margin-inline: 5px;
+    border-radius: 5px;
+    background-color: #ff0606;
+}
+
+.modal-dialog .btn-outline-delete b {
+    color: white;
+    margin-inline: 10px;
+    font-weight: 200px;
+    font-size: 12px;
+}
+
+.modal-dialog .btn-outline-primary:hover {
+    background-color: #e5e5e5;
+    border-color: white;
+}
+
+.modal-dialog .rowACJC {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.modal-dialog .description {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.modal-dialog .ab {
+    width: 25%;
+}
+
+.modal-dialog .bc {
+    width: 70%;
+}
+
+.modal-dialog .bc .status {
+    padding: 4px 10px;
+    background: rgba(13, 175, 75, 0.13);
+    border-radius: 6px;
+}
+
+.modal-dialog .title-item {
+    font-size: 16px;
+    font-weight: 500;
+    color: #aaa;
+    line-height: 24px;
+}
+
+.modal-dialog .email-link {
+    color: #206bb5;
+    text-decoration: underline;
+}
+
+.modal-dialog .link-upgrade {
+    color: #f7ad1a;
+    margin-left: 15px;
+    text-decoration-color: #f7ad1a;
+}
+
+.modal-dialog .link-upgrade :hover {
+    color: #f7ad1a;
+    text-decoration-color: #f7ad1a;
+}
+
+.modal-dialog .modal-divider {
+    border-top: 3px dashed rgba(0, 0, 0, 0.13);
+}
+
+.modal-body {
+    padding: 50px;
+}
+
+.form-buttons-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+/*  tab  */
+.nav-tabs {
+    background-color: white;
+    padding-left: 30px;
+    margin: 0;
+    flex-wrap: nowrap;
+    overflow: auto;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    font-size: 15px;
+    font-weight: 500;
+    color: #231f20;
+    opacity: 0.7;
+    padding: 0px 0px 14px 0px;
+    margin: 0px 36px 0px 0px;
+    width: max-content;
+    text-transform: capitalize;
+}
+
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+    border-bottom: 2px solid #2b357f;
+    color: #2b357f;
+    font-size: 15px;
+    font-weight: 600;
+    opacity: 1;
+}
+
+.gap-x-20 {
+    gap: 0 20px;
+}
+
+@media only screen and (max-width: 1400px) {
+    .panel-root {
+        flex-direction: column;
+        padding-top: 85px;
+    }
+}
+
+@media only screen and (max-width: 900px) {
+    .modal-body {
+        padding: 28px 23px;
+    }
+
+    .modal-dialog .header-modal {
+        padding: 28px 23px;
+    }
+
+    .modal-dialog {
+        margin: 0;
+    }
+
+    .formik-title {
+        font-size: 16px;
+    }
+
+    .form-buttons-wrapper {
+        display: flex;
+        justify-content: center;
+    }
+
+    .form-buttons-wrapper button {
+        width: 100%;
+    }
+
+    .width-40px {
+        width: 40px !important;
+    }
+
+    .rowACJC {
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .rowACJC .ab {
+        width: 50%;
+    }
+
+    .rowACJC .ab * {
+        font-size: 13px;
+    }
+
+    .rowACJC .bc {
+        width: 50%;
+    }
+
+    .rowACJC .bc * {
+        font-size: 13px;
+    }
+
+    .modal-dialog .description {
+        font-size: 13px;
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Montserrat", sans-serif;
+    box-sizing: border-box;
+}
+
+h2 {
+    margin: 0;
+}
+
+.wrapper {
+    display: flex;
+    background-color: #e5e5e5;
+    justify-content: center;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+#app {
+    display: flex;
+    width: 100%;
+}
+
+html, body {
+    height: 100%;
+}
+
+#app {
+    min-height: 100%;
+}
+
+@media only screen and (max-width: 1400px) {
+    html, #app, body {
+        height: 100%;
+    }
+}
+
+.quill-container {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.quill-container .ql-container {
+    background: #f3f1ee;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    border-bottom: none !important;
+    border-radius: 8px 8px 0px 0px;
+}
+
+.quill-container .ql-toolbar {
+    background: #eae8e5;
+    border: 0.75px solid rgba(0, 0, 0, 0.08) !important;
+    border-radius: 0px 0px 8px 8px;
+}
+
+/*# sourceMappingURL=app.css.map */

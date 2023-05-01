@@ -1,0 +1,61 @@
+@import "./bootstrap-overwrite.scss";
+@import "./panel.scss";
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Montserrat", sans-serif;
+  box-sizing: border-box;
+}
+
+h2 {
+  margin: 0;
+}
+
+.wrapper {
+  display: flex;
+  background-color: #e5e5e5;
+  justify-content: center;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+#app {
+  display: flex;
+  width: 100%
+}
+
+html, body {
+  height: 100%;
+}
+
+#app {
+  min-height: 100%;
+}
+
+@media only screen and (max-width: 1400px) {
+  html, #app, body {
+    height: 100%;
+  }
+}
+
+.quill-container {
+  display: flex;
+  flex-direction: column-reverse;
+
+  .ql-container {
+    background: #f3f1ee;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    border-bottom: none !important;
+    border-radius: 8px 8px 0px 0px;
+  }
+
+  .ql-toolbar {
+    background: #eae8e5;
+    border: 0.75px solid rgba(0, 0, 0, 0.08) !important;
+    border-radius: 0px 0px 8px 8px;
+  }
+}

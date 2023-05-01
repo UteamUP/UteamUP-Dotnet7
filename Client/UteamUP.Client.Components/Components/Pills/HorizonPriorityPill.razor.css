@@ -1,0 +1,20 @@
+.priority-pill {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.priority-pill.high {
+    background-color: #ffbbc8;
+}
+
+.priority-pill.medium {
+    background-color: #FFEBCC;
+}
+
+.priority-pill.low {
+    background-color: #F4F2EF;
+}
+
+/*# sourceMappingURL=HorizonPriorityPill.razor.css.map */

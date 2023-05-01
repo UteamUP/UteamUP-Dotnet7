@@ -1,0 +1,163 @@
+﻿@namespace UteamUP.Client.Components.Inputs
+@inherits InputBase<DateTime>
+
+<div class="date-selector-container">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label class="form-label">@Label</label>
+    }
+
+    <BSDropdown AllowItemClick Class="dropdown-menu-container" IsDiv Placement="BlazorStrap.Placement.BottomStart" @ref="_dropdown">
+        <Toggler>
+            <BSToggle IsButton="true">
+                <div class="toggle-button">
+                    @(Value != null ? Value.ToString(ShowTime ? "dd/MM/yyyy HH:mm" : "dd/MM/yyyy") : "Select")
+                    <HorizonIcon Icon="@Icons.CalendarDropdown" Width="20" Height="20" />
+                </div>
+            </BSToggle>
+        </Toggler>
+        <Content>
+            <div class="dropdown-menu--input">
+                <div class="header">
+                    <button type="button" class="nonee" @onclick="OnClickPreviousMonth"><HorizonIcon Width=10 Height=10 Icon="@Icons.ArrowLeft" /></button>
+                    <strong>@_currentMonth.ToString("MMMM yyyy")</strong>
+                    <button type="button" class="nonee" @onclick="OnClickNextMonth"><HorizonIcon Width=10 Height=10 Icon="@Icons.ArrowRight" /></button>
+                </div>
+                <div class="gridd">
+                    <span>Mo</span>
+                    <span>Tu</span>
+                    <span>We</span>
+                    <span>Th</span>
+                    <span>Fr</span>
+                    <span>Sa</span>
+                    <span>Su</span>
+
+                    @foreach (var dayOfWeek in _days)
+                    {
+                        <span class="day @(Value.ToShortDateString() == dayOfWeek.ToShortDateString() ? "active" : string.Empty)" @onclick="() => OnClickDate(dayOfWeek)">@dayOfWeek.Day</span>
+                    }
+                </div>
+
+                @if (ShowTime)
+                {
+                    <div class="hour-min-wrapper">
+                        <HorizonSelect Options="@_hourOptions" Label="Hour" Placeholder="Type here" @bind-Value="_hour" @bind-Value:after="SetTime" />
+                        <HorizonSelect Options="@_minuteOptions" Label="Minute" Placeholder="Type here" @bind-Value="_minute" @bind-Value:after="SetTime" />
+                    </div>
+                }
+            </div>
+        </Content>
+    </BSDropdown>
+</div>
+
+@code {
+    private BSDropdown _dropdown;
+    private DateTime _previousMonth => _currentMonth.AddMonths(-1);
+    private DateTime _nextMonth => _currentMonth.AddMonths(1);
+    private DateTime _currentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    private List<DateTime> _days = new();
+    private string _hour;
+    private string _minute;
+
+    private readonly IDictionary<string, string> _hourOptions = new Dictionary<string, string>();
+    private readonly IDictionary<string, string> _minuteOptions = new Dictionary<string, string>();
+
+    private void OnClickDate(DateTime date)
+    {
+        CurrentValue = date;
+        _hour = date.ToString("HH");
+        _minute = date.ToString("mm");
+        _dropdown.HideAsync();
+    }
+
+    private void SetTime() => CurrentValue = Value.Date.Add(new TimeSpan(Convert.ToInt32(_hour), Convert.ToInt32(_minute.ToString()), 0));
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public bool ShowTime { get; set; } = false;
+
+    private void OnClickNextMonth()
+    {
+        _currentMonth = _currentMonth.AddMonths(1);
+        InitializeCalendarForCurrentMonth();
+    }
+
+    private void OnClickPreviousMonth()
+    {
+        _currentMonth = _currentMonth.AddMonths(-1);
+        InitializeCalendarForCurrentMonth();
+    }
+
+    private void InitializeCalendarForCurrentMonth()
+    {
+        _days.Clear();
+
+        var totalDaysInMonth = DateTime.DaysInMonth(_currentMonth.Year, _currentMonth.Month);
+
+        for (var i = 1; i <= totalDaysInMonth; i++)
+        {
+            var currentDateTime = new DateTime(_currentMonth.Year, _currentMonth.Month, i);
+
+            if (i == 1 && currentDateTime.DayOfWeek != DayOfWeek.Monday)
+            {
+                var totalDaysToTakeFromPreviousMonth = (int)currentDateTime.DayOfWeek - 1;
+                var totalDaysInPreviousMonth = DateTime.DaysInMonth(_currentMonth.AddMonths(-1).Year, _currentMonth.AddMonths(-1).Month);
+
+                for (var j = 1; j <= totalDaysToTakeFromPreviousMonth; j++)
+                {
+                    var dd = new DateTime(_currentMonth.AddMonths(-1).Year, _currentMonth.AddMonths(-1).Month, totalDaysInPreviousMonth - totalDaysToTakeFromPreviousMonth + j);
+                    _days.Add(dd);
+                }
+            }
+            else if (i == totalDaysInMonth && currentDateTime.DayOfWeek != DayOfWeek.Sunday)
+            {
+                var totalDaysToTakeFromNextMonth = 7 - (int)currentDateTime.DayOfWeek;
+
+                _days.Add(currentDateTime);
+
+                for (var j = 1; j <= totalDaysToTakeFromNextMonth; j++)
+                {
+                    var dd = new DateTime(_currentMonth.AddMonths(1).Year, _currentMonth.AddMonths(1).Month, j);
+                    _days.Add(dd);
+                }
+
+                continue;
+            }
+
+            _days.Add(currentDateTime);
+        }
+    }
+
+    private void InitalizeTime()
+    {
+        for (var i = 0; i < 24; i++)
+            _hourOptions.Add(i.ToString("00"), i.ToString("00"));
+
+        for (var i = 0; i <= 60; i++)
+            _minuteOptions.Add(i.ToString("00"), i.ToString("00"));
+
+        _hour = Value.ToString("HH");
+        _minute = Value.ToString("mm");
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        _currentMonth = Value == DateTime.MinValue ? DateTime.Now : Value;
+        InitializeCalendarForCurrentMonth();
+        InitalizeTime();
+
+        return base.OnInitializedAsync();
+    }
+
+    protected override string FormatValueAsString(DateTime value)
+    {
+        return base.FormatValueAsString(value);
+    }
+
+    protected override bool TryParseValueFromString(string value, [MaybeNullWhen(false)] out DateTime result, [NotNullWhen(false)] out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+}

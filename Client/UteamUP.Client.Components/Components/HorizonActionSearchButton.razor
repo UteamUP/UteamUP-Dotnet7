@@ -1,0 +1,71 @@
+﻿@namespace UteamUP.Client.Components
+
+@inherits InputBase<string>
+
+<div class="reset-dorpDown action-search-button-wrapper ">
+    <BSDropdown Class="dropdown-menu-container" IsDiv Placement="BlazorStrap.Placement.Bottom">
+        <Toggler>
+            <BSToggle IsButton="true">
+                <div class="action-btn--content">
+                    <img src="_content/UTeamUP.Horizon.Components/assets/user-icon.png" alt="" />
+                    @CurrentValueAsString
+                </div>
+            </BSToggle>
+        </Toggler>
+        <Content>
+            <div class="dropdown-menu--input">
+                <HorizonInput Icon="@Icons.Icons.HeaderSearch"
+                              Placeholder="Search"
+                              IconPosition="@IconPosition.Start"
+                              @bind-Value="@SearchInputValue"
+                              @bind-Value:after="FilterItems" />
+            </div>
+            @foreach (var item in FilteredItems ?? Enumerable.Empty<string>())
+            {
+                <BSDropdownItem Class="@(IsItemSelected(item) ? "selected" : string.Empty)" OnClick="@(() => OnItemClicked(item))">
+                    <div class="dropdown-menu--item">
+                        <img src="_content/UTeamUP.Horizon.Components/assets/user-icon.png" alt="" />
+                        @item
+                    </div>
+                    @if (IsItemSelected(item))
+                    {
+                        <HorizonIcon Icon="Icons.Icons.Tick" Width="22" Height="22" />
+                    }
+                </BSDropdownItem>
+            }
+        </Content>
+    </BSDropdown>
+</div>
+
+@code {
+    [Parameter]
+    public IEnumerable<string> Items { get; set; } = Enumerable.Empty<string>();
+
+    public IEnumerable<string> FilteredItems { get; private set; }
+
+    public string SearchInputValue { get; private set; }
+
+    private void OnItemClicked(string name) => CurrentValue = name;
+
+    private bool IsItemSelected(string value) => CurrentValueAsString == value;
+
+    protected override void OnParametersSet() => FilterItems();
+
+    private void FilterItems()
+    {
+        if (Items == null || string.IsNullOrEmpty(SearchInputValue))
+        {
+            FilteredItems = Items;
+            return;
+        }
+
+        FilteredItems = Items.Where(x => x.ToLower().Contains(SearchInputValue.ToLower()));
+    }
+
+    protected override string FormatValueAsString(string value) => base.FormatValueAsString(value);
+
+    protected override bool TryParseValueFromString(string value, [MaybeNullWhen(false)] out string result, [NotNullWhen(false)] out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+}

@@ -1,0 +1,76 @@
+﻿@namespace UteamUP.Client.Components.Inputs
+@using Microsoft.JSInterop;
+
+@inject IJSRuntime JSRuntime
+
+<div class="rich-text-editor-container">
+    <div class="quill-container">
+        <BlazoredTextEditor @ref="TextEditor" ReadOnly="ReadOnly">
+            <ToolbarContent>
+                @if(!ReadOnly)
+                {
+                    <span class="ql-formats">
+                        <button class="ql-bold"></button>
+                        <button class="ql-italic"></button>
+                        <button class="ql-underline"></button>
+                        <button class="ql-strike"></button>
+                    </span>
+                    <span class="ql-formats">
+                        <button class="ql-image"></button>
+                        <button @onclick="OnClickBrowseAsync"><HorizonIcon Icon="@Icons.Attachment" Width="14" Height="14" /></button>
+                    </span>
+                }
+            </ToolbarContent>
+            <EditorContent>
+                @EditorContent
+            </EditorContent>
+        </BlazoredTextEditor>
+    </div>
+    <InputFile multiple id="@_fileInputid" OnChange="@HandleOnChange" />
+
+    @if (_uploadedFiles != null)
+    {
+        <ul>
+            @foreach (var file in _uploadedFiles)
+            {
+                <li>
+                    <span>@file.Name - @file.Size bytes</span>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    private string _fileInputid = Guid.NewGuid().ToString();
+    private IReadOnlyList<IBrowserFile>? _uploadedFiles;
+    private IJSObjectReference _module;
+
+    public BlazoredTextEditor TextEditor { get; private set; }
+
+    [Parameter]
+    public RenderFragment EditorContent { get; set; }
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
+
+    [Parameter]
+    public EventCallback<IReadOnlyList<IBrowserFile>?> OnFileChange { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/UTeamUP.Horizon.Components/Components/Inputs/HorizonRichTextEditor.razor.js");
+        }
+    }
+
+    private async Task OnClickBrowseAsync() => await _module.InvokeVoidAsync("openFileDialog", _fileInputid);
+
+    private void HandleOnChange(InputFileChangeEventArgs e)
+    {
+        _uploadedFiles = e.FileCount == 0 ? null : e.GetMultipleFiles(e.FileCount);
+
+        OnFileChange.InvokeAsync(_uploadedFiles);
+    }
+}

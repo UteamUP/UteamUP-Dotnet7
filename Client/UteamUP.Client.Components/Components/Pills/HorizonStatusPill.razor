@@ -1,0 +1,9 @@
+﻿@namespace UteamUP.Client.Components.Pills
+<div class="status-pill @Status.ToLower().Replace(" ", "-")">
+    @Status
+</div>
+
+@code {
+    [Parameter]
+    public string Status { get; set; }
+}

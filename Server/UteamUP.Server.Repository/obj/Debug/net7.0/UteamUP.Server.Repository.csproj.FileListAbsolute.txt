@@ -1,0 +1,17 @@
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/bin/Debug/net7.0/UteamUP.Server.Repository.deps.json
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/bin/Debug/net7.0/UteamUP.Server.Repository.dll
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/bin/Debug/net7.0/UteamUP.Server.Repository.pdb
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/bin/Debug/net7.0/UteamUP.Server.Database.dll
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/bin/Debug/net7.0/UteamUP.Shared.dll
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/bin/Debug/net7.0/UteamUP.Shared.pdb
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/bin/Debug/net7.0/UteamUP.Server.Database.pdb
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/obj/Debug/net7.0/UteamUP.Server.Repository.csproj.AssemblyReference.cache
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/obj/Debug/net7.0/UteamUP.Server.Repository.GeneratedMSBuildEditorConfig.editorconfig
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/obj/Debug/net7.0/UteamUP.Server.Repository.AssemblyInfoInputs.cache
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/obj/Debug/net7.0/UteamUP.Server.Repository.AssemblyInfo.cs
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/obj/Debug/net7.0/UteamUP.Server.Repository.csproj.CoreCompileInputs.cache
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/obj/Debug/net7.0/UteamUP.Server.Repository.csproj.CopyComplete
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/obj/Debug/net7.0/UteamUP.Server.Repository.dll
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/obj/Debug/net7.0/refint/UteamUP.Server.Repository.dll
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/obj/Debug/net7.0/UteamUP.Server.Repository.pdb
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Repository/obj/Debug/net7.0/ref/UteamUP.Server.Repository.dll

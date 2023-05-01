@@ -1,0 +1,39 @@
+﻿
+.pager {
+  align-items: center;
+
+  .page-item {
+    display: flex;
+    align-items: center;
+
+    a {
+      background: transparent;
+      outline: none;
+      border: none;
+      color: #2b357f;
+      font-weight: 700;
+    }
+  }
+
+
+  .page-number {
+    cursor: pointer;
+    padding: 10px;
+    margin: 0px 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 400;
+    font-size: 16px;
+    background: #ffffff;
+    color: #040921;
+    border-radius: 6px;
+    height: 32px;
+
+    &.active {
+      color: #fff;
+      background-color: #2b357f;
+      border: none;
+    }
+  }
+}

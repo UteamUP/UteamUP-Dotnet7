@@ -1,0 +1,10 @@
+﻿.stop-required-pill {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+
+  &.required {
+    background-color: #F9E3E3;
+  }
+}

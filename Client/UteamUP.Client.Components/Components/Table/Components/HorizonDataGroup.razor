@@ -1,0 +1,58 @@
+﻿@namespace UteamUP.Client.Components.Table.Components
+@using System.Linq.Expressions;
+
+@typeparam TItem
+
+<div class="grouped-node">
+    @if (GroupedData.Children != null)
+    {
+        <span class="grouped-container" @onclick="() => _isOpen = !_isOpen">
+            <div>
+                @if (_isOpen)
+                {
+                    <HorizonIcon Icon="Icons.ArrowDownThin" Width="17" Height="10" />
+                }
+                else
+                {
+                    <HorizonIcon Icon="@Icons.ArrowRight" Width="10" Height="17" />
+                }
+            </div>
+            <span>@GroupedData.PropertyName: @GroupedData.Key</span>
+        </span>
+
+        <div style="display: @(_isOpen ? "block" : "none");">
+            @foreach (var group in GroupedData.Children)
+            {
+                <HorizonDataGroup TItem="TItem" Columns="Columns" GroupedData="group" />
+            }
+        </div>
+    }
+    else
+    {
+        <div class="group-row-container">
+            @foreach (var col in Columns)
+            {
+                <div class="tag-cell">
+                    @if (col.Template != null)
+                    {
+                        @col.Template(GroupedData.Data)
+                    }
+                    else
+                    {
+                        @col.Render(GroupedData.Data)
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private bool _isOpen = false;
+
+    [Parameter]
+    public GroupedData<TItem> GroupedData { get; set; }
+
+    [Parameter]
+    public List<IHorizonColumn<TItem>> Columns { get; set; }
+}

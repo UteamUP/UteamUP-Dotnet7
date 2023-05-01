@@ -1,0 +1,61 @@
+﻿@namespace UteamUP.Client.Components.Inputs
+@using System.Text.RegularExpressions;
+
+@inherits InputBase<List<string>>
+
+<div class="input-container">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label class="form-label">@Label</label>
+    }
+
+    <div class="input-chip-wrapper">
+        <div class="root">
+            @foreach (var email in Value)
+            {
+                <div class="chip">@email</div>
+            }
+            <input @onkeyup="OnKeyDown" @onblur="OnBlur" type="text" @oninput="(e) => _inputValue = (string)e.Value" value="@BindConverter.FormatValue(_inputValue)" />
+
+        </div>
+    </div>
+</div>
+
+@code {
+    private string _inputValue;
+
+    [Parameter]
+    public string Label { get; set; }
+
+    private void OnBlur(FocusEventArgs e) => ValidateEnteredEmailAddress();
+
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if(e.Key == "Tab" || e.Key == " ")
+        {
+            ValidateEnteredEmailAddress();
+        }
+    }
+
+    private void ValidateEnteredEmailAddress()
+    {
+        _inputValue = Regex.Replace(_inputValue, @"\s+", "");
+
+        if (RegexUtilities.IsValidEmail(_inputValue) && !Value.Contains(_inputValue))
+        {
+            Value.Add(_inputValue);
+        }
+
+        _inputValue = null;
+    }
+
+    protected override string FormatValueAsString(List<string> value)
+    {
+        return base.FormatValueAsString(value);
+    }
+
+    protected override bool TryParseValueFromString(string value, [MaybeNullWhen(false)] out List<string> result, [NotNullWhen(false)] out string validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+}

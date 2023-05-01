@@ -1,0 +1,18 @@
+﻿@namespace UteamUP.Client.Components
+<button class="button-component button-component--${size} @Class @Appearance.NameToLower()" onclick="@OnClick" type="@Type">
+    @if (Icon != null)
+    {
+        <HorizonIcon Icon="@Icon" Width="@IconSize" Height="@IconSize" />
+    }
+    <span>@ChildContent</span>
+</button>
+
+@code {
+    [Parameter] public Icon Icon { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public string Type { get; set; }
+    [Parameter] public string Class { get; set; }
+    [Parameter] public ButtonAppearance Appearance { get; set; } = ButtonAppearance.Primary;
+    [Parameter] public int IconSize { get; set; } = 12;
+}

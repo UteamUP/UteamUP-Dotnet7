@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "dgSpecHash": "VTvk7EEds5cCkX/Jx7MruUsLpPv1Y+iMS9xXAZXCGdaitedPQ8ZQz7p/QZjc0QfccUjzVUFasgRYo1tvz51iPQ==",
+  "success": true,
+  "projectFilePath": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Components/UteamUP.Client.Components.csproj",
+  "expectedPackageFiles": [
+    "/Users/gisligudmundsson/.nuget/packages/aspnetcore.sasscompiler/1.61.0/aspnetcore.sasscompiler.1.61.0.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/blazorcomponentutilities/1.7.1/blazorcomponentutilities.1.7.1.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/blazored.texteditor/1.0.8/blazored.texteditor.1.0.8.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/blazorstrap/5.1.101/blazorstrap.5.1.101.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/blazorstrap.v5/5.1.101/blazorstrap.v5.5.1.101.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.aspnetcore.authorization/7.0.5/microsoft.aspnetcore.authorization.7.0.5.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.aspnetcore.components/7.0.5/microsoft.aspnetcore.components.7.0.5.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.aspnetcore.components.analyzers/7.0.5/microsoft.aspnetcore.components.analyzers.7.0.5.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.aspnetcore.components.forms/7.0.5/microsoft.aspnetcore.components.forms.7.0.5.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.aspnetcore.components.web/7.0.5/microsoft.aspnetcore.components.web.7.0.5.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.aspnetcore.metadata/7.0.5/microsoft.aspnetcore.metadata.7.0.5.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.configuration/3.1.0/microsoft.extensions.configuration.3.1.0.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.configuration.abstractions/3.1.0/microsoft.extensions.configuration.abstractions.3.1.0.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.configuration.binder/3.1.0/microsoft.extensions.configuration.binder.3.1.0.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.dependencyinjection/7.0.0/microsoft.extensions.dependencyinjection.7.0.0.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/7.0.0/microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.fileproviders.abstractions/3.1.0/microsoft.extensions.fileproviders.abstractions.3.1.0.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.hosting.abstractions/3.1.0/microsoft.extensions.hosting.abstractions.3.1.0.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.logging.abstractions/7.0.0/microsoft.extensions.logging.abstractions.7.0.0.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.options/7.0.1/microsoft.extensions.options.7.0.1.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.primitives/7.0.0/microsoft.extensions.primitives.7.0.0.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.jsinterop/7.0.5/microsoft.jsinterop.7.0.5.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/system.io.pipelines/7.0.0/system.io.pipelines.7.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,18 @@
+﻿.priority-pill {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+
+  &.high {
+    background-color: #ffbbc8;
+  }
+
+  &.medium {
+    background-color: #FFEBCC;
+  }
+
+  &.low {
+    background-color: #F4F2EF;
+  }
+}

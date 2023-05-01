@@ -1,0 +1,20 @@
+@page "/create-tenant"
+@using UteamUP.Client.Web.Repository.Implementations
+@inject ITenantWebRepository TenantWebRepository
+
+<h3>CreateTenant</h3>
+<div><p>@_oid</p></div>
+
+
+@code {
+    string _oid = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await TenantWebRepository.GetAll();
+        await base.OnInitializedAsync();
+        
+        if (GlobalState != null) _oid = GlobalState.Value.Oid;
+    }
+}

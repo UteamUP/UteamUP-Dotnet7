@@ -1,0 +1,128 @@
+@page "/create-user"
+@using UteamUP.Client.Web.Repository.Interfaces
+
+@inherits UteamUPFormBase<AddNewUserModel>
+
+@using UteamUP.Client.Wizard.CreateUser.Models
+
+@inject IModalService ModalService
+@inject IDispatcher Dispatcher
+@inject IState<GlobalState> GlobalState
+@inject IUserRepository userRepository
+@inject AuthorizationComponentBase authBase
+
+<div style="width: 800px; margin-left: auto; margin-right: auto;">
+    <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
+        <h3>CreateUser</h3>
+    </div>
+    <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
+        <a href="/global" type="button" class="btn btn-primary">Back</a>
+    </div>
+</div>
+<hr/>
+<p>Wizard starts here</p>
+<Form Steps="@_steps"
+      BackUrl="/users"
+      ActiveStepIndex="@_activeStepIndex"
+      Title="@(Id == null ? "Add a new user" : "Edit user")"
+      OnClickBackButton="OnClickBackButton"
+      OnClickContinueButton="OnClickContinueButtonAsync"
+      OnClickSubmitButton="OnClickContinueButtonAsync">
+    @switch (_activeStepIndex)
+    {
+        case 0:
+            <EditForm Model="@_model.BasicUserDetailsStep">
+                <HorizonInput Label="Full Name" Placeholder="Type here" @bind-Value="_model.BasicUserDetailsStep.Name" />
+                <HorizonInput Label="Email" Placeholder="Type here" @bind-Value="_model.BasicUserDetailsStep.Email" />
+                <HorizonInput Label="Website" Placeholder="Type here" @bind-Value="_model.BasicUserDetailsStep.Website" />
+            </EditForm>
+            break;
+        case 1:
+            <EditForm Model="@_model.AddressUserDetailsStep">
+                <HorizonInput Label="Country Name" Placeholder="Type here" @bind-Value="_model.AddressUserDetailsStep.Country" />
+            </EditForm>
+            break;
+        default:
+            break;
+    }
+</Form>
+<p>Wizard ends here</p>
+<hr/>
+
+@code {
+    private int _activeStepIndex = 0;
+    string _oid = "";
+    string _name = "";
+    string? _email = "";
+    
+    private IDictionary<string, string> _user = new Dictionary<string, string>()
+    {
+        { "JPT Foodtech", "JPT Foodtech" }
+    };
+    
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Basic details", false },
+        { "Address Info", false }
+    };
+
+    private async Task OnClickSubmitButtonAsync()
+    {
+        
+        if (!_fluentValidationValidator!.Validate())
+        {
+            return;
+        }
+
+        var mappedAsset = Mapper.Map<Asset>(_model);
+
+        //await AssetRepository.CreateAsset(mappedAsset, GlobalState.Value.Oid, GlobalState.Value.ActiveTenant.Id);
+    }
+
+    private async Task OnClickContinueButtonAsync()
+    {
+        if (!_fluentValidationValidator!.Validate())
+        {
+            return;
+        }
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+        
+    }
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+    
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        GlobalState.StateChanged += OnGlobalStateChanged;
+        
+        _model = new();
+
+        _oid = GlobalState.Value.Oid;
+        if (string.IsNullOrEmpty(_oid))
+        {
+            Console.WriteLine("The OID is null");
+        }
+        
+        MUser? user = await userRepository.GetUserByOid(_oid);
+            
+        _model = Mapper.Map<AddNewUserModel>(user);
+    }
+    
+    public void Dispose()
+    {
+        GlobalState.StateChanged -= OnGlobalStateChanged;
+    }
+    
+    private void OnGlobalStateChanged(object sender, EventArgs e)
+    {
+        // Update the component UI when the global state changes
+        StateHasChanged();
+    }
+
+}

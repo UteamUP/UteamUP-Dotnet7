@@ -1,0 +1,26 @@
+@namespace UteamUP.Client.Web.SharedComponents.Actions
+
+<TestActionMenu>
+    <BSDropdownItem OnClick="@(() => HandleOnClickAsync(ActionMenuAction.Detail))" style="color: rgb(25, 103, 54);" Class="item-text-drop"><HorizonIcon Icon="@Icons.Detail" Width="16" Height="18"/> Detail</BSDropdownItem>
+    <BSDropdownItem OnClick="@(() => HandleOnClickAsync(ActionMenuAction.Delete))" style="color: rgb(235, 87, 87);" Class="item-log-out"><HorizonIcon Icon="@Icons.Delete" Width="16" Height="18"/> Delete</BSDropdownItem>
+    <BSDropdownItem OnClick="@(() => HandleOnClickAsync(ActionMenuAction.Edit))" style="color: rgb(32, 107, 181);" Class="item-log-out"><HorizonIcon Icon="@Icons.Edit" Width="16" Height="18"/> Edit</BSDropdownItem>
+</TestActionMenu>
+
+@code {
+
+    public enum ActionMenuAction
+    {
+        Detail,
+        Delete,
+        Edit
+    }
+
+    private async Task HandleOnClickAsync(ActionMenuAction action)
+    {
+        await OnClick.InvokeAsync(action);
+    }
+
+    [Parameter]
+    public EventCallback<ActionMenuAction> OnClick { get; set; }
+
+}

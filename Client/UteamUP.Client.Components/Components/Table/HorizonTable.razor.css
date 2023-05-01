@@ -1,0 +1,146 @@
+/* table */
+.data-table {
+  background-color: white;
+  padding: 30px 25px;
+  border-radius: 7px;
+}
+
+.table-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.table-container .text ::deep svg {
+  color: rgb(255, 204, 0);
+}
+
+.grouping-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  background-color: white;
+  border-radius: 7px;
+  padding: 10px;
+}
+
+.mobile-table {
+  display: none;
+}
+
+@media only screen and (max-width: 1400px) {
+  .grouping-container {
+    display: none;
+  }
+  .mobile-table {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .mobile-table .row {
+    padding: 30px 25px;
+    border-radius: 7px;
+    background: #fff;
+  }
+  .mobile-table .row .the-col {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .mobile-table .row .the-col.action-col {
+    order: -1;
+    margin-bottom: 12px;
+  }
+  .mobile-table .row .the-col .title {
+    font-size: 11px;
+    font-weight: 500;
+    color: #7b7979;
+  }
+  .mobile-table .row .the-col .item {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .data-table {
+    display: none;
+  }
+}
+.data-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  padding-bottom: 23px;
+  padding-left: 18px;
+  padding-right: 18px;
+  flex: 1;
+}
+
+.data-table td {
+  padding: 10px;
+}
+
+.data-table th,
+.data-table td {
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  opacity: 0.6;
+  font-size: 16px;
+  font-weight: 600;
+  color: #231f20;
+  text-align: left;
+}
+
+.data-table th:last-child {
+  border-right: none;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table td {
+  font-size: 14px;
+  opacity: 1;
+}
+
+.icon-align > * {
+  vertical-align: middle;
+}
+
+.data-table tbody td {
+  text-align: center;
+}
+
+.table-mobile .card-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 22px 12px;
+  border-radius: 5px;
+  background: #fff;
+}
+.table-mobile .card-wrapper .data-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: #7b7979;
+}
+.table-mobile .card-wrapper .action-btn--content {
+  font-size: 12px;
+  font-weight: 500;
+}
+.table-mobile .card-wrapper .btn {
+  padding-left: 0;
+  padding-right: 0;
+}
+.table-mobile .card-wrapper .subject-14 {
+  padding: 6px 0;
+}
+.table-mobile .card-wrapper .name-change-slip {
+  padding: 6px 0;
+}
+.table-mobile .card-wrapper .tag-cell {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/*# sourceMappingURL=HorizonTable.razor.css.map */

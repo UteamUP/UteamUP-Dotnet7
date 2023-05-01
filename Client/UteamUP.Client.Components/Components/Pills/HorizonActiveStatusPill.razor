@@ -1,0 +1,13 @@
+﻿@namespace UteamUP.Client.Components.Pills
+<div class="status-pill @(Status ? "active" : "not-active")">
+    @if(Status)
+    {
+        <HorizonIcon Icon="@Icons.Tick" Width="16" Height="16" />
+    }
+    @(Status ? "Active" : "Not Active")
+</div>
+
+@code {
+    [Parameter]
+    public bool Status { get; set; }
+}

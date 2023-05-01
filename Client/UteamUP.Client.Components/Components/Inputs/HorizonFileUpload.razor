@@ -1,0 +1,56 @@
+﻿@namespace UteamUP.Client.Components.Inputs
+@using System.Runtime.InteropServices.JavaScript;
+@using Microsoft.JSInterop;
+
+@inject IJSRuntime JSRuntime
+
+<div class="drop-zone-wrapper" id="@_id">
+    <svg width="62" height="40" viewBox="0 0 62 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M47.0919 10.6266C45.5235 7.70063 43.2454 5.21357 40.4484 3.38644C37.2307 1.28472 33.4908 0.173828 29.6322 0.173828C20.04 0.173828 11.911 7.01092 10.1718 16.296C4.64433 17.3208 0.5 22.1781 0.5 27.9378C0.5 34.4677 5.81246 39.7802 12.3424 39.7802H29.2129V24.7894L25.4265 28.5758C24.7284 29.2735 23.597 29.2735 22.8989 28.5758C22.2008 27.8777 22.2008 26.7464 22.8989 26.0483L29.7365 19.2112C30.4341 18.5131 31.5655 18.5131 32.2635 19.2112L39.1011 26.0483C39.7992 26.7464 39.7992 27.8777 39.1011 28.5758C38.7521 28.9249 38.2946 29.0994 37.8376 29.0994C37.3801 29.0994 36.9226 28.9249 36.5735 28.5758L32.7871 24.7894V39.7802H46.9225C54.9608 39.7802 61.5 33.2409 61.5 25.2027C61.5 17.2212 55.0524 10.7173 47.0919 10.6266V10.6266Z" fill="#0E0F1A">
+        </path>
+    </svg>
+    <div role="button" tabindex="0" class="dropzone" @onclick="OnClickBrowseAsync">
+        <h5>Upload your photos</h5>
+        <p>Drag and drop your files here or <span>Browse...</span></p>
+    </div>
+    <InputFile id="@_fileInputid" OnChange="@HandleOnChange" multiple />
+    <aside>
+        <ul>
+            @if (_uploadedFile != null)
+            {
+                <li>@_uploadedFile.Name - @_uploadedFile.Size bytes</li>
+            }
+        </ul>
+    </aside>
+    <li>High resolution images and files (PNG, JPG, GIF, PDF, DOX ...)</li>
+</div>
+
+@code {
+    private string _id = Guid.NewGuid().ToString();
+    private string _fileInputid = Guid.NewGuid().ToString();
+
+    private InputFile _inputFileReference;
+    private IJSObjectReference _module;
+    private IBrowserFile _uploadedFile;
+
+    [Parameter]
+    public EventCallback<IBrowserFile> OnChange { get; set; }
+
+    private void HandleOnChange(InputFileChangeEventArgs e)
+    {
+        _uploadedFile = e.FileCount == 0 ? null : e.File;
+
+        OnChange.InvokeAsync(_uploadedFile);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/UTeamUP.Horizon.Components/Components/Inputs/HorizonFileUpload.razor.js");
+            await _module.InvokeVoidAsync("setupDropZone", _id, _fileInputid);
+        }
+    }
+
+    private async Task OnClickBrowseAsync() => await _module.InvokeVoidAsync("openFileDialog", _fileInputid);
+}

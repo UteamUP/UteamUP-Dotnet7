@@ -1,0 +1,41 @@
+﻿@namespace UteamUP.Client
+
+<Fluxor.Blazor.Web.StoreInitializer/>
+<CascadingAppState>
+    <CascadingAuthenticationState>
+        <CascadingBlazoredModal HideCloseButton="true">
+            <Router AppAssembly="@typeof(App).Assembly">
+                <Found Context="routeData">
+                    <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                        <NotAuthorized>
+                            @if (context.User.Identity?.IsAuthenticated != true)
+                            {
+                                <RedirectToLogin/>
+                            }
+                            else
+                            {
+                                <p role="alert">You are not authorized to access this resource.</p>
+                            }
+                        </NotAuthorized>
+                    </AuthorizeRouteView>
+                </Found>
+                <NotFound>
+                    <PageTitle>Not found</PageTitle>
+                    <LayoutView Layout="@typeof(MainLayout)">
+                        <p role="alert">Sorry, there's nothing at this address.</p>
+                    </LayoutView>
+                </NotFound>
+            </Router>
+        </CascadingBlazoredModal>
+    </CascadingAuthenticationState>
+</CascadingAppState>
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if the user is authenticated
+        
+        
+    }
+}

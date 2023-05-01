@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/UteamUP.Client.Components.props" />
+</Project>

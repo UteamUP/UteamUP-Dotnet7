@@ -1,0 +1,17 @@
+﻿.rich-text-editor-container {
+
+  ::deep input {
+    display: none;
+  }
+
+  ul {
+    margin-top: 10px;
+    margin-bottom: 0;
+
+    li {
+      margin: 0;
+      padding: 0;
+      font-size: 12px;
+    }
+  }
+}

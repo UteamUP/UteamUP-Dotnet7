@@ -1,0 +1,61 @@
+﻿@namespace UteamUP.Client.Components.Inputs
+@inherits InputBase<string>
+
+<div class="input-container">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label class="form-label">@Label</label>
+    }
+
+    <div class="input-wrapper">
+        @if (IconPosition == IconPosition.Start)
+        {
+            <HorizonIcon Height="@_iconSize" Width="@_iconSize" Icon="@Icon" />
+        }
+
+        @if (InputType == InputType.TextArea)
+        {
+            <textarea placeholder="@Placeholder" type="@InputType.ToDescriptionString()" @oninput="(e) => CurrentValueAsString = (string)e.Value" value="@BindConverter.FormatValue(CurrentValue)" />
+        }
+        else
+        {
+            <input placeholder="@Placeholder" type="@InputType.ToDescriptionString()" @oninput="(e) => CurrentValueAsString = (string)e.Value" value="@BindConverter.FormatValue(CurrentValue)" />
+        }
+
+        @if (IconPosition == IconPosition.End)
+        {
+            <HorizonIcon Height="@_iconSize" Width="@_iconSize" Icon="@Icon" />
+        }
+
+        @if(EditContext != null)
+        {
+            <ValidationMessage For="ValueExpression" />
+        }
+    </div>
+</div>
+
+@code {
+    private int _iconSize = 20;
+
+    [Parameter]
+    public Icon Icon { get; set; }
+
+    [Parameter]
+    public string Placeholder { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public IconPosition IconPosition { get; set; } = IconPosition.None;
+
+    [Parameter]
+    public InputType InputType { get; set; } = InputType.Text;
+
+    protected override bool TryParseValueFromString(string value, [MaybeNullWhen(false)] out string result, [NotNullWhen(false)] out string validationErrorMessage)
+    {
+        result = value;
+        validationErrorMessage = null;
+        return true;
+    }
+}

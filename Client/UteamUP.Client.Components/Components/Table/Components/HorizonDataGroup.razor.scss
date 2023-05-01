@@ -1,0 +1,26 @@
+﻿.group-row-container {
+  display: flex;
+  justify-content: space-between;
+
+  .tag-cell {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    flex: 1;
+    font-weight: 600;
+  }
+}
+
+.grouped-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 10px;
+
+}
+
+.grouped-node {
+  margin-left: 10px;
+}

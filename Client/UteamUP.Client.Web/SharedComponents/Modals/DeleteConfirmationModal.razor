@@ -1,0 +1,37 @@
+﻿@namespace UteamUP.Client.Web.SharedComponents.Modals
+
+<div class="delete-confimration-modal-container">
+    <div class="icon">
+        <HorizonIcon Icon="@Icons.Delete" Width="18" Height="20"/>
+    </div>
+    <h3>Are you sure?</h3>
+
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Odio rhoncus, gravida gravida odio non porta arcu et, accumsan.</p>
+
+    <div class="delete-modal-buttons">
+        <button @onclick="OnClickCancelAsync" class="button-component button-component--lg delete-modal--cancel-btn" type="undefined" background="rgba(0, 0, 0, 0.04)" style="color: rgb(35, 31, 32); padding: 17px 32px; border: none;">
+            <span>Cancel</span>
+        </button>
+        <button @onclick="OnClickDeleteAsync" class="button-component button-component--lg " type="undefined" style="color: rgb(255, 255, 255); background-color: rgb(255, 54, 54); padding: 17px 32px; border: none;">
+            <span>Delete</span>
+        </button>
+    </div>
+</div>
+
+
+@code {
+
+    [CascadingParameter]
+    BlazoredModalInstance Modal { get; set; } = default!;
+
+    private async Task OnClickCancelAsync()
+    {
+        Modal.CancelAsync();
+    }
+
+    private async Task OnClickDeleteAsync()
+    {
+        Modal.CloseAsync();
+    }
+
+}

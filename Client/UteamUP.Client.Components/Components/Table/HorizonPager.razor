@@ -1,0 +1,33 @@
+﻿@namespace UteamUP.Client.Components.Table
+@typeparam TableItem
+
+<div class="d-flex justify-content-end pager">
+    <ul class="pagination">
+        <li class="page-item @(Table.PageNumber == 0 ? "disabled": "")" @onclick="@(() => Table.PreviousPageAsync())" title="prev">
+            <a class="page-link" href="javascript:;" aria-disabled="@(Table.PageNumber == 0 ? "true": null)">
+                <HorizonIcon Icon="@Icons.ArrowLeft" Width="16" Height="16" />
+                Back
+            </a>
+        </li>
+
+        @for (var i = 1; i < Table.TotalPages + 1; i++)
+        {
+            var pageIndex = i-1;
+            <li @onclick="@(() => Table.NavigatePageAsync(pageIndex))" class="page-number @(Table.PageNumber+1 == i ? "active" : string.Empty)">
+                @i
+            </li>
+        }
+
+        <li class="page-item @(Table.PageNumber + 1 < Table.TotalPages ? "" : "disabled")" @onclick="@(() => Table.NextPageAsync())" title="next">
+            <a class="page-link" href="javascript:;" aria-disabled="@(Table.PageNumber + 1 < Table.TotalPages ? null: "true")">
+                Next
+                <HorizonIcon Icon="@Icons.ArrowForward" Width="16" Height="16" />
+            </a>
+        </li>
+    </ul>
+</div>
+
+@code {
+    [Parameter]
+    public IHorizonTable<TableItem> Table { get; set; }
+}

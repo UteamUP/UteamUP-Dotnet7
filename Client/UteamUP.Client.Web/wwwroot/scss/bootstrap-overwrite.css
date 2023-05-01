@@ -1,0 +1,77 @@
+.btn-primary {
+    color: #fff;
+    background-color: #2b357f;
+    border: none;
+}
+
+.fade.modal.show {
+    padding-right: 0 !important;
+}
+
+.form-select.is-valid:not([multiple]):not([size]) {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+
+.reset-dorpDown {
+    /* button content */
+}
+
+.reset-dorpDown .dropdown-toggle {
+    background-color: none;
+    border: none;
+}
+
+.reset-dorpDown .dropdown-toggle::after {
+    content: "";
+    display: none;
+}
+
+.reset-dorpDown .btn-check:focus + .btn-success,
+.reset-dorpDown .btn-success:focus {
+    color: black;
+    background-color: #fff;
+    border: none;
+    box-shadow: none;
+}
+
+.reset-dorpDown .btn-check:checked + .btn-success:focus,
+.reset-dorpDown .btn-check:active + .btn-success:focus,
+.reset-dorpDown .btn-success:active:focus,
+.reset-dorpDown .btn-success.active:focus,
+.reset-dorpDown .show > .btn-success.dropdown-toggle:focus {
+    box-shadow: none;
+}
+
+.reset-dorpDown .btn-check:checked + .btn-success,
+.reset-dorpDown .btn-check:active + .btn-success,
+.reset-dorpDown .btn-success:active,
+.reset-dorpDown .btn-success.active,
+.reset-dorpDown .show > .btn-success.dropdown-toggle {
+    color: black;
+    background-color: #fff;
+    border: none;
+}
+
+.reset-dorpDown .btn-check:focus + .btn,
+.reset-dorpDown .btn:focus {
+    outline: 0;
+    box-shadow: none;
+}
+
+.reset-dorpDown .action-btn--content {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.reset-dorpDown .action-btn--content img {
+    margin-right: 7px;
+}
+
+.reset-dorpDown .dropdown-menu {
+    padding: 0;
+    border: none;
+}
+
+/*# sourceMappingURL=bootstrap-overwrite.css.map */

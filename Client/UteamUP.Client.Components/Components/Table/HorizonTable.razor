@@ -1,0 +1,305 @@
+﻿@namespace UteamUP.Client.Components.Table
+@using System.Linq.Expressions;
+
+@typeparam TableItem
+@implements IHorizonTable<TableItem>
+
+<CascadingValue Value="(IHorizonTable<TableItem>)this" Name="Table">
+    @ChildContent
+</CascadingValue>
+
+<div class="table-container">
+    @if (EnableGrouping)
+    {
+        <div @ondrop:preventDefault="true" ondragover="event.preventDefault();" class="grouping-container">
+            @if (_groupByCols.Any())
+            {
+                foreach (var col in _groupByCols)
+                {
+                    <HorizonGroupedPill OnRemove="OnRemoveGroupedColumn" Title="@col.Title" />
+                }
+            }
+            else
+            {
+                <span class="text">
+                    <HorizonIcon Icon="@Icons.Lightbulb" Width="16" Height="16" /> Drag a column header here to group its column
+                </span>
+            }
+        </div>
+    }
+
+    <div class="data-table">
+        @if (Columns.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        @foreach (var column in Columns.Where(x => !_groupByCols.Contains(x)))
+                        {
+                            <th draggable="@EnableGrouping.ToString().ToLower()" @ondragstart="(e) => OnDragColumnHeader(e, column)">
+                                <div class="hstack gap-2">
+                                    @if (column.TitleIcon != null)
+                                    {
+                                        <HorizonIcon Icon="@column.TitleIcon" Width="20" Height="16" />
+                                    }
+                                    @column.Title
+                                </div>
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!_groupByCols.Any())
+                    {
+                        foreach (var item in FilteredItems)
+                        {
+                            <tr>
+                                @foreach (var col in Columns)
+                                {
+                                    <td>
+                                        @if (col.Template != null)
+                                        {
+                                            @col.Template(item)
+                                        }
+                                        else
+                                        {
+                                            @col.Render(item)
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+            @if (_groupByCols.Any())
+            {
+                @foreach (var group in _groupedData)
+                {
+                    <HorizonDataGroup TItem="TableItem" GroupedData="group" Columns="@Columns" />
+                }
+            }
+        }
+    </div>
+
+    <div class="mobile-table">
+        @if (!_groupByCols.Any())
+        {
+            foreach (var item in FilteredItems)
+            {
+                <div class="row">
+                    @foreach (var col in Columns)
+                    {
+                        <div class="the-col @(string.IsNullOrEmpty(col.Title) ? "action-col" : string.Empty)">
+                            <div class="title">
+                                @col.Title
+                            </div>
+
+                            <div class="item">
+                                @if (col.Template != null)
+                                {
+                                    @col.Template(item)
+                                }
+                                else
+                                {
+                                    @col.Render(item)
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+
+    <HorizonPager TableItem="TableItem" Table="this" />
+</div>
+
+@code {
+    private const int DEFAULT_PAGE_SIZE = 10;
+
+    [Parameter]
+    public IQueryable<TableItem> ItemsQueryable { get; set; }
+
+    [Parameter]
+    public IEnumerable<TableItem> Items { get; set; }
+
+    public IEnumerable<TableItem> FilteredItems { get; private set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public bool EnableGrouping { get; set; }
+
+    [Parameter]
+    public int PageSize { get; set; } = DEFAULT_PAGE_SIZE;
+
+    public int PageNumber { get; private set; }
+
+    public int TotalCount { get; private set; }
+
+    public int TotalPages => PageSize <= 0 ? 1 : (TotalCount + PageSize - 1) / PageSize;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await UpdateAsync().ConfigureAwait(false);
+    }
+
+    private List<IHorizonColumn<TableItem>> _groupByCols = new();
+
+    private List<GroupedData<TableItem>> _groupedData = null;
+
+    private void OnRemoveGroupedColumn(string title)
+    {
+        _groupByCols = _groupByCols.Where(x => x.Title != title).ToList();
+        GroupDate();
+    }
+
+    private void OnDragColumnHeader(DragEventArgs d, IHorizonColumn<TableItem> column)
+    {
+        _groupByCols.Add(column);
+
+        GroupDate();
+    }
+
+    private List<GroupedData<TableItem>> RecursiveGroup(List<GroupedData<TableItem>> data, IHorizonColumn<TableItem> column)
+    {
+        var newData = new List<GroupedData<TableItem>>();
+
+        for (var i = 0; i < data.Count(); i++)
+        {
+            var group = data.ElementAt(i);
+            var groupData = group.Children.Select(x => x.Data).GroupBy(column.Field.Compile());
+
+            group.Children = groupData.Select(x => new GroupedData<TableItem>()
+                {
+                    Key = x.Key,
+                    Children = x.Select(c => new GroupedData<TableItem>() { Data = c }).ToList(),
+                    PropertyName = column.Title
+                }).ToList();
+
+            newData.AddRange(group.Children);
+        }
+
+        return newData;
+    }
+
+    private void GroupDate()
+    {
+        var newItems = new List<GroupedData<TableItem>>();
+        List<GroupedData<TableItem>> lastGroupedData = null;
+
+        for (int i = 0; i < _groupByCols.Count(); i++)
+        {
+            var groupedCol = _groupByCols.ElementAt(i);
+
+            if (i == 0)
+            {
+                newItems = Items.GroupBy(groupedCol.Field.Compile()).Select(x =>
+                    new GroupedData<TableItem>()
+                        {
+                            Key = x.Key,
+                            Children = x.Select(c => new GroupedData<TableItem>() { Data = c }).ToList(),
+                            PropertyName = groupedCol.Title
+                        }).ToList();
+
+                _groupedData = newItems;
+                lastGroupedData = newItems;
+            }
+            else
+            {
+                lastGroupedData = RecursiveGroup(lastGroupedData, groupedCol);
+            }
+        }
+    }
+
+    public List<IHorizonColumn<TableItem>> Columns { get; } = new List<IHorizonColumn<TableItem>>();
+
+    public void AddColumn(IHorizonColumn<TableItem> column)
+    {
+        column.Table = this;
+
+        Columns.Add(column);
+        Refresh();
+    }
+
+    public void Refresh()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public async Task FirstPageAsync()
+    {
+        if (PageNumber != 0)
+        {
+            PageNumber = 0;
+            //detailsViewOpen.Clear();
+            await UpdateAsync().ConfigureAwait(false);
+        }
+    }
+
+    public async Task NextPageAsync()
+    {
+        if (PageNumber + 1 < TotalPages)
+        {
+            PageNumber++;
+            //detailsViewOpen.Clear();
+            await UpdateAsync().ConfigureAwait(false);
+        }
+    }
+
+    public async Task PreviousPageAsync()
+    {
+        if (PageNumber > 0)
+        {
+            PageNumber--;
+            //detailsViewOpen.Clear();
+            await UpdateAsync().ConfigureAwait(false);
+        }
+    }
+
+    public async Task LastPageAsync()
+    {
+        PageNumber = TotalPages - 1;
+        //detailsViewOpen.Clear();
+        await UpdateAsync().ConfigureAwait(false);
+    }
+
+    public async Task NavigatePageAsync(int page)
+    {
+        PageNumber = page;
+        //detailsViewOpen.Clear();
+        await UpdateAsync().ConfigureAwait(false);
+    }
+
+    public async Task UpdateAsync()
+    {
+        FilteredItems = GetData();
+        Refresh();
+    }
+
+    private IEnumerable<TableItem> GetData()
+    {
+        if (Items == null && ItemsQueryable == null)
+        {
+            return Items;
+        }
+        if (Items != null)
+        {
+            ItemsQueryable = Items.AsQueryable();
+        }
+
+        TotalCount = ItemsQueryable.Count();
+
+        // if the current page is filtered out, we should go back to a page that exists
+        if (PageNumber > TotalPages)
+        {
+            PageNumber = TotalPages - 1;
+        }
+
+        // if PageSize is zero, we return all rows and no paging
+        return PageSize <= 0 ? ItemsQueryable.ToList() : ItemsQueryable.Skip(PageNumber * PageSize).Take(PageSize).ToList();
+    }
+}

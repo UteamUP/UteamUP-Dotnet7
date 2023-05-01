@@ -1,0 +1,26 @@
+.group-row-container[b-1w21xsypcw] {
+  display: flex;
+  justify-content: space-between;
+}
+.group-row-container .tag-cell[b-1w21xsypcw] {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  flex: 1;
+  font-weight: 600;
+}
+
+.grouped-container[b-1w21xsypcw] {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 10px;
+}
+
+.grouped-node[b-1w21xsypcw] {
+  margin-left: 10px;
+}
+
+/*# sourceMappingURL=HorizonDataGroup.razor.css.map */

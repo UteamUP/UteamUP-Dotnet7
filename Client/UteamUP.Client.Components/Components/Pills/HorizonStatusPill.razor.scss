@@ -1,0 +1,14 @@
+﻿.status-pill {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+
+  &.not-started {
+    background-color: #E8DEEE;
+  }
+
+  &.completed {
+    background-color: #DEEEE6;
+  }
+}
