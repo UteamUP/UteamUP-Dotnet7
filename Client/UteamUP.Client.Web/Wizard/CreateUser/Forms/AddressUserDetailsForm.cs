@@ -1,4 +1,4 @@
-namespace UteamUP.Client.Wizard.CreateUser.Models;
+namespace UteamUP.Client.Web.Wizard.CreateUser.Forms;
 
 public class AddressUserDetailsForm
 {

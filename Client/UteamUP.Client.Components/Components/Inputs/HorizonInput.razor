@@ -15,11 +15,26 @@
 
         @if (InputType == InputType.TextArea)
         {
-            <textarea placeholder="@Placeholder" type="@InputType.ToDescriptionString()" @oninput="(e) => CurrentValueAsString = (string)e.Value" value="@BindConverter.FormatValue(CurrentValue)" />
+            @if(Enabled)
+            {
+                <textarea placeholder="@Placeholder" type="@InputType.ToDescriptionString()" @oninput="(e) => CurrentValueAsString = (string)e.Value" value="@BindConverter.FormatValue(CurrentValue)" />
+            }
+            else
+            {
+                <textarea placeholder="@Placeholder" type="@InputType.ToDescriptionString()" disabled="@Enabled" readonly @oninput="(e) => CurrentValueAsString = (string)e.Value" value="@BindConverter.FormatValue(CurrentValue)" />
+            }
         }
         else
         {
-            <input placeholder="@Placeholder" type="@InputType.ToDescriptionString()" @oninput="(e) => CurrentValueAsString = (string)e.Value" value="@BindConverter.FormatValue(CurrentValue)" />
+            @if (Enabled)
+            {
+                <input placeholder="@Placeholder" type="@InputType.ToDescriptionString()" @oninput="(e) => CurrentValueAsString = (string)e.Value" value="@BindConverter.FormatValue(CurrentValue)" />
+
+            }
+            else
+            {
+                <input placeholder="@Placeholder" type="@InputType.ToDescriptionString()" disabled="@Enabled" readonly @oninput="(e) => CurrentValueAsString = (string)e.Value" value="@BindConverter.FormatValue(CurrentValue)" />
+            }
         }
 
         @if (IconPosition == IconPosition.End)
@@ -40,6 +55,9 @@
     [Parameter]
     public Icon Icon { get; set; }
 
+    [Parameter]
+    public bool Enabled { get; set; } = true;
+    
     [Parameter]
     public string Placeholder { get; set; }
 

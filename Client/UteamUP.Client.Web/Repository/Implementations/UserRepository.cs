@@ -20,6 +20,14 @@ public class UserRepository : IUserRepository
         _headerRepository = headerRepository;
     }
 
+    // a private function that updates the header with the current user's token
+    private async Task GetHttpClientHeaderToken()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _httpClient.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
+    }
+    
     public async Task<MUser?> GetUserByOid(string? oid)
     {
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
@@ -28,5 +36,20 @@ public class UserRepository : IUserRepository
         _httpClient.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
 
         return await _httpClient.GetFromJsonAsync<MUser>($"{ServerUrl}/{Url}/{oid}");
+    }
+
+    public async Task<MUserUpdateDto?> UpdateUserByOid(MUserUpdateDto? userUpdateDto, string oid)
+    {
+        await GetHttpClientHeaderToken();
+        var user = await _httpClient.PutAsJsonAsync<MUserUpdateDto>($"{ServerUrl}/{Url}/{oid}", userUpdateDto);
+        
+        if (user.IsSuccessStatusCode)
+        {
+            return await user.Content.ReadFromJsonAsync<MUserUpdateDto>();
+        }
+        else
+        {
+            return new MUserUpdateDto();
+        }
     }
 }

@@ -29,20 +29,14 @@ public class UserController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(oid))
         {
-            _logger.Log(LogLevel.Error, $"Oid is null or empty");
+            _logger.Log(LogLevel.Error, $"GetByOidAsync: Oid is null or empty");
             return new NoContentResult();
         }
 
-        _logger.Log(LogLevel.Information, $"Getting user by oid {oid}");
-        MUser nuser = new MUser();
-        nuser.Oid = "bleh";
-        nuser.Name = "bleh";
-        nuser.Email = "bleh";
-        nuser.Phone = "bleh";
-        nuser.ActivationCode = "bleh";
+        _logger.Log(LogLevel.Information, $"GetByOidAsync: Getting user by oid {oid}");
 
-        //var user = await _user.GetByOidAsync(oid);
-        return Ok(nuser);
+        var user = await _user.GetByOidAsync(oid);
+        return Ok(user);
     }
 
     [HttpPost]
@@ -52,11 +46,26 @@ public class UserController : ControllerBase
             string.IsNullOrWhiteSpace(user.Name) ||
             string.IsNullOrWhiteSpace(user.Email))
         {
-            _logger.Log(LogLevel.Error, $"User data is null or empty");
+            _logger.Log(LogLevel.Error, $"PostAsync: User data is null or empty");
             return new BadRequestResult();
         }
 
         var result = await _user.CreateUserAsync(user);
+        return Ok(result);
+    }
+    
+    [HttpPut("oid/{oid}")]
+    public async Task<IActionResult> PutAsync([FromBody] MUserUpdateDto user, string oid)
+    {
+        if (string.IsNullOrWhiteSpace(oid) ||
+            string.IsNullOrWhiteSpace(user.Name) ||
+            string.IsNullOrWhiteSpace(user.Email))
+        {
+            _logger.Log(LogLevel.Error, $"PutAsync: User data is null or empty");
+            return new BadRequestResult();
+        }
+
+        var result = await _user.UpdateUserAsync(user, oid);
         return Ok(result);
     }
 }

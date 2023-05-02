@@ -1,6 +1,6 @@
 @page "/create-user"
 @using UteamUP.Client.Web.Repository.Interfaces
-@using UteamUP.Client.Wizard.CreateUser.Models
+@using UteamUP.Client.Web.Wizard.CreateUser.Forms
 @inject IUserRepository UserRepository
 
 <Form Steps="@_steps"
@@ -9,14 +9,16 @@
       Title="Create user"
       OnClickBackButton="OnClickBackButton"
       OnClickContinueButton="OnClickContinueButtonAsync"
-      OnClickSubmitButton="OnClickContinueButtonAsync">
+      OnClickSubmitButton="OnClickSubmitButtonAsync">
     @switch (_activeStepIndex)
     {
         case 0:
             <EditForm Model="@_model.BasicUserDetailsForm">
-                <HorizonInput Label="Name" Placeholder="Name" @bind-Value="@_model.BasicUserDetailsForm.Name" />
-                <HorizonInput Label="Email" Placeholder="Email" @bind-Value="@_model.BasicUserDetailsForm.Email" />
+                <HorizonInput Label="Name" Placeholder="Name" @bind-Value="@_model.BasicUserDetailsForm.Name" Enabled="false" />
+                <HorizonInput Label="Email" Placeholder="Email" @bind-Value="@_model.BasicUserDetailsForm.Email" Enabled="false" />
                 <HorizonInput Label="Website" Placeholder="Website" @bind-Value="@_model.BasicUserDetailsForm.Website" />
+                <HorizonInput Label="Phone" Placeholder="Your Phone" @bind-Value="@_model.BasicUserDetailsForm.Phone" />
+                <HorizonInput Label="Company or Department" Placeholder="Company or Department" @bind-Value="@_model.BasicUserDetailsForm.DepartmentCompany" />
             </EditForm>
             break;
         case 1:
@@ -29,12 +31,9 @@
             break;
         case 2:
             <EditForm Model="@_model.AddressUserDetailsForm">
-                <p>Some tenant invites here</p>
-            </EditForm>
-            break;
-        case 3:
-            <EditForm Model="@_model.AddressUserDetailsForm">
                 <p>Read the license agreement</p>
+                <p>Accept the license agreement</p>
+                <InputCheckbox @bind-Value=@_model.LicenseAgreementForm.LicenseAgreement />
             </EditForm>
             break;
         default:
@@ -58,7 +57,6 @@
     {
         { "Basic User Information", false },
         { "Address Information", false },
-        { "Tenant Invites", false },
         { "License Agreement", false },
     };
     
@@ -71,11 +69,57 @@
         _oid = AppState?.Oid;
         _name = AppState?.Name;
         _email = AppState?.Email;
+        
+        _model.BasicUserDetailsForm.Name = _name;
+        _model.BasicUserDetailsForm.Email = _email;
 
         MUser? user = await UserRepository.GetUserByOid(_oid);
 
-    //_model = Mapper.Map<AddNewUserForm>(user);
+        _model.BasicUserDetailsForm.Website = user.Website;
+        _model.BasicUserDetailsForm.Phone = user.Phone;
+        _model.BasicUserDetailsForm.DepartmentCompany = user.DepartmentCompany;
+        _model.AddressUserDetailsForm.Country = user.Country;
+        _model.AddressUserDetailsForm.StreetName = user.StreetName;
+        _model.AddressUserDetailsForm.City = user.City;
+        _model.AddressUserDetailsForm.PostalCode = user.PostalCode;
+        
+        _model.LicenseAgreementForm.LicenseAgreement = user.HasAcceptedLicenseAgreement;
+        
+        //_model = Mapper.Map<AddNewUserForm>(user);
 
+    }
+    
+    private async Task OnClickSubmitButtonAsync()
+    {
+        Console.WriteLine("Submit button clicked");
+        // Map the form data to the user object
+        MUserUpdateDto user = new MUserUpdateDto();
+        user.Name = _model.BasicUserDetailsForm.Name;
+        user.Email = _model.BasicUserDetailsForm.Email;
+        user.Website = _model.BasicUserDetailsForm.Website;
+        user.Phone = _model.BasicUserDetailsForm.Phone;
+        user.DepartmentCompany = _model.BasicUserDetailsForm.DepartmentCompany;
+        user.Country = _model.AddressUserDetailsForm.Country;
+        user.StreetName = _model.AddressUserDetailsForm.StreetName;
+        user.City = _model.AddressUserDetailsForm.City;
+        user.PostalCode = _model.AddressUserDetailsForm.PostalCode;
+        user.HasAcceptedLicenseAgreement = _model.LicenseAgreementForm.LicenseAgreement;
+        
+        // Save the user information
+        MUserUpdateDto? updatedUser = await UserRepository.UpdateUserByOid(user, _oid);
+        
+        // Check if the updated user has successfully been updated with checking if updatedUser is not null
+        if(string.IsNullOrWhiteSpace(updatedUser.Name) == null)
+            throw new Exception("User has not been updated");
+
+        // If the user has HasTenantInvites as true, then redirect to tenantInvites page
+        MUser? checkUser = await UserRepository.GetUserByOid(_oid);
+
+        // If the user has FirstLogin as true redirect to Create Tenant page
+        if(checkUser.IsFirstLogin)
+            NavigationManager.NavigateTo("/create-tenant");
+        else
+            NavigationManager.NavigateTo("/global");
     }
     
     private async Task OnClickContinueButtonAsync()

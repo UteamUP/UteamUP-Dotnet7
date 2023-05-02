@@ -7,6 +7,7 @@ public interface IMUserRepository
 
     Task<MUser?> GetByOidAsync(string oid);
     Task<MUser> CreateUserAsync(MUserDto userDto);
+    Task<MUserUpdateDto> UpdateUserAsync(MUserUpdateDto userDto, string oid);
 
     //Task<MUser> ActivateUserAsync(string oid, string code);
     //Task<MUser> DisableUserAsync(string oid);

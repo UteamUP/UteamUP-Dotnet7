@@ -5,12 +5,13 @@
 @using Blazor.SubtleCrypto
 
 @using Blazored.LocalStorage
+@using UteamUP.Client.Web.Repository.Interfaces
 @using UteamUP.Shared.States
 @using JsonSerializer = System.Text.Json.JsonSerializer
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService LocalStorageService
 @inject ICryptoService Crypto
-
+@inject IUserRepository UserRepository
 
 <CascadingValue Value="@myGlobal">
     @ChildContent
@@ -39,7 +40,6 @@
             {
                 // Load the savedState into the GlobalState
                 GlobalState newGlobal = await LocalStorageService.GetItemAsync<GlobalState>("globalState");
-                //GlobalState newGlobal = await Crypto.DecryptAsync<GlobalState>(savedStateJson);
                 
                 Console.WriteLine("Loaded state for : " + newGlobal.Email);
                 
@@ -53,16 +53,26 @@
                 oid = user.FindFirst("oid")?.Value;
                 email = user.FindFirst("signInNames.emailAddress")?.Value;
                 
-                // Save the GlobalState to the local storage
-                GlobalState newGlobal = new GlobalState { Name = username, Email = email, Oid = oid };
+                if(string.IsNullOrEmpty(oid))
+                    throw new Exception("No oid found in the claims");
                 
-                // Encrypt GlobalState
-                //var newGlobalEncrypted = await Crypto.EncryptAsync(newGlobal);
+                var myUser = await GetUserInformationFromDB(oid);
+                GlobalState newGlobal;
                 
+                if (!string.IsNullOrEmpty(myUser.Oid))
+                {
+                    // Save the GlobalState to the local storage
+                    newGlobal = new GlobalState { Name = myUser.Name, Email = myUser.Email, Oid = myUser.Oid, FirstLogin = myUser.IsFirstLogin, HasDatabaseUser = true, IsActivated = myUser.IsActive };
+                }
+                else
+                {
+                    // Save the GlobalState to the local storage
+                    newGlobal = new GlobalState { Name = username, Email = email, Oid = oid, FirstLogin = true};
+                }
+
                 // Convert newGlobal to json
                 var newGlobalJson = JsonSerializer.Serialize(newGlobal);
                 
-                //await LocalStorageService.SetItemAsStringAsync("globalState", newGlobalEncrypted.Value);
                 await LocalStorageService.SetItemAsStringAsync("globalState", newGlobalJson);
                 Console.WriteLine("New state for : " + newGlobal.Email);
                 
@@ -83,5 +93,20 @@
     {
         myGlobal = await this.GetClaimsPrincipalData();
         Console.WriteLine("Initialized for : " + myGlobal.Email);
+    }
+    
+    private async Task<MUser> GetUserInformationFromDB(string oid)
+    {
+        // Get the user information from the database
+        MUser? user = await UserRepository.GetUserByOid(oid);
+
+        if(!string.IsNullOrEmpty(user?.Email))
+        {
+            return user;
+        }
+        else
+        {
+            return new MUser();
+        }
     }
 }
