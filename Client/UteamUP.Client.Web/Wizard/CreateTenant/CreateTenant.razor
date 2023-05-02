@@ -1,20 +1,82 @@
 @page "/create-tenant"
-@using UteamUP.Client.Web.Repository.Implementations
-@inject ITenantWebRepository TenantWebRepository
+@using UteamUP.Client.Web.Repository.Interfaces
+@using UteamUP.Client.Wizard.CreateTenant.Forms
+@inject IUserRepository UserRepository
 
-<h3>CreateTenant</h3>
-<div><p>@_oid</p></div>
-
+<Form Steps="@_steps"
+      BackUrl="/global"
+      ActiveStepIndex="@_activeStepIndex"
+      Title="Create tenant"
+      OnClickBackButton="OnClickBackButton"
+      OnClickContinueButton="OnClickContinueButtonAsync"
+      OnClickSubmitButton="OnClickContinueButtonAsync">
+    @switch (_activeStepIndex)
+    {
+        case 0:
+            <EditForm Model="@_model.BasicTenantDetailsForm">
+                <HorizonInput Label="Name" Placeholder="Name" @bind-Value="@_model.BasicTenantDetailsForm.Name" />
+            </EditForm>
+            break;
+        case 1:
+            <EditForm Model="@_model.PlanDetailsForm">
+                <HorizonInput Label="Plan Name" Placeholder="Plan Name" @bind-Value="@_model.PlanDetailsForm.Name" />
+            </EditForm>
+            break;
+        case 2:
+            <EditForm Model="@_model.ExtraLicensesForm">
+                <HorizonInput Label="Extra Licenses Amount" Placeholder="Extra Licenses Amount" @bind-Value="@_model.ExtraLicensesForm.Amount" />
+            </EditForm>
+            break;
+        case 3:
+            <EditForm Model="@_model">
+                <p>Read the license agreement</p>
+            </EditForm>
+            break;
+        default:
+            break;
+    }
+</Form>
 
 @code {
-    string _oid = "";
+    [CascadingParameter] public GlobalState? AppState { get; set; }
+    string? _oid = "";
+    string? _name = "";
+    string? _email = "";
+    public int? Id { get; set; }
+    
+    AddNewTenantForm _model = new AddNewTenantForm();
 
+    protected int _activeStepIndex = 0;
+
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Basic Tenant Information", false },
+        { "Plan Selection", false },
+        { "Extra Licenses", false },
+        { "License Agreement", false },
+    };
+    
+    FluentValidationValidator? _fluentValidationValidator;
+    
     protected override async Task OnInitializedAsync()
     {
-
-        await TenantWebRepository.GetAll();
         await base.OnInitializedAsync();
-        
-        if (GlobalState != null) _oid = GlobalState.Value.Oid;
+
+        _oid = AppState?.Oid;
+        _name = AppState?.Name;
+        _email = AppState?.Email;
+
+        MUser? user = await UserRepository.GetUserByOid(_oid);
+
+    //_model = Mapper.Map<AddNewUserForm>(user);
+
     }
+    
+    private async Task OnClickContinueButtonAsync()
+    {
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+    }
+    
+    private void OnClickBackButton() => _activeStepIndex = _activeStepIndex - 1;
 }

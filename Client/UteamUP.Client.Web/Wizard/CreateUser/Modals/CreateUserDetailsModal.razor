@@ -1,0 +1,50 @@
+<div class="workorder-details-modal-container">
+    <div class="header">
+        <div class="name">
+            <h4>@_item.Name</h4>
+            <button @onclick="OnClickEdit">
+                <HorizonIcon Icon="@Icons.Modify" Width="28" Height="28"/>
+            </button>
+        </div>
+
+    </div>
+
+    <div class="modal-body">
+        <div class="info-row">
+            <span class="label">Email</span>
+            <a>@_item.Name</a>
+        </div>
+        <div class="footer">
+            <span class="label">
+                Vendor Description
+            </span>
+
+            <span class="description">
+                @_item.Description
+            </span>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private Vendor _item;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private void OnClickEdit()
+    {
+        NavigationManager.NavigateTo($"global-vendor-edit/{_item.Id}");
+    }
+
+    private void OnClick()
+    {
+        NavigationManager.NavigateTo($"assets");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+    //_vendor = await VendorRepository.GetVendor(Id);
+    }
+}

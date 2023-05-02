@@ -142,6 +142,10 @@
               "target": "Package",
               "version": "[1.8.2, )"
             },
+            "Blazor.SubtleCrypto": {
+              "target": "Package",
+              "version": "[6.0.1, )"
+            },
             "BlazorStrap": {
               "target": "Package",
               "version": "[5.1.101, )"
@@ -202,6 +206,10 @@
             "Microsoft.Authentication.WebAssembly.Msal": {
               "target": "Package",
               "version": "[7.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.Memory": {
+              "target": "Package",
+              "version": "[7.0.0, )"
             },
             "Microsoft.Extensions.Http": {
               "target": "Package",

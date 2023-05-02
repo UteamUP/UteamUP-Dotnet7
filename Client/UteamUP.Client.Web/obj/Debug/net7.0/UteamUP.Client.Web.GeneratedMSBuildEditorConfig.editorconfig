@@ -20,10 +20,6 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/Base/InitComponent.razor]
-build_metadata.AdditionalFiles.TargetPath = QmFzZS9Jbml0Q29tcG9uZW50LnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
 [/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/Pages/Authentication.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQXV0aGVudGljYXRpb24ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
@@ -36,8 +32,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5kZXgucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/Shared/CascadingAppState.razor]
-build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL0Nhc2NhZGluZ0FwcFN0YXRlLnJhem9y
+[/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/Shared/AppState.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL0FwcFN0YXRlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/Shared/MainLayout.razor]
@@ -56,6 +52,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkQ29tcG9uZW50cy9Nb2RhbHMvRGVsZXRlQ29uZmlybWF0aW9uTW9kYWwucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/Wizard/AcceptInvites/AcceptInvites.razor]
+build_metadata.AdditionalFiles.TargetPath = V2l6YXJkL0FjY2VwdEludml0ZXMvQWNjZXB0SW52aXRlcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/Wizard/ActivateUser/ActivateUser.razor]
+build_metadata.AdditionalFiles.TargetPath = V2l6YXJkL0FjdGl2YXRlVXNlci9BY3RpdmF0ZVVzZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/Wizard/CreateTenant/CreateTenant.razor]
 build_metadata.AdditionalFiles.TargetPath = V2l6YXJkL0NyZWF0ZVRlbmFudC9DcmVhdGVUZW5hbnQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
@@ -64,8 +68,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = V2l6YXJkL0NyZWF0ZVVzZXIvQ3JlYXRlVXNlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/Wizard/CreateUser/Modal/CreateUserDetailsModal.razor]
-build_metadata.AdditionalFiles.TargetPath = V2l6YXJkL0NyZWF0ZVVzZXIvTW9kYWwvQ3JlYXRlVXNlckRldGFpbHNNb2RhbC5yYXpvcg==
+[/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/Wizard/CreateUser/Modals/CreateUserDetailsModal.razor]
+build_metadata.AdditionalFiles.TargetPath = V2l6YXJkL0NyZWF0ZVVzZXIvTW9kYWxzL0NyZWF0ZVVzZXJEZXRhaWxzTW9kYWwucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/_Imports.razor]

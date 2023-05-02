@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "J1pwwWj3bMR/1XI2q4PPc7dDZMoK6BZ28sk7fR/CiopBL9UaPHXAJ4y5TeECFMqv4dG9VlNGGLwbNmMZh+tBkA==",
+  "dgSpecHash": "0jFOuHSVTgo1gvETeLNn7AzpyawalKFeGE2NRLtpXg97Z9XUSI6ePwExa7EspqVE49zxt2SDAYjvJ+9SCuJ+OA==",
   "success": true,
   "projectFilePath": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Api/UteamUP.Server.Api.csproj",
   "expectedPackageFiles": [
@@ -11,6 +11,7 @@
     "/Users/gisligudmundsson/.nuget/packages/azure.identity/1.8.2/azure.identity.1.8.2.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/azure.security.keyvault.certificates/4.1.0/azure.security.keyvault.certificates.4.1.0.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/azure.security.keyvault.secrets/4.1.0/azure.security.keyvault.secrets.4.1.0.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/blazor.subtlecrypto/6.0.1/blazor.subtlecrypto.6.0.1.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/blazorcomponentutilities/1.7.1/blazorcomponentutilities.1.7.1.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/blazored.fluentvalidation/2.1.0/blazored.fluentvalidation.2.1.0.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/blazored.localstorage/4.3.0/blazored.localstorage.4.3.0.nupkg.sha512",

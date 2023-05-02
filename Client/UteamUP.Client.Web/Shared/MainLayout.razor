@@ -2,11 +2,13 @@
 
 @inherits LayoutComponentBase
 
-<div class="panel-root">
-    <Navigation/>
-    @Body
-    @* <BottomNavigation NavigationItems="@NavigationItems" /> *@
-</div>
+<AppState>
+    <div class="panel-root">
+        <Navigation/>
+        @Body
+        @* <BottomNavigation NavigationItems="@NavigationItems" /> *@
+    </div>
+</AppState>
 
 @code {
 
@@ -14,7 +16,6 @@
     {
         await base.OnInitializedAsync();
     }
-
 
     // public IEnumerable<NavigationItem> NavigationItems { get; set; } = new List<NavigationItem>()
     // {

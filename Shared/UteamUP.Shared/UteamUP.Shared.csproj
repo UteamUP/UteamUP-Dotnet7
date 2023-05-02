@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="Properties\launchSettings.json"/>
+        <None Remove="Properties\launchSettings.json" />
     </ItemGroup>
 
 </Project>

@@ -14,6 +14,7 @@
       "AutoMapper.Extensions.Microsoft.DependencyInjection.dll": "sha256-RFmP6C+\/wYl1ISrVBekC+K2zrBwqPDUwvi8dVw+tiUY=",
       "Azure.Core.dll": "sha256-RYa0iegJD3tgNDsvNop5C25eHMGKM+EF4uiZZMUtG2o=",
       "Azure.Identity.dll": "sha256-Cor8FQkX0iPF+u6KbtFYSkd4wgRskp96WgnTobwSZ1g=",
+      "Blazor.SubtleCrypto.dll": "sha256-WQ4m4jQhysDeKdmq67CGksSulqmvdJq4KN4stpdLfSI=",
       "BlazorComponentUtilities.dll": "sha256-UapksNiQg3lu5QM9uVSLyjEuzRH\/7o22fmcmxcLAAeI=",
       "Blazored.FluentValidation.dll": "sha256-pmAnzGHbzjJkqlA1\/MjJe3bE8oA0PM8Cld1vLp+68sI=",
       "Blazored.LocalStorage.dll": "sha256-eXVgTw72kEn74FZgDQbLtvAmXbiZDSj5gzUnxVmwowQ=",
@@ -42,6 +43,8 @@
       "Microsoft.AspNetCore.WebUtilities.dll": "sha256-D5akJeBd7NNITuzAXxlX7zl2jfsc4uTKyeEKwwNhqoo=",
       "Microsoft.Authentication.WebAssembly.Msal.dll": "sha256-M6I8rpdSyz29AfvhQusE2M7HxP83C6UjlCbXXNBs8m8=",
       "Microsoft.Bcl.AsyncInterfaces.dll": "sha256-EcDo\/GQZkQrOT1Xd0jMPE3NwT5lsMq5DNsPxHVidLDQ=",
+      "Microsoft.Extensions.Caching.Abstractions.dll": "sha256-tiD1Xg\/wcoUkJVBDtLfs5EiB1IwSUm0d\/lPffRVbKOc=",
+      "Microsoft.Extensions.Caching.Memory.dll": "sha256-xNEDLuTrpWv6Lq76qNCi\/PYwN6Ev6cjFAzNQPsAKMfg=",
       "Microsoft.Extensions.Configuration.dll": "sha256-PqQvp77oZ4+uuy2ElXk8AU9I6RfZSf18UGTrd4rulOo=",
       "Microsoft.Extensions.Configuration.Abstractions.dll": "sha256-CnS3b9EMFQmETBUVEgtcron4DBsfFdcVt3zfCP6Uflg=",
       "Microsoft.Extensions.Configuration.Binder.dll": "sha256-7GY9+7Cm0Z8DJ+JCFwgCx9OfFtUvXlFHaaLlBYmXfIE=",
@@ -240,16 +243,16 @@
       "netstandard.dll": "sha256-OYYuPT3JUknj4LdYIa58zF7kDB3tCnLzjCSuhEjtKXM=",
       "System.Private.CoreLib.dll": "sha256-EVS7zPxPV\/41g2mzPwdXtwiigWxI\/SeAHme1IgyD6tc=",
       "UteamUP.Client.Components.dll": "sha256-7wu5H2iWRf0vA302FU+BzRHgBjYEPygeg9jX3GVSsBg=",
-      "UteamUP.Shared.dll": "sha256-eahOf0OPMPlKJ7501IUGYZa\/PR1EkME86VfhGkIhh20=",
-      "UteamUP.Client.Web.dll": "sha256-jiF9xZJ3QDJolGRMCcoHp277t\/vi9+ixyfUWj+7A5cg="
+      "UteamUP.Shared.dll": "sha256-X1c5C+hrW5nV87pRLs0hbvJx1GjpTnHty3hehBgJH5Q=",
+      "UteamUP.Client.Web.dll": "sha256-jQzaftRTSO7GrAOspW9Hc9tC9gw8BUHlPDu4VmSMiPI="
     },
     "extensions": null,
     "lazyAssembly": null,
     "libraryInitializers": null,
     "pdb": {
-      "UteamUP.Shared.pdb": "sha256-qciOW\/66UBrz5TlJdkVGvEennLz+1zG+mbEizeZ5Yp8=",
+      "UteamUP.Shared.pdb": "sha256-dk0RL1EhA9v0PuNfsAvueSHbyg4rrfATfZS5DozYceU=",
       "UteamUP.Client.Components.pdb": "sha256-8uKr43wyi1gCXcghD50Iyo8osU3ebLmz97V8ZCSm1Bc=",
-      "UteamUP.Client.Web.pdb": "sha256-3TXAscAGsv6q9KhT6tgZtSRPslyg1Tx4b8W18kb7pLw="
+      "UteamUP.Client.Web.pdb": "sha256-y+9ZeexWnDXQyTpHoqcVLnRhW6KZPX03QLsTAEzdjpw="
     },
     "runtime": {
       "dotnet.7.0.5.0go5whkgi1.js": "sha256-codB25EodaFEP43MDCfMBuKXU4LqurUKnQrpoMIFnPs=",

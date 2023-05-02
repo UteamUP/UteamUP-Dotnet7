@@ -152,3 +152,4 @@
 /Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Api/bin/Debug/net7.0/Blazored.LocalStorage.dll
 /Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Api/bin/Debug/net7.0/Fluxor.Blazor.Web.ReduxDevTools.dll
 /Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Api/bin/Debug/net7.0/Blazored.Toast.dll
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Server/UteamUP.Server.Api/bin/Debug/net7.0/Blazor.SubtleCrypto.dll

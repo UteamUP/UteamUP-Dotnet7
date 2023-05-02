@@ -1,77 +1,76 @@
 ﻿.btn-primary {
-  color: #fff;
-  background-color: #2b357f;
-  border: none;
+    color: #fff;
+    background-color: #2b357f;
+    border: none;
 }
 
 // modal
 .fade.modal.show {
-  padding-right: 0 !important;
+    padding-right: 0 !important;
 }
 
 .form-select.is-valid:not([multiple]):not([size]) {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
 }
 
 // reset dropDown
 .reset-dorpDown {
-  .dropdown-toggle {
-    background-color: none;
-    border: none;
-  }
+    .dropdown-toggle {
+        background-color: none;
+        border: none;
+    }
 
-  .dropdown-toggle::after {
-    content: "";
-    display: none;
-  }
+    .dropdown-toggle::after {
+        content: "";
+        display: none;
+    }
 
-  .btn-check:focus + .btn-success,
-  .btn-success:focus {
-    color: black;
-    background-color: #fff;
-    border: none;
-    box-shadow: none;
-  }
+    .btn-check:focus + .btn-success,
+    .btn-success:focus {
+        color: black;
+        background-color: #fff;
+        border: none;
+        box-shadow: none;
+    }
 
-  .btn-check:checked + .btn-success:focus,
-  .btn-check:active + .btn-success:focus,
-  .btn-success:active:focus,
-  .btn-success.active:focus,
-  .show > .btn-success.dropdown-toggle:focus {
-    box-shadow: none;
-  }
+    .btn-check:checked + .btn-success:focus,
+    .btn-check:active + .btn-success:focus,
+    .btn-success:active:focus,
+    .btn-success.active:focus,
+    .show > .btn-success.dropdown-toggle:focus {
+        box-shadow: none;
+    }
 
-  .btn-check:checked + .btn-success,
-  .btn-check:active + .btn-success,
-  .btn-success:active,
-  .btn-success.active,
-  .show > .btn-success.dropdown-toggle {
-    color: black;
-    background-color: #fff;
-    border: none;
-  }
+    .btn-check:checked + .btn-success,
+    .btn-check:active + .btn-success,
+    .btn-success:active,
+    .btn-success.active,
+    .show > .btn-success.dropdown-toggle {
+        color: black;
+        background-color: #fff;
+        border: none;
+    }
 
-  .btn-check:focus + .btn,
-  .btn:focus {
-    outline: 0;
-    box-shadow: none;
-  }
+    .btn-check:focus + .btn,
+    .btn:focus {
+        outline: 0;
+        box-shadow: none;
+    }
+    /* button content */
 
-  /* button content */
+    .action-btn--content {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        font-weight: 600;
+    }
 
-  .action-btn--content {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    font-weight: 600;
-  }
+    .action-btn--content img {
+        margin-right: 7px;
+    }
 
-  .action-btn--content img {
-    margin-right: 7px;
-  }
-
-  .dropdown-menu {
-    padding: 0;
-    border: none;
-  }
+    .dropdown-menu {
+        padding: 0;
+        border: none;
+    }
 }

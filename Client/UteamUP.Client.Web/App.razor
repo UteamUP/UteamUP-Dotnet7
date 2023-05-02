@@ -1,16 +1,15 @@
 ﻿@namespace UteamUP.Client
 
-<Fluxor.Blazor.Web.StoreInitializer/>
-<CascadingAppState>
     <CascadingAuthenticationState>
         <CascadingBlazoredModal HideCloseButton="true">
             <Router AppAssembly="@typeof(App).Assembly">
                 <Found Context="routeData">
+                    
                     <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                         <NotAuthorized>
                             @if (context.User.Identity?.IsAuthenticated != true)
                             {
-                                <RedirectToLogin/>
+                                    <RedirectToLogin/>
                             }
                             else
                             {
@@ -28,14 +27,3 @@
             </Router>
         </CascadingBlazoredModal>
     </CascadingAuthenticationState>
-</CascadingAppState>
-
-@code
-{
-    protected override async Task OnInitializedAsync()
-    {
-        // Check if the user is authenticated
-        
-        
-    }
-}

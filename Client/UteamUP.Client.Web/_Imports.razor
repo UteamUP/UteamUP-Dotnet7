@@ -14,10 +14,8 @@
 @using Microsoft.Extensions.Localization
 @using Microsoft.JSInterop
 
-@using Newtonsoft.Json.Linq
 @using Azure.Core
 @using Azure.Identity
-@using Newtonsoft.Json
 
 @* Injections *@
 @inject HttpClient Http
@@ -43,7 +41,6 @@
 @using UteamUP.Client.Web
 @using UteamUP.Client.Components.Icons
 @using UteamUP.Client.Web.Shared
-@using UteamUP.Client.Web.Base
 @using UteamUP.Shared.Models
 @using UteamUP.Client.Web.SharedComponents.Modals
 @using UteamUP.Client.Web.SharedComponents.Actions
@@ -53,12 +50,13 @@
 @using UteamUP.Client.Components.Table.Components
 @using UteamUP.Client.Components.Pills
 @using UteamUP.Client.Components.Inputs
+@using UteamUP.Shared.States
 
 @* UteamUP injections *@
 @inject NavigationManager NavigationManager
 @inject IMapper Mapper
 
-@inherits UteamupComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
 
 @* Attributes to import *@
 @attribute [Authorize]

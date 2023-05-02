@@ -1009,3 +1009,15 @@
 /Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Blazored.Toast.dll.gz
 /Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/Blazored.Toast.dll
 /Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/obj/Debug/net7.0/build-gz/6p9ggFyC.gz
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Caching.Abstractions.dll
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Caching.Memory.dll
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Caching.Abstractions.dll.gz
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Caching.Memory.dll.gz
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/Microsoft.Extensions.Caching.Abstractions.dll
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/Microsoft.Extensions.Caching.Memory.dll
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/obj/Debug/net7.0/build-gz/jaCouca2.gz
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/obj/Debug/net7.0/build-gz/Tq6gOPjT.gz
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Blazor.SubtleCrypto.dll
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Blazor.SubtleCrypto.dll.gz
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/Blazor.SubtleCrypto.dll
+/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/obj/Debug/net7.0/build-gz/pv53o9Vq.gz

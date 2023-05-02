@@ -20,7 +20,7 @@ public class UserRepository : IUserRepository
         _headerRepository = headerRepository;
     }
 
-    public async Task<MUser?> GetUserByOid(string oid)
+    public async Task<MUser?> GetUserByOid(string? oid)
     {
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;

@@ -1,6 +1,4 @@
 @page "/global"
-@inherits InitComponent
-
 <AuthorizeView>
     <Authorized>
         <div style="width: 800px; margin-left: auto; margin-right: auto;">
@@ -32,58 +30,82 @@
                 </div>
             </div>
             <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
+                @if (AppState != null){
+                    @if (!string.IsNullOrWhiteSpace(AppState.Oid))
+                    {
+                    <table class="table table-striped" style="width: 700px; margin: auto;">
+                        <thead>
+                        <tr>
+                            <td>Name</td>
+                            <td>Value</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Name</td>
+                            <td>@AppState.Name</td>
+                        </tr>
+                        <tr>
+                            <td>Oid</td>
+                            <td>@AppState.Oid</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>@AppState.Email</td>
+                        </tr>
+                        <tr>
+                            <td>First Login</td>
+                            <td>@AppState.FirstLogin</td>
+                        </tr>
 
-                <table class="table table-striped" style="width: 700px; margin: auto;">
-                    <thead>
-                    <tr>
-                        <td>Name</td>
-                        <td>Value</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>Name</td>
-                        <td>@_name</td>
-                    </tr>
-                    <tr>
-                        <td>Oid</td>
-                        <td>@_oid</td>
-                    </tr>
-                    <tr>
-                        <td>Email</td>
-                        <td>@_email</td>
-                    </tr>
-                    <tr>
-                        <td>First Login</td>
-                        <td>@_userFirstLogin</td>
-                    </tr>
+                        <tr>
+                            <td>Is activated</td>
+                            <td>
+                                <p>@AppState.IsActivated</p>
+                            </td>
+                        </tr>
 
-                    <tr>
-                        <td>Is activated</td>
-                        <td>
-                            <p>@_userActivated</p>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>Has user in DB</td>
+                            <td>@AppState.HasDatabaseUser</td>
+                        </tr>
+                        <tr>
+                            <td>User has tenant invites</td>
+                            <td>@AppState.HasTenantInvites</td>
+                        </tr>
+                        <tr>
+                            <td>Invites Count</td>
+                            @if (@AppState.TenantsInvited != null)
+                            {
+                                <td>@AppState.TenantsInvited.Count</td>
+                            }
+                            else
+                            {
+                                <td>0</td>
+                            }
+                        </tr>
 
-                    <tr>
-                        <td>Has user in DB</td>
-                        <td>@_userHasDatabase</td>
-                    </tr>
-                    <tr>
-                        <td>User has tenant invites</td>
-                        <td>@_userHasInvites</td>
-                    </tr>
-                    <tr>
-                        <td>Invites Count</td>
-                        <td>@_tenantInviteCount</td>
-                    </tr>
-
-                    <tr>
-                        <td>Tenant Count</td>
-                        <td>@_tenantCount</td>
-                    </tr>
-                    </tbody>
-                </table>
+                        <tr>
+                            <td>Tenant Count</td>
+                            @if (@AppState.Tenants != null)
+                            {
+                                <td>@AppState.Tenants.Count</td>
+                            }
+                            else
+                            {
+                                <td>0</td>
+                            }
+                        </tr>
+                        </tbody>
+                    </table>
+                    }else
+                    {
+                        <p>Loading...</p>
+                    }
+                }else
+                {
+                    <p>Loading...</p>
+                }
             </div>
         </div>
     </Authorized>
@@ -93,37 +115,6 @@
 </AuthorizeView>
 
 @code {
-    string _oid = "";
-    string _name = "";
-    string? _email = "";
-
-    int _tenantCount = 0;
-    int _tenantInviteCount = 0;
-
-    bool _userActivated = false;
-    bool _userHasDatabase = false;
-    bool _userFirstLogin = false;
-    bool _userHasTenants = false;
-    bool _userHasInvites = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
-        _tenantCount = GlobalState.Value.Tenants?.Count() ?? 0;
-        _tenantInviteCount = GlobalState.Value.TenantsInvited?.Count() ?? 0;
-        _userHasInvites = GlobalState.Value.HasTenantInvites;
-        if (GlobalState.Value.Tenants?.Count() > 0)
-        {
-            _userHasTenants = true;
-        }
-        _userFirstLogin = GlobalState.Value.FirstLogin;
-        _userHasDatabase = GlobalState.Value.HasDatabaseUser;
-        _userActivated = GlobalState.Value.IsActivated;
-
-        _oid = GlobalState.Value.Oid;
-        _name = GlobalState.Value.Name;
-        _email = GlobalState.Value.Email;
-    }
-
+    // TODO: Figure out why we get "Unhandled exception rendering component: Object reference not set to an instance of an object."
+    [CascadingParameter] public GlobalState? AppState { get; set; }
 }

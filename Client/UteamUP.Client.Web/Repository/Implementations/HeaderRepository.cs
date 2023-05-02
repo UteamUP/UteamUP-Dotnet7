@@ -22,7 +22,7 @@ public class HeaderRepository : IHeaderRepository
 
         if (tokenResult.TryGetToken(out token))
         {
-            _logger.Log(LogLevel.Information, $"SetHeaderAsync: {token.Value}");
+            _logger.Log(LogLevel.Information, $"SetHeaderAsync: {token}");
             return new AuthenticationHeaderValue("Bearer", token.Value);
         }
         

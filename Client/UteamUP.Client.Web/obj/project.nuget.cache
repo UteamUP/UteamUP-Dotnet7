@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "uqSzdyFioIldC+yuQTKiOdTxlXHZsqzxjBNzHYNOgWzArT9G6xqJdgMWxsMk5N4xdZURcbokED+bNIaYdkfhpA==",
+  "dgSpecHash": "tK602aQQD0rchVXBFc3/A/v+CaTmQSx93vD/8QKq7HHyXjXgd1KLIXTw9O8fyYGVwCWyg/gDj+g2MgagtBY5+Q==",
   "success": true,
   "projectFilePath": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/UteamUP.Client.Web.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,7 @@
     "/Users/gisligudmundsson/.nuget/packages/automapper.extensions.microsoft.dependencyinjection/12.0.1/automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/azure.core/1.31.0/azure.core.1.31.0.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/azure.identity/1.8.2/azure.identity.1.8.2.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/blazor.subtlecrypto/6.0.1/blazor.subtlecrypto.6.0.1.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/blazorcomponentutilities/1.7.1/blazorcomponentutilities.1.7.1.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/blazored.fluentvalidation/2.1.0/blazored.fluentvalidation.2.1.0.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/blazored.localstorage/4.3.0/blazored.localstorage.4.3.0.nupkg.sha512",
@@ -40,6 +41,8 @@
     "/Users/gisligudmundsson/.nuget/packages/microsoft.authentication.webassembly.msal/7.0.5/microsoft.authentication.webassembly.msal.7.0.5.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/microsoft.bcl.asyncinterfaces/1.1.1/microsoft.bcl.asyncinterfaces.1.1.1.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/microsoft.csharp/4.7.0/microsoft.csharp.4.7.0.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.caching.abstractions/7.0.0/microsoft.extensions.caching.abstractions.7.0.0.nupkg.sha512",
+    "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.caching.memory/7.0.0/microsoft.extensions.caching.memory.7.0.0.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.configuration/7.0.0/microsoft.extensions.configuration.7.0.0.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.configuration.abstractions/7.0.0/microsoft.extensions.configuration.abstractions.7.0.0.nupkg.sha512",
     "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.configuration.binder/7.0.4/microsoft.extensions.configuration.binder.7.0.4.nupkg.sha512",

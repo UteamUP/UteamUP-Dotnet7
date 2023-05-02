@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "M9K0t38FCIvz+E/VRQb0Hqxta7UvQEFt8FpP2z07QcE=",
+  "Hash": "jP1I+wAMFyR9GIz5D0Tc1NbNB5lAd/x6puUYSSRNhLE=",
   "Source": "UteamUP.Server.Api",
   "BasePath": "_content/UteamUP.Server.Api",
   "Mode": "Default",
@@ -572,6 +572,23 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "obj/Debug/net7.0/blazor.boot.json"
+    },
+    {
+      "Identity": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Blazor.SubtleCrypto.dll",
+      "SourceId": "UteamUP.Client.Web",
+      "SourceType": "Project",
+      "ContentRoot": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Blazor.SubtleCrypto.dll",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "BlazorWebAssemblyResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/gisligudmundsson/.nuget/packages/blazor.subtlecrypto/6.0.1/lib/net6.0/Blazor.SubtleCrypto.dll"
     },
     {
       "Identity": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/blazor.webassembly.js",
@@ -1201,6 +1218,40 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "/Users/gisligudmundsson/.nuget/packages/microsoft.netcore.app.runtime.mono.browser-wasm/7.0.5/runtimes/browser-wasm/lib/net7.0/Microsoft.CSharp.dll"
+    },
+    {
+      "Identity": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Caching.Abstractions.dll",
+      "SourceId": "UteamUP.Client.Web",
+      "SourceType": "Project",
+      "ContentRoot": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Extensions.Caching.Abstractions.dll",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "BlazorWebAssemblyResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.caching.abstractions/7.0.0/lib/net7.0/Microsoft.Extensions.Caching.Abstractions.dll"
+    },
+    {
+      "Identity": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Caching.Memory.dll",
+      "SourceId": "UteamUP.Client.Web",
+      "SourceType": "Project",
+      "ContentRoot": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Extensions.Caching.Memory.dll",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "BlazorWebAssemblyResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/gisligudmundsson/.nuget/packages/microsoft.extensions.caching.memory/7.0.0/lib/net7.0/Microsoft.Extensions.Caching.Memory.dll"
     },
     {
       "Identity": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Configuration.Abstractions.dll",
@@ -6796,6 +6847,23 @@
       "OriginalItemSpec": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/System.Reflection.Emit.Lightweight.dll"
     },
     {
+      "Identity": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/obj/Debug/net7.0/build-gz/jaCouca2.gz",
+      "SourceId": "UteamUP.Client.Web",
+      "SourceType": "Project",
+      "ContentRoot": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Extensions.Caching.Abstractions.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Caching.Abstractions.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Caching.Abstractions.dll"
+    },
+    {
       "Identity": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/obj/Debug/net7.0/build-gz/JEQTuW81.gz",
       "SourceId": "UteamUP.Client.Web",
       "SourceType": "Project",
@@ -7680,6 +7748,23 @@
       "OriginalItemSpec": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Microsoft.IdentityModel.Abstractions.dll"
     },
     {
+      "Identity": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/obj/Debug/net7.0/build-gz/pv53o9Vq.gz",
+      "SourceId": "UteamUP.Client.Web",
+      "SourceType": "Project",
+      "ContentRoot": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Blazor.SubtleCrypto.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Blazor.SubtleCrypto.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Blazor.SubtleCrypto.dll"
+    },
+    {
       "Identity": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/obj/Debug/net7.0/build-gz/PVjB+z9Y.gz",
       "SourceId": "UteamUP.Client.Web",
       "SourceType": "Project",
@@ -8103,6 +8188,23 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/System.Collections.Specialized.dll"
+    },
+    {
+      "Identity": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/obj/Debug/net7.0/build-gz/Tq6gOPjT.gz",
+      "SourceId": "UteamUP.Client.Web",
+      "SourceType": "Project",
+      "ContentRoot": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Extensions.Caching.Memory.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Caching.Memory.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/bin/Debug/net7.0/wwwroot/_framework/Microsoft.Extensions.Caching.Memory.dll"
     },
     {
       "Identity": "/Users/gisligudmundsson/Library/Mobile Documents/com~apple~CloudDocs/Development/NewUteamUP/Horizon/Client/UteamUP.Client.Web/obj/Debug/net7.0/build-gz/ts+Ai9pf.gz",

@@ -130,6 +130,19 @@
           }
         }
       },
+      "Blazor.SubtleCrypto/6.0.1": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0",
+          "Microsoft.Extensions.Options": "7.0.1",
+          "Microsoft.JSInterop": "7.0.5"
+        },
+        "runtime": {
+          "lib/net6.0/Blazor.SubtleCrypto.dll": {
+            "assemblyVersion": "6.0.1.0",
+            "fileVersion": "6.0.1.0"
+          }
+        }
+      },
       "BlazorComponentUtilities/1.7.1": {
         "runtime": {
           "lib/netstandard2.0/BlazorComponentUtilities.dll": {
@@ -1394,6 +1407,7 @@
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.1",
           "Azure.Core": "1.31.0",
           "Azure.Identity": "1.8.2",
+          "Blazor.SubtleCrypto": "6.0.1",
           "BlazorStrap": "5.1.101",
           "Blazored.FluentValidation": "2.1.0",
           "Blazored.LocalStorage": "4.3.0",
@@ -1408,6 +1422,7 @@
           "Microsoft.AspNetCore.Components.WebAssembly.Authentication": "7.0.5",
           "Microsoft.AspNetCore.Http": "2.2.2",
           "Microsoft.Authentication.WebAssembly.Msal": "7.0.5",
+          "Microsoft.Extensions.Caching.Memory": "7.0.0",
           "Microsoft.Extensions.Http": "7.0.0",
           "Microsoft.Extensions.Localization": "7.0.5",
           "UteamUP.Client.Components": "1.0.0",
@@ -1504,6 +1519,13 @@
       "sha512": "sha512-SK4XTPEaXI5UTdtSkr8TN4ZKnvazNHhybnnkxHgOyRAhV9ObcIjbrNlhS4ZeR8XtI+HidL+v/WIIVfR1+jKB8Q==",
       "path": "azure.security.keyvault.secrets/4.1.0",
       "hashPath": "azure.security.keyvault.secrets.4.1.0.nupkg.sha512"
+    },
+    "Blazor.SubtleCrypto/6.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kxfWY4UFXVaZFq1kbnnQTPYIlgOjyN+FWgg2MNvQCdSJ2H5h8af/Buun19pgbDlVhO5XrCCdZJmsal9AVIweKQ==",
+      "path": "blazor.subtlecrypto/6.0.1",
+      "hashPath": "blazor.subtlecrypto.6.0.1.nupkg.sha512"
     },
     "BlazorComponentUtilities/1.7.1": {
       "type": "package",
