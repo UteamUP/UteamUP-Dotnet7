@@ -15,6 +15,7 @@ public class Plan : Base
     public string Sku { get; set; }
 
     public string? Description { get; set; }
+    public string? PlanAgreement { get; set; }
 
     [Required(ErrorMessage = "You must set the plan type.")]
     public int PlanType { get; set; }

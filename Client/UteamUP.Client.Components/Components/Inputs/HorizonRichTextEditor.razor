@@ -4,29 +4,29 @@
 @inject IJSRuntime JSRuntime
 
 <div class="rich-text-editor-container">
-    <div class="quill-container">
-        <BlazoredTextEditor @ref="TextEditor" ReadOnly="ReadOnly">
-            <ToolbarContent>
-                @if(!ReadOnly)
-                {
-                    <span class="ql-formats">
-                        <button class="ql-bold"></button>
-                        <button class="ql-italic"></button>
-                        <button class="ql-underline"></button>
-                        <button class="ql-strike"></button>
-                    </span>
-                    <span class="ql-formats">
-                        <button class="ql-image"></button>
-                        <button @onclick="OnClickBrowseAsync"><HorizonIcon Icon="@Icons.Attachment" Width="14" Height="14" /></button>
-                    </span>
-                }
-            </ToolbarContent>
-            <EditorContent>
-                @EditorContent
-            </EditorContent>
-        </BlazoredTextEditor>
-    </div>
-    <InputFile multiple id="@_fileInputid" OnChange="@HandleOnChange" />
+        <div class="quill-container" style="height: @Height">
+            <BlazoredTextEditor @ref="TextEditor" ReadOnly="ReadOnly">
+                <ToolbarContent>
+                    @if (!ReadOnly)
+                    {
+                        <span class="ql-formats">
+                            <button class="ql-bold"></button>
+                            <button class="ql-italic"></button>
+                            <button class="ql-underline"></button>
+                            <button class="ql-strike"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-image"></button>
+                            <button @onclick="OnClickBrowseAsync"><HorizonIcon Icon="@Icons.Attachment" Width="14" Height="14"/></button>
+                        </span>
+                    }
+                </ToolbarContent>
+                <EditorContent>
+                    @EditorContent
+                </EditorContent>
+            </BlazoredTextEditor>
+        </div>
+    <InputFile multiple id="@_fileInputid" OnChange="@HandleOnChange"/>
 
     @if (_uploadedFiles != null)
     {
@@ -54,6 +54,9 @@
     [Parameter]
     public bool ReadOnly { get; set; }
 
+    [Parameter]
+    public string Height { get; set; } = "auto";
+    
     [Parameter]
     public EventCallback<IReadOnlyList<IBrowserFile>?> OnFileChange { get; set; }
 

@@ -242,17 +242,17 @@
       "mscorlib.dll": "sha256-qqpKd+W+AFb6UxudEYEKzrz7ma81p5LrWUwPBVvHV4U=",
       "netstandard.dll": "sha256-OYYuPT3JUknj4LdYIa58zF7kDB3tCnLzjCSuhEjtKXM=",
       "System.Private.CoreLib.dll": "sha256-EVS7zPxPV\/41g2mzPwdXtwiigWxI\/SeAHme1IgyD6tc=",
-      "UteamUP.Client.Components.dll": "sha256-oUTd8eHRD0UCipp5\/IFLBI6Bm+EFMlWvL6QPJNwjZFs=",
-      "UteamUP.Shared.dll": "sha256-8ecVB7RXb0hWOyM8SvddSLjiOi8ToNJEnZkxp2mY6qk=",
-      "UteamUP.Client.Web.dll": "sha256-Rfep0q6xr8FB+c4\/IfuRD5EVjk8IyZ3cJ+RHm95fWH8="
+      "UteamUP.Client.Components.dll": "sha256-E\/o9zlfxgoK+asb3Fvnrul8137QBsy6aj6w4eB6RMnE=",
+      "UteamUP.Shared.dll": "sha256-8Uv+UHnukvg60v164PE\/KixtO9fQ\/ZSBqypt3Uz8KLU=",
+      "UteamUP.Client.Web.dll": "sha256-Sk8AKJ603qAeBam5vOqY+UZBU5LBNWZ+GQI8BYLO6WE="
     },
     "extensions": null,
     "lazyAssembly": null,
     "libraryInitializers": null,
     "pdb": {
-      "UteamUP.Shared.pdb": "sha256-PNom\/mbwFtKBEm63tKmFAvweUfkPXRBPVLe+auw+7DI=",
-      "UteamUP.Client.Components.pdb": "sha256-eTchObvfp1p8QUx\/Mej8kG7HDGUkEL9S2BPwf2vfT3o=",
-      "UteamUP.Client.Web.pdb": "sha256-0tvsUW9hntFGbyREVWelY4tQUhP0YbZroDqr3powmBo="
+      "UteamUP.Shared.pdb": "sha256-Gfa6PhAhTgR5X9mIheNYT86gXO0wxIaD26qNfYy2ioQ=",
+      "UteamUP.Client.Components.pdb": "sha256-2ftTrsRwsr\/5+kuY4+HAiItZFtTeLyFKez3\/gF4YFdE=",
+      "UteamUP.Client.Web.pdb": "sha256-b1B+9q8zNTaOG+80ZO82euZcKwuNWO0W2zuljVEyPVY="
     },
     "runtime": {
       "dotnet.7.0.5.0go5whkgi1.js": "sha256-codB25EodaFEP43MDCfMBuKXU4LqurUKnQrpoMIFnPs=",

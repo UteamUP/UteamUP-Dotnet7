@@ -1,0 +1,48 @@
+.input-container[b-ypbdl066oo] {
+    margin-bottom: 30px;
+}
+
+.input-container .input-chip-wrapper[b-ypbdl066oo] {
+    background: #f4f2ef;
+    border: 0.75px solid rgba(0, 0, 0, 0.08);
+    padding: 13px 16px;
+    border-radius: 8px;
+}
+
+.input-container .input-chip-wrapper .root[b-ypbdl066oo] {
+    border: 0;
+    margin: 0;
+    display: inline-flex;
+    padding: 0;
+    position: relative;
+    min-width: 0;
+    vertical-align: top;
+    gap: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.input-container .input-chip-wrapper .root .chip[b-ypbdl066oo] {
+    margin: 0;
+    height: 41px;
+    padding: 10px;
+    background: #f6e5d8;
+    border-radius: 6px;
+    color: #f37221;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.input-container .input-chip-wrapper .root input[b-ypbdl066oo] {
+    background: none;
+    border: none;
+    flex: 1;
+}
+
+.input-container .input-chip-wrapper .root input:focus[b-ypbdl066oo] {
+    outline: none;
+}
+
+/*# sourceMappingURL=HorizonEmailChipInput.razor.css.map */

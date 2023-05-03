@@ -31,9 +31,80 @@
             break;
         case 2:
             <EditForm Model="@_model.AddressUserDetailsForm">
-                <p>Read the license agreement</p>
-                <p>Accept the license agreement</p>
-                <InputCheckbox @bind-Value=@_model.LicenseAgreementForm.LicenseAgreement />
+                <HorizonRichTextEditor ReadOnly="true" Height="300px">
+                    <EditorContent>
+                        <h3>LICENSE AGREEMENT</h3>
+                        <br />
+                        <p>This Software as a Service (SaaS) License Agreement (the "Agreement") is entered into as of [DATE] (the "Effective Date") by and between UteamUP, a company duly organized and existing under the laws of [JURISDICTION], having its principal place of business at [ADDRESS] ("Licensor") and [CUSTOMER NAME], a company duly organized and existing under the laws of [JURISDICTION], having its principal place of business at [ADDRESS] ("Licensee").</p>
+                        <br />
+                        <p>WHEREAS, Licensor has developed and owns a software solution known as "Horizon" (the "Software"), which is provided as a SaaS solution;</p>
+                        <br />
+                        <p>WHEREAS, Licensee desires to license and use the Software, and Licensor desires to grant Licensee a license to use the Software, subject to the terms and conditions set forth herein.</p>
+                        <br />
+                        <p>NOW, THEREFORE, in consideration of the mutual covenants and promises contained herein and other good and valuable consideration, the receipt and sufficiency of which are hereby acknowledged, the parties hereto agree as follows:</p>
+                        <br />
+                        <h4>1. DEFINITIONS</h4>
+                        <p>1.1 "Authorized Users" means the employees, agents, and independent contractors of Licensee who are authorized by Licensee to access and use the Software pursuant to this Agreement.</p>
+                        <p>1.2 "Documentation" means any user manuals, technical manuals, and any other materials provided by Licensor, in printed, electronic, or other forms, that describe the features, functions, and operation of the Software.</p>
+                        <br />
+                        <h4>2. LICENSE</h4>
+                        <p>2.1 Grant of License. Subject to the terms and conditions of this Agreement, Licensor hereby grants to Licensee a non-exclusive, non-transferable, revocable, limited license, without the right to sublicense, for the term of this Agreement, for Authorized Users to access and use the Software and Documentation solely for Licensee's internal business purposes.</p>
+                        <br />
+                        <h4>3. RESTRICTIONS</h4>
+                        <p>3.1 Use Restrictions. Licensee shall not, and shall not permit any Authorized User or third party to: (a) reverse engineer, decompile, disassemble, or otherwise attempt to derive the source code, techniques, processes, algorithms, know-how, or other information from the Software or permit or induce the foregoing; (b) sublicense, lease, rent, loan, distribute, or otherwise transfer the Software to any third party; (c) modify, adapt, or create derivative works based on the Software or Documentation; (d) remove any proprietary notices, labels, or marks from the Software or Documentation; (e) use the Software for the benefit of any third party or in any manner not authorized by this Agreement.</p>
+                        <br />
+                        <h4>4. FEES AND PAYMENT</h4>
+                        <p>4.1 Fees. Licensee shall pay Licensor the fees for the Software as set forth in the applicable Order Form or as otherwise agreed to in writing by the parties (the "Fees").</p>
+                        <p>4.2 Payment Terms. Licensee shall pay all Fees within thirty (30) days of receipt of an invoice from Licensor, unless otherwise agreed to in writing by the parties.</p>
+                        <br />
+                        <h4>5. TERM AND TERMINATION</h4>
+                        <p>5.1 Term. This Agreement shall commence on the Effective Date and continue for a period of one (1) year unless earlier terminated as provided herein (the "Initial Term"). The Agreement shall automatically renew for successive one (1) year periods (each, a "Renewal Term" and, collectively with the Initial Term, the "Term") unless either party provides written notice of non-renewal at least thirty (30) days prior to the expiration of the then-current term.</p>
+                        <p>5.2 Termination. Either party may terminate this Agreement upon written notice if the other party breaches any material term or condition of this Agreement and fails to cure such breach within thirty (30) days after receipt of written notice of the same.</p>
+                        <br />
+                        <p>5.3 Effects of Termination. Upon termination of this Agreement for any reason, all rights and licenses granted to Licensee under this Agreement shall immediately terminate, and Licensee shall immediately cease all use of the Software and Documentation. Licensee shall promptly return to Licensor or, at Licensor's request, destroy all copies of the Software and Documentation in Licensee's possession or control.</p>
+                        <br />
+                        <h4>6. INTELLECTUAL PROPERTY</h4>
+                        <p>6.1 Ownership. Licensor and its licensors shall retain all right, title, and interest in and to the Software and Documentation, including all intellectual property rights therein. Nothing in this Agreement shall be construed to grant Licensee any rights, title, or interest in the Software or Documentation, other than the limited rights expressly granted in this Agreement.</p>
+                        <br />
+                        <h4>7. CONFIDENTIALITY</h4>
+                        <p>7.1 Confidential Information. The parties acknowledge that, in the course of performing their obligations under this Agreement, each party may have access to or may be exposed to, directly or indirectly, confidential information of the other party ("Confidential Information"). Confidential Information includes the Software, Documentation, and any non-public information, technical data, or know-how, including but not limited to, research, product plans, products, services, customers, customer lists, markets, software, developments, inventions, processes, formulas, technology, designs, drawings, engineering, hardware configuration information, marketing, finances, or other business information.</p>
+                        <br />
+                        <p>7.2 Nondisclosure. Each party agrees not to use any Confidential Information of the other party for any purpose other than the performance of its obligations under this Agreement, and to protect the confidentiality of all Confidential Information of the other party by using the same degree of care as it uses to protect its own confidential information, but in no event less than a reasonable degree of care.</p>
+                        <br />
+                        <h4>8. WARRANTIES AND DISCLAIMERS</h4>
+                        <p>8.1 Limited Warranty. Licensor warrants that the Software, when used in accordance with the Documentation, will perform substantially as described in the Documentation for a period of ninety (90) days from the Effective Date ("Warranty Period"). If Licensee notifies Licensor of any breach of this warranty during the Warranty Period, Licensor shall, at its sole option, either correct the nonconforming Software, replace the nonconforming Software with conforming Software, or terminate the license granted herein and refund the Fees paid by Licensee for the Software.</p>
+                        <br />
+                        <p>8.2 Disclaimer. EXCEPT FOR THE LIMITED WARRANTY SET FORTH IN SECTION 8.1, THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" AND LICENSOR DISCLAIMS ALL OTHER WARRANTIES, WHETHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, AND ANY WARRANTIES ARISING FROM A COURSE OF DEALING, USAGE, OR TRADE PRACTICE.</p>
+                        <br />
+                        <h4>9. LIMITATION OF LIABILITY</h4>
+                        <p>9.1 Limitation. IN NO EVENT SHALL LICENSOR BE LIABLE TO LICENSEE OR ANY OTHER PERSON FOR ANY INDIRECT, INCIDENTAL, CONSEQUENTIAL, EXEMPLARY, SPECIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF PROFIT OR GOODWILL, FOR ANY MATTER ARISING OUT OF OR RELATING TO THIS AGREEMENT, WHETHER SUCH LIABILITY IS ASSERTED ON THE BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE OR STRICT LIABILITY), OR OTHERWISE, EVEN IF LICENSOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
+                        <br />
+                        <p>9.2 Maximum Liability. IN NO EVENT SHALL LICENSOR'S TOTAL LIABILITY FOR ALL DAMAGES, LOSSES, AND CAUSES OF ACTION ARISING OUT OF OR RELATING TO THIS AGREEMENT (WHETHER IN CONTRACT, TORT, INCLUDING NEGLIGENCE, WARRANTY, OR OTHERWISE) EXCEED THE AMOUNT OF FEES PAID BY LICENSEE TO LICENSOR DURING THE TWELVE (12) MONTHS IMMEDIATELY PRECEDING THE DATE ON WHICH THE CLAIM AROSE.</p>
+                        <br />
+                        <h4>10. INDEMNIFICATION</h4>
+                        <p>10.1 Indemnification by Licensor. Licensor shall defend, indemnify, and hold harmless Licensee from and against any and all third-party claims, liabilities, damages, losses, and expenses, including reasonable attorneys' fees, arising out of or relating to any actual or alleged infringement of any intellectual property rights by the Software, provided that: (a) Licensee promptly notifies Licensor in writing of the claim; (b) Licensor has sole control of the defense and all related settlement negotiations; and (c) Licensee provides Licensor with the assistance, information, and authority necessary to perform Licensor's obligations under this Section.</p>
+                        <br />
+                        <p>10.2 Indemnification by Licensee. Licensee shall defend, indemnify, and hold harmless Licensor from and against any and all third-party claims, liabilities, damages, losses, and expenses, including reasonable attorneys' fees, arising out of or relating to Licensee's use of the Software in violation of this Agreement, provided that: (a) Licensor promptly notifies Licensee in writing of the claim; (b) Licensee has sole control of the defense and all related settlement negotiations; and (c) Licensor provides Licensee with the assistance, information, and authority necessary to perform Licensee's obligations under this Section.</p>
+                        <br />
+                        <h4>11. MISCELLANEOUS</h4>
+                        <p>11.1 Governing Law. This Agreement shall be governed by and construed in accordance with the laws of [JURISDICTION], without regard to its conflict of laws principles.</p>
+                        <br />
+                        <p>11.2 Entire Agreement. This Agreement, together with any applicable Order Form, constitutes the entire agreement between the parties with respect to the subject matter hereof, and supersedes all prior and contemporaneous understandings, agreements, negotiations, representations, warranties, and communications, both written and oral, with respect to such subject matter.</p>
+                        <br />
+                        <p>11.3 Amendment. No modification, amendment, or waiver of any provision of this Agreement shall be effective unless in writing and signed by both parties hereto.</p>
+                        <br />
+                        <p>11.4 Assignment. Neither party may assign or otherwise transfer any of its rights or obligations under this Agreement without the prior written consent of the other party, except that either party may assign this Agreement without consent in connection with a merger, acquisition, or sale of all or substantially all of its assets.</p>
+                        <br />
+                        <p>11.5 Severability. If any provision of this Agreement is held by a court of competent jurisdiction to be contrary to law, such provision shall be modified by the court and interpreted so as best to accomplish the objectives of the original provision to the fullest extent permitted by law, and the remaining provisions of this Agreement shall remain in effect.</p>
+                        <br />
+                        <p>11.6 Notices. All notices, requests, consents, claims, demands, waivers, and other communications under this Agreement must be in writing and addressed to the parties at the addresses set forth on the first page of this Agreement (or to such other address that may be designated by the receiving party from time to time in accordance with this section).</p>
+                    </EditorContent>
+                </HorizonRichTextEditor>
+                <br />
+                <label class="input-container">
+                    <InputCheckbox @bind-Value=@_model.LicenseAgreementForm.LicenseAgreement/>
+                    Accept the license agreement
+                </label>
             </EditForm>
             break;
         default:

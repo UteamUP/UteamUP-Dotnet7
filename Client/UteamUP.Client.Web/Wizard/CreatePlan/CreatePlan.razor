@@ -1,0 +1,111 @@
+@page "/create-plan"
+@using UteamUP.Client.Wizard.CreatePlan.Forms
+@using UteamUP.Client.Web.Repository.Implementations
+
+<Form Steps="@_steps"
+      BackUrl="/global"
+      ActiveStepIndex="@_activeStepIndex"
+      Title="Create plan"
+      OnClickBackButton="OnClickBackButton"
+      OnClickContinueButton="OnClickContinueButtonAsync"
+      OnClickSubmitButton="OnClickSubmitButtonAsync">
+    @switch (_activeStepIndex)
+    {
+        case 0:
+            <EditForm Model="@_model.BasicPlanForm">
+                <HorizonInput Label="Name" Placeholder="Name" @bind-Value="@_model.BasicPlanForm.Name" />
+                <HorizonInput Label="Sku" Placeholder="SKU Information" @bind-Value="@_model.BasicPlanForm.Sku" />
+                <HorizonInput Label="Type" Placeholder="Plan Type" @bind-Value="@_model.BasicPlanForm.PlanType" />
+            </EditForm>
+            break;
+        case 1:
+            <EditForm Model="@_model.PlanCostForm">
+                <HorizonInput Label="Licenses" Placeholder="Amount of licenses included" @bind-Value="@licenses" />
+                <HorizonInput Label="Price" Placeholder="Price per license" @bind-Value="@price" />
+                <HorizonInput Label="Discount" Placeholder="Discount per license" @bind-Value="@discount" />
+            </EditForm>
+            break;
+        case 2:
+            <EditForm Model="@_model.PlanAgreementForm.PlanAgreement">
+                <HorizonRichTextEditor>
+                    <EditorContent>
+                        <p>Something here</p>
+                    </EditorContent>
+                </HorizonRichTextEditor>
+            </EditForm>
+            break;
+        case 3:
+            <EditForm Model="@_model.PlanDescriptionForm.Description">
+                <HorizonRichTextEditor>
+                    <EditorContent>
+                        <p>Something here</p>
+                    </EditorContent>
+                </HorizonRichTextEditor>
+            </EditForm>
+            break;
+        default:
+            break;
+    }
+</Form>
+
+
+@code {
+    [CascadingParameter] public GlobalState? AppState { get; set; }
+    
+    string? _oid = "";
+    string? _name = "";
+    string? _email = "";
+    public int? Id { get; set; }
+    string discount = "";
+    string price = "";
+    string licenses = "";
+
+    AddNewPlanForm _model = new AddNewPlanForm();
+    
+    protected int _activeStepIndex = 0;
+
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Plan Basic Information", false },
+        { "Plan Costs and Licenses", false },
+        { "Plan Agreement Details", false },
+        { "Plan Detailed Information", false },
+    };
+    
+    FluentValidationValidator? _fluentValidationValidator;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _oid = AppState?.Oid;
+        _name = AppState?.Name;
+        _email = AppState?.Email;
+    }
+    
+    private async Task OnClickSubmitButtonAsync()
+    {
+        Console.WriteLine("Submit button clicked");
+        // Map the form data to the user object
+        PlanDto plan = new PlanDto();
+
+        
+        // Save the plan information
+        
+        // Check if the updated user has successfully been updated with checking if updatedUser is not null
+        if(string.IsNullOrWhiteSpace(plan.Name) == null)
+            throw new Exception("Plan has not been updated");
+
+        // If the user has HasTenantInvites as true, then redirect to tenantInvites page
+
+        // If the user has FirstLogin as true redirect to Create Tenant page
+    }
+    
+    private async Task OnClickContinueButtonAsync()
+    {
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+    }
+    
+    private void OnClickBackButton() => _activeStepIndex = _activeStepIndex - 1;
+}

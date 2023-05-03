@@ -1,0 +1,44 @@
+.input-container[b-gfgz71rqf9] {
+  margin-bottom: 30px;
+}
+.input-container[b-gfgz71rqf9]  .form-select {
+  background-color: #f3f1ee;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  border-radius: 8px;
+  font-weight: 400;
+  font-size: 16px;
+  color: #05060f;
+  position: relative;
+  height: 51px;
+}
+.input-container .input-wrapper[b-gfgz71rqf9] {
+  position: relative;
+  width: 100%;
+}
+.input-container .input-wrapper input[b-gfgz71rqf9] {
+  width: 100%;
+  background: #f3f1ee;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  border-radius: 8px;
+  height: 51px;
+  padding: 15px;
+  margin-bottom: 30px;
+  font-weight: 400;
+  font-size: 16px;
+  color: #05060f;
+  position: relative;
+}
+.input-container .input-wrapper[b-gfgz71rqf9]  svg {
+  position: absolute;
+  top: 12px;
+  color: red;
+  z-index: 1;
+  left: 10px;
+}
+.input-container[b-gfgz71rqf9]  .validation-message {
+  color: #dc3545 !important;
+}
+
+/*# sourceMappingURL=HorizonSelect.razor.css.map */

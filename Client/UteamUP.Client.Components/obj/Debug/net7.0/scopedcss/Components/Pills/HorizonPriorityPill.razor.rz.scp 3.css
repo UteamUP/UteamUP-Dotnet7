@@ -1,0 +1,20 @@
+.priority-pill[b-dwdvnrw7xn] {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.priority-pill.high[b-dwdvnrw7xn] {
+    background-color: #ffbbc8;
+}
+
+.priority-pill.medium[b-dwdvnrw7xn] {
+    background-color: #FFEBCC;
+}
+
+.priority-pill.low[b-dwdvnrw7xn] {
+    background-color: #F4F2EF;
+}
+
+/*# sourceMappingURL=HorizonPriorityPill.razor.css.map */

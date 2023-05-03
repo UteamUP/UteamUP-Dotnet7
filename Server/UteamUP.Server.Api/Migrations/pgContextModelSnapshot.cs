@@ -614,11 +614,9 @@ namespace UteamUP.Server.Api.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Country")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
@@ -638,6 +636,9 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("HasAcceptedLicenseAgreement")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("HasBeenActivated")
                         .HasColumnType("boolean");
@@ -671,11 +672,9 @@ namespace UteamUP.Server.Api.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PostalCode")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("StreetName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")

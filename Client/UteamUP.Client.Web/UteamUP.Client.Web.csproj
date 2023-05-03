@@ -72,6 +72,8 @@
         <Folder Include="Wizard\ActivateUser\Forms\" />
         <Folder Include="Wizard\ActivateUser\Modals\" />
         <Folder Include="Wizard\ActivateUser\Profiles\" />
+        <Folder Include="Wizard\CreatePlan\Modals\" />
+        <Folder Include="Wizard\CreatePlan\Profiles\" />
         <Folder Include="Wizard\CreateTenant\Modals\" />
         <Folder Include="Wizard\CreateTenant\Profiles\" />
     </ItemGroup>

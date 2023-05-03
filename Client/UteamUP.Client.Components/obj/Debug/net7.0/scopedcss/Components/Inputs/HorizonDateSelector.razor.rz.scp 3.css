@@ -1,0 +1,79 @@
+.date-selector-container[b-n1yp1g2z5u] {
+  margin-bottom: 30px;
+}
+.date-selector-container[b-n1yp1g2z5u]  .dropdown .dropdown-toggle {
+  width: 100%;
+  padding: 0;
+}
+.date-selector-container[b-n1yp1g2z5u]  .dropdown .dropdown-toggle::after {
+  display: none;
+}
+.date-selector-container[b-n1yp1g2z5u]  .dropdown .dropdown-menu {
+  background: #fff;
+  padding: 20px;
+  width: 520px;
+  min-height: 300px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  margin-top: 5px !important;
+  display: flex;
+}
+.date-selector-container[b-n1yp1g2z5u]  .dropdown .dropdown-menu .dropdown-menu--input {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.date-selector-container[b-n1yp1g2z5u]  .dropdown .dropdown-menu .dropdown-menu--input .hour-min-wrapper {
+  margin-top: 20px;
+  display: flex;
+  gap: 30px;
+}
+.date-selector-container[b-n1yp1g2z5u]  .dropdown .dropdown-menu .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.date-selector-container[b-n1yp1g2z5u]  .dropdown .dropdown-menu .header .nonee {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+.date-selector-container .toggle-button[b-n1yp1g2z5u] {
+  background-color: #f3f1ee;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  border-radius: 8px;
+  font-weight: 400;
+  font-size: 16px;
+  color: #05060f;
+  position: relative;
+  height: 51px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.375rem 0.75rem 0.375rem 0.75rem;
+}
+.date-selector-container[b-n1yp1g2z5u]  .gridd {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+  align-items: center;
+  flex: 1;
+}
+.date-selector-container[b-n1yp1g2z5u]  .gridd .day:hover {
+  cursor: pointer;
+}
+.date-selector-container[b-n1yp1g2z5u]  .gridd .day.active {
+  border-radius: 6px;
+  background: #2b357f;
+  padding: 5px;
+  color: #fff;
+}
+
+/*# sourceMappingURL=HorizonDateSelector.razor.css.map */
