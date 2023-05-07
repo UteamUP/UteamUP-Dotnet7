@@ -1,4 +1,4 @@
-namespace UteamUP.Client.Wizard.CreateTenant.Forms;
+namespace UteamUP.Client.Web.Wizard.CreateTenant.Forms;
 
 public class ExtraLicensesForm
 {

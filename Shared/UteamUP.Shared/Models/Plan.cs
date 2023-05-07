@@ -18,7 +18,7 @@ public class Plan : Base
     public string? PlanAgreement { get; set; }
 
     [Required(ErrorMessage = "You must set the plan type.")]
-    public int PlanType { get; set; }
+    public string PlanType { get; set; }
 
     [Required(ErrorMessage = "You must set amount of licenses included in this plan.")]
     public int LicenseIncluded { get; set; }

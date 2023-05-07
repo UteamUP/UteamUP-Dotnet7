@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,9 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Adding generic repository services.
 
 // Adding Global repository services.
-builder.Services.AddScoped<IMUserRepository, MUserRepository>();
-builder.Services.AddScoped<ITenantRepository, TenantRepository>();
-
+builder.Services.TryAddScoped<IMUserRepository, MUserRepository>();
+builder.Services.TryAddScoped<ITenantRepository, TenantRepository>();
+builder.Services.TryAddScoped<IPlanRepository, PlanRepository>();
+builder.Services.TryAddScoped<IClaimRepository, ClaimRepository>();
 
 // Add Database Service
 builder.Services.AddDbContext<pgContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("UteamupDB"),

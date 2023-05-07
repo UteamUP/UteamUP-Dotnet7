@@ -1,6 +1,8 @@
 @page "/create-plan"
 @using UteamUP.Client.Wizard.CreatePlan.Forms
 @using UteamUP.Client.Web.Repository.Implementations
+@using UteamUP.Client.Web.Repository.Interfaces
+@inject IPlanRepository PlanRepository
 
 <Form Steps="@_steps"
       BackUrl="/global"
@@ -13,34 +15,45 @@
     {
         case 0:
             <EditForm Model="@_model.BasicPlanForm">
-                <HorizonInput Label="Name" Placeholder="Name" @bind-Value="@_model.BasicPlanForm.Name" />
-                <HorizonInput Label="Sku" Placeholder="SKU Information" @bind-Value="@_model.BasicPlanForm.Sku" />
-                <HorizonInput Label="Type" Placeholder="Plan Type" @bind-Value="@_model.BasicPlanForm.PlanType" />
+                <HorizonInput Label="Name" Placeholder="Name" @bind-Value="@_model.BasicPlanForm.Name"/>
+                <HorizonInput Label="Sku" Placeholder="SKU Information" @bind-Value="@_model.BasicPlanForm.Sku"/>
+                <HorizonSelect Options="@_planTypes" Label="Plan Type" Placeholder="Type here" @bind-Value="_model.BasicPlanForm.PlanType"/>
             </EditForm>
             break;
         case 1:
             <EditForm Model="@_model.PlanCostForm">
-                <HorizonInput Label="Licenses" Placeholder="Amount of licenses included" @bind-Value="@licenses" />
-                <HorizonInput Label="Price" Placeholder="Price per license" @bind-Value="@price" />
-                <HorizonInput Label="Discount" Placeholder="Discount per license" @bind-Value="@discount" />
+                <HorizonInput Label="Licenses" Placeholder="Amount of licenses included" @bind-Value="@licenses"/>
+                <HorizonInput Label="Price" Placeholder="Price per license" @bind-Value="@price"/>
+                <HorizonInput Label="Discount" Placeholder="Discount per license" @bind-Value="@discount"/>
+                <div class="priority-status-wrapper">
+                    <HorizonDateSelector @bind-Value="_model.PlanCostForm.DiscountExpiry" Label="Expiry Date" />
+                </div>
             </EditForm>
             break;
         case 2:
-            <EditForm Model="@_model.PlanAgreementForm.PlanAgreement">
-                <HorizonRichTextEditor>
-                    <EditorContent>
-                        <p>Something here</p>
-                    </EditorContent>
-                </HorizonRichTextEditor>
+            <EditForm Model="@_model.PlanAgreementForm">
+                <h2>Plan Agreement</h2>
+                <div class="input-container">
+                    <label class="form-label">Agreement</label>
+                    <HorizonRichTextEditor Height="300px">
+                        <EditorContent>
+                            @((MarkupString)@_model.PlanAgreementForm.PlanAgreement)
+                        </EditorContent>
+                    </HorizonRichTextEditor>
+                </div>
             </EditForm>
             break;
         case 3:
-            <EditForm Model="@_model.PlanDescriptionForm.Description">
-                <HorizonRichTextEditor>
-                    <EditorContent>
-                        <p>Something here</p>
-                    </EditorContent>
-                </HorizonRichTextEditor>
+            <EditForm Model="@_model.PlanDescriptionForm">
+                <h2>Plan Description</h2>
+                <div class="input-container">
+                    <label class="form-label">Description</label>
+                    <HorizonRichTextEditor Height="300px">
+                        <EditorContent>
+                            @((MarkupString)@_model.PlanDescriptionForm.Description)
+                        </EditorContent>
+                    </HorizonRichTextEditor>
+                </div>
             </EditForm>
             break;
         default:
@@ -50,8 +63,10 @@
 
 
 @code {
-    [CascadingParameter] public GlobalState? AppState { get; set; }
-    
+
+    [CascadingParameter]
+    public GlobalState? AppState { get; set; }
+
     string? _oid = "";
     string? _name = "";
     string? _email = "";
@@ -62,6 +77,7 @@
 
     AddNewPlanForm _model = new AddNewPlanForm();
     
+
     protected int _activeStepIndex = 0;
 
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
@@ -69,11 +85,23 @@
         { "Plan Basic Information", false },
         { "Plan Costs and Licenses", false },
         { "Plan Agreement Details", false },
-        { "Plan Detailed Information", false },
+        { "Plan Detailed Information", false }
     };
-    
+
+    private IDictionary<string, string> _planTypes = new Dictionary<string, string>()
+    {
+        { "Contact Sales", "Contact Sales" },
+        { "Premium", "Premium" },
+        { "Standard", "Standard" },
+        { "Basic", "Basic" },
+        { "Platinum", "Platinum" },
+        { "Gold", "Gold" },
+        { "Silver", "Silver" },
+        { "Bronze", "Bronze" }
+    };
+
     FluentValidationValidator? _fluentValidationValidator;
-    
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -81,31 +109,67 @@
         _oid = AppState?.Oid;
         _name = AppState?.Name;
         _email = AppState?.Email;
+        
+        _model.BasicPlanForm.Name = "My Premium Plan";
+        _model.BasicPlanForm.Sku = "PREMIUM_SKU_001";
+        _model.BasicPlanForm.PlanType = "Premium";
+        
+        _model.PlanCostForm.LicenseIncluded = (int)100 ;
+        _model.PlanCostForm.PricePerLicense = (float)59.99;
+        _model.PlanCostForm.ExtraDiscountPerUser = (float)20.00;
+        
+        price = _model.PlanCostForm.PricePerLicense.ToString();
+        discount = _model.PlanCostForm.ExtraDiscountPerUser.ToString();
+        licenses = _model.PlanCostForm.LicenseIncluded.ToString();
+        
+        _model.PlanAgreementForm.PlanAgreement = "This is the plan agreement";
+        _model.PlanDescriptionForm.Description = "This is the plan description";
     }
-    
+
     private async Task OnClickSubmitButtonAsync()
     {
         Console.WriteLine("Submit button clicked");
-        // Map the form data to the user object
-        PlanDto plan = new PlanDto();
+    // Map the form data to the plan object
+        var plan = new PlanDto();
 
+        if (string.IsNullOrWhiteSpace(plan.Name) == null)
+            throw new Exception("Plan has not been created");
         
-        // Save the plan information
-        
-        // Check if the updated user has successfully been updated with checking if updatedUser is not null
-        if(string.IsNullOrWhiteSpace(plan.Name) == null)
+    // Check if the updated plan has successfully been updated with checking if updatedUser is not null
+        if (string.IsNullOrWhiteSpace(plan.Name) == null)
             throw new Exception("Plan has not been updated");
 
-        // If the user has HasTenantInvites as true, then redirect to tenantInvites page
+        // Map the form data to the plan object
+        var newPlan = new PlanDto();
+        newPlan.Name = _model.BasicPlanForm.Name;
+        newPlan.Sku = _model.BasicPlanForm.Sku;
+        newPlan.PlanType = _model.BasicPlanForm.PlanType;
+        
+        newPlan.PlanAgreement = _model.PlanAgreementForm.PlanAgreement;
+        newPlan.Description = _model.PlanDescriptionForm.Description;
+        
+        newPlan.LicenseIncluded = Convert.ToInt32(licenses);
+        newPlan.PricePerLicense = (float)Convert.ToDecimal(price);
+        newPlan.ExtraDiscountPerUser = (float)Convert.ToDecimal(discount);
+        newPlan.DiscountExpiry = _model.PlanCostForm.DiscountExpiry.ToUniversalTime();
 
-        // If the user has FirstLogin as true redirect to Create Tenant page
+    // Save create the plan and redirect to global page
+        var results = await PlanRepository.CreatePlanAsync(newPlan);
+        if (results == false)
+            throw new Exception("Plan has not been created");
+        else
+            NavigationManager.NavigateTo("/global");
     }
-    
+
     private async Task OnClickContinueButtonAsync()
     {
         _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
         _activeStepIndex = _activeStepIndex + 1;
     }
-    
-    private void OnClickBackButton() => _activeStepIndex = _activeStepIndex - 1;
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+
 }

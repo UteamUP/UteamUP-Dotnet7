@@ -6,17 +6,17 @@ public interface IPlanRepository
     Task<Plan> CreatePlanAsync(PlanDto plan);
 
     // Get plan by id
-    Task<Plan> GetPlanByIdAsync(int id);
+    //Task<Plan> GetPlanByIdAsync(int id);
 
     // Get all plans
-    Task<IEnumerable<Plan>> GetAllPlansAsync();
+    Task<List<Plan>> GetAllPlansAsync();
 
     // Update plan
-    Task<Plan> UpdatePlanAsync(PlanDto plan);
+    //Task<Plan> UpdatePlanAsync(PlanDto plan);
 
     // Add plan discount
-    Task<Plan> AddPlanDiscountAsync(float planDiscount);
+    //Task<Plan> AddPlanDiscountAsync(float planDiscount);
 
     // Set plan discount expiry date
-    Task<Plan> SetPlanDiscountExpiryDateAsync(DateTime planDiscountExpiryDate);
+    //Task<Plan> SetPlanDiscountExpiryDateAsync(DateTime planDiscountExpiryDate);
 }

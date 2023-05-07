@@ -1,7 +1,8 @@
 @page "/create-tenant"
 @using UteamUP.Client.Web.Repository.Interfaces
-@using UteamUP.Client.Wizard.CreateTenant.Forms
+@using UteamUP.Client.Web.Wizard.CreateTenant.Forms
 @inject IUserRepository UserRepository
+@inject IPlanRepository PlanRepository
 
 <Form Steps="@_steps"
       BackUrl="/global"
@@ -9,28 +10,52 @@
       Title="Create tenant"
       OnClickBackButton="OnClickBackButton"
       OnClickContinueButton="OnClickContinueButtonAsync"
-      OnClickSubmitButton="OnClickContinueButtonAsync">
+      OnClickSubmitButton="OnClickSubmitButtonAsync">
     @switch (_activeStepIndex)
     {
         case 0:
             <EditForm Model="@_model.BasicTenantDetailsForm">
-                <HorizonInput Label="Name" Placeholder="Name" @bind-Value="@_model.BasicTenantDetailsForm.Name" />
+                <HorizonInput Label="Name" Placeholder="Company Name" @bind-Value="@_model.BasicTenantDetailsForm.Name"/>
+                <HorizonInput Label="Description" Placeholder="Description" @bind-Value="@_model.BasicTenantDetailsForm.Description"/>
+                <HorizonInput Label="Contact Email" Placeholder="Contact Email" @bind-Value="@_model.BasicTenantDetailsForm.ContactEmail"/>
+                <HorizonInput Label="Phone Number" Placeholder="Phone Number" @bind-Value="@_model.BasicTenantDetailsForm.PhoneNumber"/>
+                <HorizonInput Label="Website" Placeholder="Website" @bind-Value="@_model.BasicTenantDetailsForm.Website"/>
             </EditForm>
             break;
         case 1:
-            <EditForm Model="@_model.PlanDetailsForm">
-                <HorizonInput Label="Plan Name" Placeholder="Plan Name" @bind-Value="@_model.PlanDetailsForm.Name" />
+            <EditForm Model="@_model.AddressTenantDetailsForm">
+                <HorizonInput Label="Country" Placeholder="Country" @bind-Value="@_model.AddressTenantDetailsForm.Country"/>
+                <HorizonInput Label="City" Placeholder="City" @bind-Value="@_model.AddressTenantDetailsForm.City"/>
+                <HorizonInput Label="Address" Placeholder="Address" @bind-Value="@_model.AddressTenantDetailsForm.Address"/>
+                <HorizonInput Label="State" Placeholder="State" @bind-Value="@_model.AddressTenantDetailsForm.State"/>
+                <HorizonInput Label="Postal Code" Placeholder="Postal Code" @bind-Value="@_model.AddressTenantDetailsForm.PostalCode"/>
             </EditForm>
             break;
         case 2:
-            <EditForm Model="@_model.ExtraLicensesForm">
-                <HorizonInput Label="Extra Licenses Amount" Placeholder="Extra Licenses Amount" @bind-Value="@_model.ExtraLicensesForm.Amount" />
-            </EditForm>
+            <HorizonSelect Options="@_planSelector" Label="Plan Type" Placeholder="Type here" @bind-Value="_model.PlanDetailsForm.Name"/>
             break;
         case 3:
-            <EditForm Model="@_model">
-                <p>Read the license agreement</p>
+            <EditForm Model="@_model.ExtraLicensesForm">
+                <HorizonInput Label="Extra Licenses Amount" Placeholder="Extra Licenses Amount" @bind-Value="@_model.ExtraLicensesForm.Amount"/>
             </EditForm>
+            break;
+        case 4:
+            <EditForm Model="@_model">
+                <HorizonRichTextEditor ReadOnly="true" Height="300px">
+                    <EditorContent>
+                        <h3>LICENSE AGREEMENT</h3>
+                        <br/>
+                        <p>This Software as a Service (SaaS) License Agreement (the "Agreement") is entered into as of [DATE] (the "Effective Date") by and between UteamUP, a company duly organized and existing under the laws of [JURISDICTION], having its principal place of business at [ADDRESS] ("Licensor") and [CUSTOMER NAME], a company duly organized and existing under the laws of [JURISDICTION], having its principal place of business at [ADDRESS] ("Licensee").</p>
+                        <br/>
+                        <p>WHEREAS, Licensor has developed and owns a software solution known as "Horizon" (the "Software"), which is provided as a SaaS solution;</p>
+                        <br/>
+                        <p>WHEREAS, Licensee desires to license and use the Software, and Licensor desires to grant Licensee a license to use the Software, subject to the terms and conditions set forth herein.</p>
+                        <br/>
+                        <p>NOW, THEREFORE, in consideration of the mutual covenants and promises contained herein and other good and valuable consideration, the receipt and sufficiency of which are hereby acknowledged, the parties hereto agree as follows:</p>
+                    </EditorContent>
+                </HorizonRichTextEditor>
+            </EditForm>
+            <br/>
             break;
         default:
             break;
@@ -38,26 +63,36 @@
 </Form>
 
 @code {
-    [CascadingParameter] public GlobalState? AppState { get; set; }
+
+    [CascadingParameter]
+    public GlobalState? AppState { get; set; }
+
     string? _oid = "";
     string? _name = "";
     string? _email = "";
     public int? Id { get; set; }
-    
-    AddNewTenantForm _model = new AddNewTenantForm();
+    List<Plan?>? _plans = new();
+
+    AddNewTenantForm _model = new();
 
     protected int _activeStepIndex = 0;
 
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
         { "Basic Tenant Information", false },
+        { "Address Tenant Information", false },
         { "Plan Selection", false },
-        { "Extra Licenses", false },
-        { "License Agreement", false },
+        { "Add Extra Licenses", false },
+        { "License Agreement", false }
     };
-    
+
+    private IDictionary<string, string> _planSelector = new Dictionary<string, string>()
+    {
+        { "", "" },
+    };
+
     FluentValidationValidator? _fluentValidationValidator;
-    
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -66,17 +101,38 @@
         _name = AppState?.Name;
         _email = AppState?.Email;
 
-        MUser? user = await UserRepository.GetUserByOid(_oid);
+        var user = await UserRepository.GetUserByOid(_oid);
+        _plans = await PlanRepository.GetAllPlansAsync();
 
-    //_model = Mapper.Map<AddNewUserForm>(user);
-
+        _planSelector = _plans.ToDictionary(x => x.Name, x => x.Name);
     }
-    
+
     private async Task OnClickContinueButtonAsync()
     {
         _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
         _activeStepIndex = _activeStepIndex + 1;
     }
-    
-    private void OnClickBackButton() => _activeStepIndex = _activeStepIndex - 1;
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+
+    private async Task OnClickSubmitButtonAsync()
+    {
+        Console.WriteLine("Submit button clicked");
+        TenantDto tenantDto = new TenantDto();
+        tenantDto.Name = _model.BasicTenantDetailsForm.Name;
+        tenantDto.Description = _model.BasicTenantDetailsForm.Description;
+        tenantDto.ContactEmail = _model.BasicTenantDetailsForm.ContactEmail;
+        tenantDto.PhoneNumber = _model.BasicTenantDetailsForm.PhoneNumber;
+        tenantDto.Website = _model.BasicTenantDetailsForm.Website;
+        
+        tenantDto.Country = _model.AddressTenantDetailsForm.Country;
+        tenantDto.City = _model.AddressTenantDetailsForm.City;
+        tenantDto.Address = _model.AddressTenantDetailsForm.Address;
+        tenantDto.State = _model.AddressTenantDetailsForm.State;
+        tenantDto.PostalCode = _model.AddressTenantDetailsForm.PostalCode;
+
+    }
 }
