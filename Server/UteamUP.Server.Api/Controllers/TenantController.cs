@@ -13,6 +13,24 @@ public class TenantController : ControllerBase
         _tenant = tenant;
         _logger = logger;
     }
+    
+    private async Task<MUserDto> ValidateUser()
+    {
+        // Get the oid from the user who is logged in
+        var oid = User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value ?? User.Claims.FirstOrDefault(c => c.Type == "oid")?.Value;
+        // Get email from the user who is logged in
+        var email = User.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/signInNames.emailAddress")?.Value ?? User.Claims.FirstOrDefault(c => c.Type == "signInNames.emailAddress")?.Value;
+
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(oid))
+            return new MUserDto();
+
+        MUserDto mUser = new MUserDto();
+        mUser.Email = email;
+        mUser.Oid = oid;
+        
+        // Validate that the user is admin
+        return mUser;
+    }
 
     [HttpGet("oid/{oid}")]
     public async Task<IActionResult> GetByOidAsync(string oid)
@@ -56,5 +74,33 @@ public class TenantController : ControllerBase
         }
 
         return Ok(tenants);
+    }
+    
+    // Create tenant
+    [HttpPost]
+    public async Task<IActionResult> CreateTenantAsync([FromBody] TenantDto tenant)
+    {
+        if (tenant == null)
+        {
+            _logger.Log(LogLevel.Error, $"CreateTenantAsync: Tenant is null");
+            return BadRequest();
+        }
+
+        var user = await ValidateUser();
+        if (string.IsNullOrWhiteSpace(user.Oid))
+        {
+            _logger.Log(LogLevel.Error, $"CreateTenantAsync: User is null");
+            return BadRequest();
+        }
+        
+        _logger.Log(LogLevel.Information, $"CreateTenantAsync: Creating tenant");
+        var createdTenant = await _tenant.CreateTenantAsync(tenant, user.Oid);
+        if (string.IsNullOrWhiteSpace(createdTenant.Name))
+        {
+            _logger.Log(LogLevel.Error, $"CreateTenantAsync: Tenant could not be created");
+            return BadRequest();
+        }
+
+        return Ok(createdTenant);
     }
 }

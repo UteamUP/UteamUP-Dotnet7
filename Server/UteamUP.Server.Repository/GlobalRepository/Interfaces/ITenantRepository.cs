@@ -7,6 +7,10 @@ public interface ITenantRepository
 
     // List all invites of the tenant
     Task<List<InvitedUser>> GetTenantInvitesAsync(string email);
+    
+    // Create a new tenant
+    Task<Tenant?> CreateTenantAsync(TenantDto tenant, string oid);
+
 
     /*
     // Get all tenants which the user is owner of the tenant
