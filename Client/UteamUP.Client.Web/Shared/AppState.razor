@@ -11,7 +11,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService LocalStorageService
 @inject ICryptoService Crypto
-@inject IUserRepository UserRepository
+@inject IUserWebRepository UserWebRepository
 
 <CascadingValue Value="@myGlobal">
     @ChildContent
@@ -98,7 +98,7 @@
     private async Task<MUser> GetUserInformationFromDB(string oid)
     {
         // Get the user information from the database
-        MUser? user = await UserRepository.GetUserByOid(oid);
+        MUser? user = await UserWebRepository.GetUserByOid(oid);
 
         if(!string.IsNullOrEmpty(user?.Email))
         {

@@ -1,8 +1,8 @@
 @page "/create-tenant"
 @using UteamUP.Client.Web.Repository.Interfaces
 @using UteamUP.Client.Web.Wizard.CreateTenant.Forms
-@inject IUserRepository UserRepository
-@inject IPlanRepository PlanRepository
+@inject ITenantWebRepository TenantWebRepository
+@inject IPlanWebRepository PlanWebRepository
 
 <Form Steps="@_steps"
       BackUrl="/global"
@@ -101,10 +101,25 @@
         _name = AppState?.Name;
         _email = AppState?.Email;
 
-        var user = await UserRepository.GetUserByOid(_oid);
-        _plans = await PlanRepository.GetAllPlansAsync();
+        //var user = await UserWebRepository.GetUserByOid(_oid);
+        _plans = await PlanWebRepository.GetAllPlansAsync();
 
         _planSelector = _plans.ToDictionary(x => x.Name, x => x.Name);
+        
+        _model.BasicTenantDetailsForm.Name = "UteamUP Inc.";
+        _model.BasicTenantDetailsForm.Description = "UteamUP Inc. is a company that provides a platform for managing projects and teams.";
+        _model.BasicTenantDetailsForm.ContactEmail = "gisli@uteamup.com";
+        _model.BasicTenantDetailsForm.PhoneNumber = "1234567";
+        _model.BasicTenantDetailsForm.Website = "www.uteamup.com";
+        
+        _model.AddressTenantDetailsForm.Country = "Iceland";
+        _model.AddressTenantDetailsForm.City = "Reykjavik";
+        _model.AddressTenantDetailsForm.Address = "Skolavordustigur 12";
+        _model.AddressTenantDetailsForm.State = "Capital Region";
+        _model.AddressTenantDetailsForm.PostalCode = "101";
+        
+        _model.PlanDetailsForm.Name = "My Basic Plan";
+        _model.ExtraLicensesForm.Amount = "10";
     }
 
     private async Task OnClickContinueButtonAsync()
@@ -134,5 +149,6 @@
         tenantDto.State = _model.AddressTenantDetailsForm.State;
         tenantDto.PostalCode = _model.AddressTenantDetailsForm.PostalCode;
 
+        
     }
 }

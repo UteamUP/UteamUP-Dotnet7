@@ -1,7 +1,7 @@
 @page "/create-user"
 @using UteamUP.Client.Web.Repository.Interfaces
 @using UteamUP.Client.Web.Wizard.CreateUser.Forms
-@inject IUserRepository UserRepository
+@inject IUserWebRepository UserWebRepository
 
 <Form Steps="@_steps"
       BackUrl="/global"
@@ -144,7 +144,7 @@
         _model.BasicUserDetailsForm.Name = _name;
         _model.BasicUserDetailsForm.Email = _email;
 
-        MUser? user = await UserRepository.GetUserByOid(_oid);
+        MUser? user = await UserWebRepository.GetUserByOid(_oid);
 
         _model.BasicUserDetailsForm.Website = user.Website;
         _model.BasicUserDetailsForm.Phone = user.Phone;
@@ -176,14 +176,14 @@
         user.HasAcceptedLicenseAgreement = _model.LicenseAgreementForm.LicenseAgreement;
         
         // Save the user information
-        MUserUpdateDto? updatedUser = await UserRepository.UpdateUserByOid(user, _oid);
+        MUserUpdateDto? updatedUser = await UserWebRepository.UpdateUserByOid(user, _oid);
         
         // Check if the updated user has successfully been updated with checking if updatedUser is not null
         if(string.IsNullOrWhiteSpace(updatedUser.Name) == null)
             throw new Exception("User has not been updated");
 
         // If the user has HasTenantInvites as true, then redirect to tenantInvites page
-        MUser? checkUser = await UserRepository.GetUserByOid(_oid);
+        MUser? checkUser = await UserWebRepository.GetUserByOid(_oid);
 
         // If the user has FirstLogin as true redirect to Create Tenant page
         if(checkUser.IsFirstLogin)

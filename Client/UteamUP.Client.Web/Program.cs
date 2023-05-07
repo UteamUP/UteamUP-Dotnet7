@@ -18,8 +18,8 @@ builder.Services.TryAddScoped<AppState>();
 
 // Add Repositories and Services
 builder.Services.TryAddScoped<ITenantWebRepository, TenantWebRepository>();
-builder.Services.TryAddScoped<IUserRepository, UserRepository>();
-builder.Services.TryAddScoped<IPlanRepository, PlanRepository>();
+builder.Services.TryAddScoped<IUserWebRepository, UserWebRepository>();
+builder.Services.TryAddScoped<IPlanWebRepository, PlanWebRepository>();
 builder.Services.TryAddScoped<IHeaderRepository, HeaderRepository>();
 
 // Supply HttpClient instances that include access tokens when making requests to the server project

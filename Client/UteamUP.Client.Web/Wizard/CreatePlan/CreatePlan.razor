@@ -2,7 +2,7 @@
 @using UteamUP.Client.Wizard.CreatePlan.Forms
 @using UteamUP.Client.Web.Repository.Implementations
 @using UteamUP.Client.Web.Repository.Interfaces
-@inject IPlanRepository PlanRepository
+@inject IPlanWebRepository PlanWebRepository
 
 <Form Steps="@_steps"
       BackUrl="/global"
@@ -154,7 +154,7 @@
         newPlan.DiscountExpiry = _model.PlanCostForm.DiscountExpiry.ToUniversalTime();
 
     // Save create the plan and redirect to global page
-        var results = await PlanRepository.CreatePlanAsync(newPlan);
+        var results = await PlanWebRepository.CreatePlanAsync(newPlan);
         if (results == false)
             throw new Exception("Plan has not been created");
         else
