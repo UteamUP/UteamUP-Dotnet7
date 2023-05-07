@@ -39,13 +39,12 @@ public class PlanWebRepository : IPlanWebRepository
         if (result.IsSuccessStatusCode)
         {
             await result.Content.ReadFromJsonAsync<PlanDto>();
-            _logger.Log(LogLevel.Information, $"{nameof(CreatePlanAsync)}: Plan created successfully");
+            _logger.Log(LogLevel.Information, "Successfully created plan: {plan}", plan.Name);
             return true;
         }
         else
         {
-            _logger.Log(LogLevel.Error,
-                $"{nameof(CreatePlanAsync)}: Plan creation failed, because of : " + result.StatusCode);
+            _logger.Log(LogLevel.Error, "Error creating plan, since the result was not successful: {result}", result.RequestMessage);
             return false;
         }
     }
@@ -55,13 +54,12 @@ public class PlanWebRepository : IPlanWebRepository
         var result = await _httpClient.GetAsync($"{ServerUrl}/{Url}");
         if (result.IsSuccessStatusCode)
         {
-            _logger.Log(LogLevel.Information, $"{nameof(GetAllPlansAsync)}: Got all plans successfully");
+            _logger.Log(LogLevel.Information, "Successfully got all plans");
             return await result.Content.ReadFromJsonAsync<List<Plan?>>();
         }
         else
         {
-            _logger.Log(LogLevel.Error,
-                $"{nameof(GetAllPlansAsync)}: Failed to get all plans, because of : " + result.StatusCode);
+            _logger.Log(LogLevel.Error, "Error getting all plans, since the result was not successful: {result}", result.RequestMessage);
             return new List<Plan?>();
         }
     }

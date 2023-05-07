@@ -1,26 +1,50 @@
+using System.Net.Http.Json;
+using UteamUP.Client.Web.Repository.Interfaces;
 using UteamUP.Shared.ModelDto;
 
 namespace UteamUP.Client.Repository.Implementations;
 
 public class TenantWebRepository : ITenantWebRepository
 {
-    public Task<List<TenantDto>> GetMyTenants(string userOid)
+    private readonly HttpClient _httpClient;
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
+    private readonly IHeaderRepository _headerRepository;
+    private readonly ILogger<TenantWebRepository> _logger;
+    private protected string Url = "api/tenant";
+    
+    public TenantWebRepository(
+        HttpClient httpClient, 
+        AuthenticationStateProvider authenticationStateProvider, 
+        IHeaderRepository headerRepository, ILogger<TenantWebRepository> logger)
     {
-        throw new NotImplementedException();
+        _httpClient = httpClient;
+        _authenticationStateProvider = authenticationStateProvider;
+        _headerRepository = headerRepository;
+        _logger = logger;
     }
-
-    public Task<TenantDto> GetTenantById(int id)
+    
+    // a private function that updates the header with the current user's token
+    private async Task GetHttpClientHeaderToken()
     {
-        throw new NotImplementedException();
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _httpClient.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
     }
-
-    public Task<List<TenantDto>> GetAll()
+    
+    public async Task<Tenant?> CreateTenantAsync(TenantDto tenant)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<MUserDto>> GetTenantUsers(int tenantId)
-    {
-        throw new NotImplementedException();
+        await GetHttpClientHeaderToken();
+        var result = await _httpClient.PostAsJsonAsync<TenantDto>($"{Url}", tenant);
+        if (result.IsSuccessStatusCode)
+        {
+            _logger.Log(LogLevel.Information, "CreateTenantAsync: Tenant created successfully");
+            return await result.Content.ReadFromJsonAsync<Tenant>();
+        }
+        else
+        {
+            _logger.Log(LogLevel.Error,
+                $"{nameof(CreateTenantAsync)}: Tenant creation failed, because of : " + result.StatusCode);
+            return new Tenant();
+        }
     }
 }

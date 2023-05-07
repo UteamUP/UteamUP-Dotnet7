@@ -149,6 +149,11 @@
         tenantDto.State = _model.AddressTenantDetailsForm.State;
         tenantDto.PostalCode = _model.AddressTenantDetailsForm.PostalCode;
 
-        
+        var results = await TenantWebRepository.CreateTenantAsync(tenantDto);
+        if (string.IsNullOrWhiteSpace(results.Name))
+            // TODO: Show error message
+            throw new Exception("Tenant has not been created");
+        else
+            NavigationManager.NavigateTo("/global");
     }
 }
