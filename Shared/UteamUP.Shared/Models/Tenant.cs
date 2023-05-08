@@ -2,6 +2,11 @@ namespace UteamUP.Shared.Models;
 
 public class Tenant : Base
 {
+    public Tenant()
+    {
+        Users = new List<MUser>();
+    }
+
     private IEnumerable<string>? _userNames;
     [Key] public int Id { get; set; }
 
@@ -44,18 +49,6 @@ public class Tenant : Base
     [ForeignKey("MUser")] public int OwnerId { get; set; }
 
     public virtual ICollection<MUser>? Users { get; set; }
-
-    public IEnumerable<string>? UserNames
-    {
-        get
-        {
-            if (_userNames != null) return _userNames;
-
-            _userNames = Users.Select(x => x.Name);
-
-            return _userNames;
-        }
-    }
 
     public virtual ICollection<Location>? Locations { get; set; }
 }

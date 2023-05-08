@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace UteamUP.Shared.Models;
 
 public class MUser : Base
@@ -5,6 +7,7 @@ public class MUser : Base
     public MUser()
     {
         Tags = new List<Tag>();
+        Tenants = new List<Tenant>();
     }
 
     [Key] public int Id { get; set; }
@@ -35,8 +38,6 @@ public class MUser : Base
     public bool HasAcceptedLicenseAgreement { get; set; } = false;
     public string ActivationCode { get; set; } = string.Empty;
     [MaxLength(50)] [MinLength(2)] public string DefaultLanguage { get; set; } = "en";
-    public virtual ICollection<Tenant>? Tenants { get; set; }
-
     public virtual List<Tag>? Tags { get; set; } = new();
     
     // Address information
@@ -48,4 +49,6 @@ public class MUser : Base
     // Other information
     public string Website { get; set; } = string.Empty;
     
+    [JsonIgnore]
+    public virtual ICollection<Tenant>? Tenants { get; set; }
 }

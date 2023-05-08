@@ -34,8 +34,10 @@ public class TenantWebRepository : ITenantWebRepository
     public async Task<Tenant?> CreateTenantAsync(TenantDto tenant)
     {
         await GetHttpClientHeaderToken();
-        var result = await _httpClient.PostAsJsonAsync<TenantDto>($"{Url}", tenant);
-        if (result.IsSuccessStatusCode)
+        Console.WriteLine($"CreateTenantAsync: Creating tenant ({Url})");
+        var result = await _httpClient.PostAsJsonAsync($"{Url}", tenant);
+        
+        /*if (result.IsSuccessStatusCode)
         {
             _logger.Log(LogLevel.Information, "CreateTenantAsync: Tenant created successfully");
             return await result.Content.ReadFromJsonAsync<Tenant>();
@@ -45,6 +47,7 @@ public class TenantWebRepository : ITenantWebRepository
             _logger.Log(LogLevel.Error,
                 $"{nameof(CreateTenantAsync)}: Tenant creation failed, because of : " + result.StatusCode);
             return new Tenant();
-        }
+        }*/
+        return new Tenant();
     }
 }

@@ -45,6 +45,7 @@ public class TenantRepository : ITenantRepository
 
     public async Task<Tenant?> CreateTenantAsync(TenantDto tenant, string oid)
     {
+        Console.WriteLine("In CreateTenantAsync Repo method for controller");
         // Check if tenant is null
         if (string.IsNullOrWhiteSpace(tenant.Name))
         {
@@ -69,30 +70,33 @@ public class TenantRepository : ITenantRepository
         
         // Map tenantdto to tenant
         var mappedTenant = _mapper.Map<Tenant>(tenant);
-        
-        try{
+
+        try
+        {
             // Assign user to tenant
             mappedTenant.OwnerId = user.Id;
-            
-            // Add user to tenant
-            mappedTenant.Users?.Add(user);
-            
+
             // Update timestamps
             mappedTenant.CreatedAt = DateTime.Now.ToUniversalTime();
             mappedTenant.UpdatedAt = DateTime.Now.ToUniversalTime();
-            
+
+            // Add user to tenant
+            mappedTenant.Users.Add(user);
+
             // Add tenant to database
-            await _context.Tenants.AddAsync(mappedTenant);
-            
+            _context.Tenants.Add(mappedTenant);
+
             // Save changes
             await _context.SaveChangesAsync();
-            
+
             // Return tenant
             _logger.Log(LogLevel.Information,
                 "CreateTenantAsync: Tenant created successfully with id {MappedTenantId} and name {MappedTenantName}",
                 mappedTenant.Id, mappedTenant.Name);
+
             return mappedTenant;
-        }catch(Exception e){
+        }catch(Exception e)
+        {
             _logger.Log(LogLevel.Error, $"CreateTenantAsync: {e.Message}");
             return new Tenant();
         }

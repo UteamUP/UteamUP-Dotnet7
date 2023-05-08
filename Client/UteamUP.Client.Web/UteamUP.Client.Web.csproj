@@ -69,7 +69,6 @@
         <Folder Include="Wizard\AcceptInvites\Forms\" />
         <Folder Include="Wizard\AcceptInvites\Modals\" />
         <Folder Include="Wizard\AcceptInvites\Profiles\" />
-        <Folder Include="Wizard\ActivateUser\Forms\" />
         <Folder Include="Wizard\ActivateUser\Modals\" />
         <Folder Include="Wizard\ActivateUser\Profiles\" />
         <Folder Include="Wizard\CreatePlan\Modals\" />

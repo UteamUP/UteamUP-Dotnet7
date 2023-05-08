@@ -1,6 +1,7 @@
 @page "/create-tenant"
 @using UteamUP.Client.Web.Repository.Interfaces
 @using UteamUP.Client.Web.Wizard.CreateTenant.Forms
+@using System.Text.Json
 @inject ITenantWebRepository TenantWebRepository
 @inject IPlanWebRepository PlanWebRepository
 
@@ -149,11 +150,16 @@
         tenantDto.State = _model.AddressTenantDetailsForm.State;
         tenantDto.PostalCode = _model.AddressTenantDetailsForm.PostalCode;
 
+        // Print out json tenantDto
+        Console.WriteLine(JsonSerializer.Serialize(tenantDto));
+        
         var results = await TenantWebRepository.CreateTenantAsync(tenantDto);
-        if (string.IsNullOrWhiteSpace(results.Name))
+        if (!string.IsNullOrWhiteSpace(results.Name))
             // TODO: Show error message
             throw new Exception("Tenant has not been created");
+            //NavigationManager.NavigateTo("/create-tenant");
         else
             NavigationManager.NavigateTo("/global");
+       
     }
 }

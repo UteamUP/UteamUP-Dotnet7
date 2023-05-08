@@ -54,6 +54,25 @@ public class UserController : ControllerBase
         return Ok(result);
     }
     
+    // Activate user with post
+    [HttpPost("oid/{oid}/activate/{activationCode}")]
+    public async Task<IActionResult> ActivateUserAsync(string oid, string activationCode)
+    {
+        if (string.IsNullOrWhiteSpace(oid) ||
+            string.IsNullOrWhiteSpace(activationCode))
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(ActivateUserAsync)}: User data is null or empty");
+            return new BadRequestResult();
+        }
+
+        var result = await _user.ActivateUserAsync(oid, activationCode);
+        if(result == false)
+            return BadRequest("Activation code is not valid");
+        
+        _logger.Log(LogLevel.Information, $"{nameof(ActivateUserAsync)}: User activated");
+        return Ok(result);
+    }
+    
     [HttpPut("oid/{oid}")]
     public async Task<IActionResult> PutAsync([FromBody] MUserUpdateDto user, string oid)
     {
@@ -61,11 +80,12 @@ public class UserController : ControllerBase
             string.IsNullOrWhiteSpace(user.Name) ||
             string.IsNullOrWhiteSpace(user.Email))
         {
-            _logger.Log(LogLevel.Error, $"PutAsync: User data is null or empty");
+            _logger.Log(LogLevel.Error, $"{nameof(PutAsync)}: User data is null or empty");
             return new BadRequestResult();
         }
 
         var result = await _user.UpdateUserAsync(user, oid);
+        _logger.Log(LogLevel.Information, $"{nameof(PutAsync)}: User updated");
         return Ok(result);
     }
 }

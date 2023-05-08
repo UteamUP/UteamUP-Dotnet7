@@ -6,11 +6,15 @@ public class MUserRepository : IMUserRepository
     private readonly IMapper _mapper;
     private readonly ILogger<MUserRepository> _logger;
 
-    public MUserRepository(pgContext context, IMapper mapper, ILogger<MUserRepository> logger)
+    public MUserRepository(
+        pgContext context, 
+        IMapper mapper, 
+        ILogger<MUserRepository> logger
+        )
     {
         _context = context;
         _mapper = mapper;
-        _logger = logger ?? NullLogger<MUserRepository>.Instance;
+        _logger = logger;
     }
 
     public async Task<MUser?> GetByOidAsync(string oid)
@@ -18,14 +22,14 @@ public class MUserRepository : IMUserRepository
         // Check if oid is null or empty
         if (string.IsNullOrWhiteSpace(oid))
         {
-            _logger.Log(LogLevel.Warning, $"GetByOidAsync: Oid is null or empty");
+            _logger.Log(LogLevel.Warning, $"{nameof(GetByOidAsync)}: Oid is null or empty");
             return new MUser();
         }
 
         // Check if the oid string is less than 30 characters
         if (oid.Length < 30)
         {
-            _logger.Log(LogLevel.Warning, $"GetByOidAsync: Oid characters are incorrect");
+            _logger.Log(LogLevel.Warning, $"{nameof(GetByOidAsync)}: Oid characters are incorrect");
             return new MUser();
         }
 
@@ -34,7 +38,7 @@ public class MUserRepository : IMUserRepository
 
         if (string.IsNullOrWhiteSpace(user?.Oid))
         {
-            _logger.Log(LogLevel.Error, $"GetByOidAsync: User not found");
+            _logger.Log(LogLevel.Error, $"{nameof(GetByOidAsync)}: User not found");
             return new MUser();
         }
 
@@ -49,7 +53,7 @@ public class MUserRepository : IMUserRepository
         user.UpdatedAt = DateTime.UtcNow;
 
         _logger.Log(LogLevel.Information,
-            $"CreateUserAsync: Trying to create user {userDto.Name} with oid {userDto.Oid} at {user.CreatedAt}");
+            $"{nameof(CreateUserAsync)}: Trying to create user {userDto.Name} with oid {userDto.Oid} at {user.CreatedAt}");
 
         // Add the user to the context
         _context.Users.Add(user);
@@ -60,7 +64,7 @@ public class MUserRepository : IMUserRepository
         // Check if the user has been saved to the database
         if (!UserExists(user.Id))
         {
-            _logger.Log(LogLevel.Error, $"CreateUserAsync: Could not create user {userDto.Name} with oid {userDto.Oid}");
+            _logger.Log(LogLevel.Error, $"{nameof(CreateUserAsync)}: Could not create user {userDto.Name} with oid {userDto.Oid}");
             return new MUser();
         }
 
@@ -77,7 +81,7 @@ public class MUserRepository : IMUserRepository
         try
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Oid == oid);
-            _logger.Log(LogLevel.Information, $"UpdateUserAsync: Updating user {userDto.Name} with oid {oid}");
+            _logger.Log(LogLevel.Information, $"{nameof(UpdateUserAsync)}: Updating user {userDto.Name} with oid {oid}");
 
             // Update the values where needed
             if (!string.IsNullOrWhiteSpace(userDto.Name))
@@ -142,9 +146,53 @@ public class MUserRepository : IMUserRepository
             return userDto;
         }catch(Exception e)
         {
-            _logger.Log(LogLevel.Error, $"UpdateUserAsync: Could not update user {userDto.Name} with oid {oid}");
+            _logger.Log(LogLevel.Error, $"{nameof(UpdateUserAsync)}: Could not update user {{UserDtoName}} with oid {{Oid}}",
+                userDto.Name, oid);
             return new MUserUpdateDto();
         }
+    }
+
+    public async Task<bool> ActivateUserAsync(string oid, string activationCode)
+    {
+        // Get the user by oid
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Oid == oid);
+
+        // Check if the user is null
+        if (user == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(ActivateUserAsync)}: User with oid {oid} not found");
+            return false;
+        }
+        
+        // Check if the activation code is null or empty
+        if (string.IsNullOrWhiteSpace(activationCode))
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(ActivateUserAsync)}: Activation code is null or empty");
+            return false;
+        }
+        
+        // Check if the activation code is correct
+        if (user.ActivationCode != activationCode)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(ActivateUserAsync)}: Activation code is incorrect");
+            return false;
+        }
+        try{
+            // if the activation code iscorrect, set the user as activated
+            user.HasBeenActivated = true;
+            
+            // Save the changes
+            await _context.SaveChangesAsync();
+            _logger.Log(LogLevel.Information, $"{nameof(ActivateUserAsync)}: User with oid {oid} has been activated");
+            
+            // Return true
+            return true;
+        }catch(Exception e)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(ActivateUserAsync)}: Could not activate user with oid {oid}, {e.Message}");
+            return false;
+        }
+        
     }
 
     private bool UserExists(int id)

@@ -9,15 +9,22 @@ public class UserWebRepository : IUserWebRepository
     private readonly HttpClient _httpClient;
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly IHeaderRepository _headerRepository;
+    private readonly ILogger<UserWebRepository> _logger;
     private protected string ServerUrl = "https://localhost:5001";
     private protected string Url = "api/user/oid";
     private protected string UserStateUrl = "api/userstate";
 
-    public UserWebRepository(HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider, IHeaderRepository headerRepository)
+    public UserWebRepository(
+        HttpClient httpClient, 
+        AuthenticationStateProvider authenticationStateProvider, 
+        IHeaderRepository headerRepository, 
+        ILogger<UserWebRepository> logger
+        )
     {
         _httpClient = httpClient;
         _authenticationStateProvider = authenticationStateProvider;
         _headerRepository = headerRepository;
+        _logger = logger;
     }
 
     // a private function that updates the header with the current user's token
@@ -35,21 +42,40 @@ public class UserWebRepository : IUserWebRepository
 
         _httpClient.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
 
-        return await _httpClient.GetFromJsonAsync<MUser>($"{ServerUrl}/{Url}/{oid}");
+        return await _httpClient.GetFromJsonAsync<MUser>($"{Url}/{oid}");
     }
 
     public async Task<MUserUpdateDto?> UpdateUserByOid(MUserUpdateDto? userUpdateDto, string oid)
     {
         await GetHttpClientHeaderToken();
-        var user = await _httpClient.PutAsJsonAsync<MUserUpdateDto>($"{ServerUrl}/{Url}/{oid}", userUpdateDto);
+        var user = await _httpClient.PutAsJsonAsync<MUserUpdateDto>($"{Url}/{oid}", userUpdateDto);
         
         if (user.IsSuccessStatusCode)
         {
+            _logger.Log(LogLevel.Information, $"{nameof(UpdateUserByOid)}: User updated successfully");
             return await user.Content.ReadFromJsonAsync<MUserUpdateDto>();
         }
         else
         {
+            _logger.Log(LogLevel.Error, $"{nameof(UpdateUserByOid)}: User update failed with status code {user.StatusCode} and reason {user.ReasonPhrase}");
             return new MUserUpdateDto();
         }
+    }
+
+    public async Task<bool> ActivateUser(string activationCode, string oid)
+    {
+        await GetHttpClientHeaderToken();
+        var user = await _httpClient.PostAsync($"{Url}/{oid}/activate/{activationCode}", null);
+        if (user.IsSuccessStatusCode)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(ActivateUser)}: User activated successfully");
+            return true;
+        }
+        else
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(ActivateUser)}: User activation failed with status code {user.StatusCode} and reason {user.ReasonPhrase}");
+            return false;
+        }
+
     }
 }

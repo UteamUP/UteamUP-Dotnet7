@@ -36,6 +36,7 @@ clean:
 
 	dotnet clean
 watch:
+	dotnet clean
 	dotnet watch --project Server/UteamUP.Server.Api/Uteamup.Server.Api.csproj --launch-profile https
 run:
 	dotnet run --project Server/UteamUP.Server.Api/Uteamup.Server.Api.csproj --launch-profile https

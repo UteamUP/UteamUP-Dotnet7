@@ -9,7 +9,7 @@ public interface IMUserRepository
     Task<MUser> CreateUserAsync(MUserDto userDto);
     Task<MUserUpdateDto> UpdateUserAsync(MUserUpdateDto userDto, string oid);
 
-    //Task<MUser> ActivateUserAsync(string oid, string code);
+    Task<bool> ActivateUserAsync(string oid, string activationCode);
     //Task<MUser> DisableUserAsync(string oid);
 
     // Get all users by tenant paginated

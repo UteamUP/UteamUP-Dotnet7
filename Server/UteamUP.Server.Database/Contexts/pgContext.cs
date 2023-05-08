@@ -27,7 +27,7 @@ public class pgContext : DbContext
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<Tenant> Tenants { get; set; }
-    public DbSet<TenantUser> TenantUsers { get; set; }
+    //public DbSet<TenantUser> TenantUsers { get; set; }
     public DbSet<Tool> Tools { get; set; }
     public DbSet<MUser> Users { get; set; }
     public DbSet<Vendor> Vendor { get; set; }
@@ -43,5 +43,15 @@ public class pgContext : DbContext
         modelBuilder.Entity<MUser>()
             .HasIndex(mUser => new { mUser.Oid })
             .IsUnique();
+        
+        modelBuilder.Entity<MUser>()
+            .HasIndex(mUser => new { mUser.Email })
+            .IsUnique();
+        
+        modelBuilder.Entity<Tenant>().HasIndex(b => b.Name).IsUnique();
+        
+        modelBuilder.Entity<Vendor>().HasIndex(b => b.Name).IsUnique();
+
+
     }
 }

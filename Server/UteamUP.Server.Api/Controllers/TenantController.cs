@@ -8,7 +8,10 @@ public class TenantController : ControllerBase
     private readonly ILogger<TenantController> _logger;
     private readonly ITenantRepository _tenant;
 
-    public TenantController(ITenantRepository tenant, ILogger<TenantController> logger)
+    public TenantController(
+        ITenantRepository tenant, 
+        ILogger<TenantController> logger
+        )
     {
         _tenant = tenant;
         _logger = logger;
@@ -75,11 +78,12 @@ public class TenantController : ControllerBase
 
         return Ok(tenants);
     }
-    
+
     // Create tenant
     [HttpPost]
-    public async Task<IActionResult> CreateTenantAsync([FromBody] TenantDto tenant)
+    public async Task<IActionResult> CreateTenantAsync(TenantDto tenant)
     {
+        Console.WriteLine("I am in CreateTenantAsync controller");
         if (tenant == null)
         {
             _logger.Log(LogLevel.Error, $"CreateTenantAsync: Tenant is null");

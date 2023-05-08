@@ -14,7 +14,8 @@ public class PlanController : ControllerBase
     public PlanController(
         IPlanRepository plan, 
         ILogger<PlanController> logger, 
-        IMUserRepository user)
+        IMUserRepository user
+        )
     {
         _plan = plan;
         _logger = logger;
