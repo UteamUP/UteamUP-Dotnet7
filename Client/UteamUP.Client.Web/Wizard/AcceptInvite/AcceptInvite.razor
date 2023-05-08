@@ -1,0 +1,96 @@
+@page "/accept-invite"
+@inject ITenantWebRepository TenantWebRepository
+
+@if (_tenants.Count >= 1)
+{
+    <Form Steps="@_steps"
+          BackUrl="/global"
+          ActiveStepIndex="@_activeStepIndex"
+          Title="Accept Invite"
+          OnClickBackButton="OnClickBackButton"
+          OnClickContinueButton="OnClickContinueButtonAsync"
+          OnClickSubmitButton="OnClickSubmitButtonAsync">
+        @switch (_activeStepIndex)
+        {
+            case 0:
+                <EditForm Model="@_tenants">
+                    <p>Here are some invites</p>
+                </EditForm>
+                break;
+            case 1:
+                <EditForm Model="@_tenants">
+                    <p>Here is the overview</p>
+                </EditForm>
+                break;
+            default:
+                break;
+        }
+    </Form>
+}
+else
+{
+    <p>You don't have any tenant invites.</p>
+}
+
+@code {
+
+    [CascadingParameter]
+    public GlobalState? AppState { get; set; }
+
+    string? _oid = "";
+    string? _name = "";
+    string? _email = "";
+    
+    protected int _activeStepIndex = 0;
+
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Invite Information", false },
+        { "Overview Information", false },
+    };
+    
+    private IDictionary<string, string> _tenants = new Dictionary<string, string>() { };
+
+    FluentValidationValidator? _fluentValidationValidator;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _oid = AppState?.Oid;
+        _name = AppState?.Name;
+        _email = AppState?.Email;
+        
+        // Check if the user has any invites
+        var results = await TenantWebRepository.GetInvitesAsync(_oid);
+        foreach (var result in results)
+        {
+            _tenants.Add(result.Name, result.Name);
+        }
+    }
+
+    private async Task OnClickSubmitButtonAsync()
+    {
+        Console.WriteLine("Submit button clicked");
+
+    // Save create the plan and redirect to global page
+        //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, AppState.Oid);
+        //if (results == false)
+        //    // TODO: Should popup an error box in the client
+        //    throw new Exception("Could not activate the user");
+        //else
+        //    NavigationManager.NavigateTo("/global");
+    }
+
+    private async Task OnClickContinueButtonAsync()
+    {
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+    }
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+
+}

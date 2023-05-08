@@ -57,28 +57,6 @@ public class TenantController : ControllerBase
         return Ok(tenants);
     }
 
-    [HttpGet("invite/{email}")]
-    public async Task<IActionResult> GetByInviteAsync(string email)
-    {
-        List<Tenant> tenantList = new();
-
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            _logger.Log(LogLevel.Error, $"Email is null or empty");
-            return NotFound(tenantList);
-        }
-
-        _logger.Log(LogLevel.Information, $"Getting user by email {email}");
-        var tenants = await _tenant.GetTenantInvitesAsync(email);
-        if (tenants.Count == 0)
-        {
-            _logger.Log(LogLevel.Information, $"No tenants found for user with email {email}");
-            return Ok(tenantList);
-        }
-
-        return Ok(tenants);
-    }
-
     // Create tenant
     [HttpPost]
     public async Task<IActionResult> CreateTenantAsync(TenantDto tenant)
@@ -106,5 +84,36 @@ public class TenantController : ControllerBase
         }
 
         return Ok(createdTenant);
+    }
+    
+    // Get all tenant invites for user oid
+    [HttpGet("invites/{oid}")]
+    public async Task<IActionResult> GetInvitesByOidAsync(string oid)
+    {
+        var user = await ValidateUser();
+        // Check if the oid is the same as the user oid
+        if (user.Oid != oid)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetInvitesByOidAsync)}: Could not validate user");
+            return BadRequest("Could not validate user");
+        }
+
+        List<Tenant> tenantList = new();
+
+        if (string.IsNullOrWhiteSpace(oid))
+        {
+            _logger.Log(LogLevel.Error, $"Oid is null or empty");
+            return NotFound(tenantList);
+        }
+
+        _logger.Log(LogLevel.Information, $"Getting user by oid {oid}");
+        var tenants = await _tenant.GetInvitesAsync(oid);
+        if (tenants.Count == 0)
+        {
+            _logger.Log(LogLevel.Information, $"No tenant invites found for user with oid {oid}");
+            return Ok(tenantList);
+        }
+
+        return Ok(tenants);
     }
 }

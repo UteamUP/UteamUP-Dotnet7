@@ -34,10 +34,9 @@ public class TenantWebRepository : ITenantWebRepository
     public async Task<Tenant?> CreateTenantAsync(TenantDto tenant)
     {
         await GetHttpClientHeaderToken();
-        Console.WriteLine($"CreateTenantAsync: Creating tenant ({Url})");
         var result = await _httpClient.PostAsJsonAsync($"{Url}", tenant);
         
-        /*if (result.IsSuccessStatusCode)
+        if (result.IsSuccessStatusCode)
         {
             _logger.Log(LogLevel.Information, "CreateTenantAsync: Tenant created successfully");
             return await result.Content.ReadFromJsonAsync<Tenant>();
@@ -47,7 +46,45 @@ public class TenantWebRepository : ITenantWebRepository
             _logger.Log(LogLevel.Error,
                 $"{nameof(CreateTenantAsync)}: Tenant creation failed, because of : " + result.StatusCode);
             return new Tenant();
-        }*/
-        return new Tenant();
+        }
+    }
+
+    public async Task<List<Tenant?>?> GetTenantsForUserAsync(string oid, bool onlyOwned)
+    {
+        await GetHttpClientHeaderToken();
+        var result = await _httpClient.GetAsync($"{Url}/all/{oid}/{onlyOwned}");
+        
+        if (result.IsSuccessStatusCode)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(CreateTenantAsync)}: Tenant created successfully");
+            return await result.Content.ReadFromJsonAsync<List<Tenant>>();
+        }
+        else
+        {
+            _logger.Log(LogLevel.Error,
+                $"{nameof(CreateTenantAsync)}: Tenant creation failed, because of : " + result.StatusCode + " and " +
+                result.ReasonPhrase);
+            return new List<Tenant?>();
+        }
+
+    }
+
+    public async Task<List<Tenant>> GetInvitesAsync(string oid)
+    {
+        await GetHttpClientHeaderToken();
+        Console.WriteLine($"{Url}/invites/{oid}");
+        var result = await _httpClient.GetAsync($"{Url}/invites/{oid}");
+        if (result.IsSuccessStatusCode)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(GetInvitesAsync)}: Showing all tenant invites");
+            return await result.Content.ReadFromJsonAsync<List<Tenant>>();
+        }
+        else
+        {
+            _logger.Log(LogLevel.Error,
+                $"{nameof(CreateTenantAsync)}: Could not show any tenant invites: " + result.StatusCode + " and " +
+                result.ReasonPhrase);
+            return new List<Tenant>();
+        }
     }
 }

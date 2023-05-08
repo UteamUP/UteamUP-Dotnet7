@@ -10,7 +10,7 @@ public class TenantRepository : ITenantRepository
     {
         _context = context;
         _mapper = mapper;
-        _logger = logger ?? NullLogger<TenantRepository>.Instance;
+        _logger = logger;
     }
 
     public async Task<List<Tenant>> GetAllTenantsAsyncByOid(string oid)
@@ -21,42 +21,26 @@ public class TenantRepository : ITenantRepository
         // Check if the tenants are null
         if (tenants == null)
         {
-            _logger.Log(LogLevel.Warning, $"No tenants found");
+            _logger.Log(LogLevel.Warning, $"{nameof(GetAllTenantsAsyncByOid)}: No tenants found");
             return new List<Tenant>();
         }
 
         return tenants;
     }
 
-    public async Task<List<InvitedUser>> GetTenantInvitesAsync(string email)
-    {
-        // Get all invites by email
-        var invites = await _context.InvitedUsers.Where(x => x.Email == email).ToListAsync();
-        // Check if the tenants are null
-
-        if (invites == null)
-        {
-            _logger.Log(LogLevel.Warning, $"No invites found");
-            return new List<InvitedUser>();
-        }
-
-        return invites;
-    }
-
     public async Task<Tenant?> CreateTenantAsync(TenantDto tenant, string oid)
     {
-        Console.WriteLine("In CreateTenantAsync Repo method for controller");
         // Check if tenant is null
         if (string.IsNullOrWhiteSpace(tenant.Name))
         {
-            _logger.Log(LogLevel.Error, $"CreateTenantAsync: Tenant is null");
+            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: Tenant is null");
             return new Tenant();
         }
         
         // Check if user is null
         if (string.IsNullOrWhiteSpace(oid))
         {
-            _logger.Log(LogLevel.Error, $"CreateTenantAsync: Oid is null");
+            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: Oid is null");
             return new Tenant();
         }
         
@@ -64,7 +48,7 @@ public class TenantRepository : ITenantRepository
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Oid == oid);
         if (string.IsNullOrWhiteSpace(user?.Oid))
         {
-            _logger.Log(LogLevel.Error, $"CreateTenantAsync: User is null");
+            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: User is null");
             return new Tenant();
         }
         
@@ -91,15 +75,52 @@ public class TenantRepository : ITenantRepository
 
             // Return tenant
             _logger.Log(LogLevel.Information,
-                "CreateTenantAsync: Tenant created successfully with id {MappedTenantId} and name {MappedTenantName}",
+                $"{nameof(CreateTenantAsync)}: Tenant created successfully with id {{MappedTenantId}} and name {{MappedTenantName}}",
                 mappedTenant.Id, mappedTenant.Name);
 
             return mappedTenant;
         }catch(Exception e)
         {
-            _logger.Log(LogLevel.Error, $"CreateTenantAsync: {e.Message}");
+            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: {e.Message}");
             return new Tenant();
         }
+    }
+
+    public async Task<List<Tenant>> GetInvitesAsync(string oid)
+    {
+        // Get the user by oid
+        var user = _context.Users.Where(a => a.Oid == oid).FirstOrDefault();
+        
+        // if the user is null return emtpy list
+        if (user == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetInvitesAsync)}: User is null");
+            return new List<Tenant>();
+        }
+        
+        // Get all invites by oid
+        var invites = _context.InvitedUsers.Where(x => x.Email == user.Email).ToListAsync();
+        
+        // if the invites are null return empty list
+        if (invites == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetInvitesAsync)}: Invites are null");
+            return new List<Tenant>();
+        }
+        
+        // Move all data from invites list to tenants list
+        var tenants = new List<Tenant>();
+        foreach (var invite in invites.Result)
+        {
+            var tenant = await _context.Tenants.FirstOrDefaultAsync(x => x.Id == invite.TenantId);
+            if (tenant != null)
+            {
+                tenants.Add(tenant);
+            }
+        }
+        
+        // Return tenants
+        return tenants;
     }
 
     private bool TenantExists(int id)
