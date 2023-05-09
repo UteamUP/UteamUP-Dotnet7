@@ -23,11 +23,13 @@ public class Part : Base
     public string Notes { get; set; } = string.Empty;
     public bool IsActive { get; set; }
 
+    // TenantID can be empty if IsActive is false, if IsActive is true, then Tenant is required
+    [ForeignKey("Tenant")] public int? TenantId { get; set; }
+    
     [ForeignKey("Vendor")] public int? VendorId { get; set; }
     public Vendor? Vendor { get; set; }
 
     [ForeignKey("Category")] public int? CategoryId { get; set; }
     public Category? Category { get; set; }
-
     public virtual List<Tag>? Tags { get; set; } = new();
 }

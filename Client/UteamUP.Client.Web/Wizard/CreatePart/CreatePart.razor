@@ -2,39 +2,52 @@
 @using UteamUP.Client.Wizard.ActivateUser.Forms
 @using UteamUP.Client.Components.Enums
 @using UteamUP.Client.Web.Repository.Interfaces
+@using UteamUP.Client.Web.Wizard.CreatePart.Forms
 
 @inject IUserWebRepository UserWebRepository
+@inject IVendorWebRepository VendorWebRepository
 
 <Form Steps="@_steps"
-      BackUrl="/creation"
+      BackUrl="/global"
       ActiveStepIndex="@_activeStepIndex"
-      Title="Create Workorder"
+      Title="Create Part"
       OnClickBackButton="OnClickBackButton"
       OnClickContinueButton="OnClickContinueButtonAsync"
       OnClickSubmitButton="OnClickSubmitButtonAsync">
     @switch (_activeStepIndex)
     {
         case 0:
-            <EditForm Model="@_model">
-                <HorizonInput Label="Workorder Name" Placeholder="Type in the subject of the workorder" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="Priority" Placeholder="Select the priority" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="Status" Placeholder="Select the status" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="Assign User" Placeholder="Select the status" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="Assign Asset" Placeholder="Select the status" @bind-Value="@_model.ActivationNumber"/>
+            <EditForm Model="@_model.BasicPartForm">
+                <HorizonInput Label="Part Name" Placeholder="Type in the name of the part" @bind-Value="@_model.BasicPartForm.Name"/>
+                <HorizonSelect Label="Select the vendor" Placeholder="Type here" Options="@_vendorOptions" @bind-Value="_model.BasicPartForm.VendorName" />
             </EditForm>
             break;
         case 1:
-            <EditForm Model="@_model">
-                <HorizonInput Label="Start Date" Placeholder="Type in the subject of the workorder" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="End Date" Placeholder="Select the priority" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="Stop Required" Placeholder="Select the priority" @bind-Value="@_model.ActivationNumber"/>
+            <EditForm Model="@_model.PartDetailsForm">
+                <HorizonInput Label="Serial Number" Placeholder="Type in the serial number" @bind-Value="@_model.PartDetailsForm.SerialNumber"/>
+                <HorizonInput Label="Reference Number" Placeholder="Type in the reference number" @bind-Value="@_model.PartDetailsForm.ReferenceNumber"/>
+                <HorizonInput Label="Part Number" Placeholder="Type in the part number" @bind-Value="@_model.PartDetailsForm.PartNumber"/>
+                <HorizonInput Label="Model Number" Placeholder="Type in the model number" @bind-Value="@_model.PartDetailsForm.ModelNumber"/>
             </EditForm>
             break;
         case 2:
-            <EditForm Model="@_model">
-                <HorizonInput Label="Description" Placeholder="Description" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="Notes" Placeholder="Other Notes" @bind-Value="@_model.ActivationNumber"/>
-            </EditForm>
+            <div class="input-container">
+                <HorizonFileUpload />
+            </div>
+            break;
+        case 3:
+            <div class="input-container">
+                <label>Write Description</label>
+                <HorizonRichTextEditor Height="300px">
+                    <EditorContent>
+                        @((MarkupString)@_model.PartDescriptionForm.Description)
+                    </EditorContent>
+                </HorizonRichTextEditor>
+            </div>
+            <label class="input-container">
+                <InputCheckbox @bind-Value=@_model.PartDescriptionForm.IsPrivate />
+                Make it private for this Tenant
+            </label>
             break;
         default:
             break;
@@ -52,7 +65,14 @@
 
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
-        { "Activation Information", false },
+        { "Basic Part Information", false },
+        { "Serial Information", false },
+        { "Documentations or images", false },
+        { "Description", false },
+    };
+    
+    private IDictionary<string, string> _vendorOptions = new Dictionary<string, string>()
+    {
     };
 
     FluentValidationValidator? _fluentValidationValidator;
@@ -64,8 +84,27 @@
         _oid = UserState.User.Oid;
         _name = UserState.User.Name;
         _email = UserState.User.Email;
-
-        _model.ActivationNumber = "";
+        
+        // Get the list of vendors
+        var vendors = await VendorWebRepository.GetAllAsync();
+        foreach (var vendor in vendors)
+        {
+            _vendorOptions.Add(vendor.Name, vendor.Id.ToString());
+        }
+        
+        _model.BasicPartForm.Name = "Element 115";
+        _model.BasicPartForm.VendorName = "UteamUP Vendor";
+        
+        _model.PartDetailsForm.SerialNumber = "123-321-456";
+        _model.PartDetailsForm.ReferenceNumber = "REF-115";
+        _model.PartDetailsForm.PartNumber = "PART-115-2023";
+        _model.PartDetailsForm.ModelNumber = "UteamUP-115";
+        
+        _model.PartUploadForm.UploadPath = "C:\\Users\\Public\\Pictures\\Sample Pictures\\Chrysanthemum.jpg";
+        
+        _model.PartDescriptionForm.IsPrivate = false;
+        _model.PartDescriptionForm.Description = "Element 115 is a energy source that can be used to power up a lot of things. It is a very rare element that can be found in the universe.";
+        
     }
 
     private async Task OnClickSubmitButtonAsync()
@@ -73,12 +112,12 @@
         Console.WriteLine("Submit button clicked");
 
     // Save create the plan and redirect to global page
-        var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
-        if (results == false)
+        //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
+        //if (results == false)
             // TODO: Should popup an error box in the client
-            throw new Exception("Could not activate the user");
-        else
-            NavigationManager.NavigateTo("/global");
+        //    throw new Exception("Could not activate the user");
+        //else
+        //    NavigationManager.NavigateTo("/global");
     }
 
     private async Task OnClickContinueButtonAsync()

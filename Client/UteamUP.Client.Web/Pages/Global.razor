@@ -2,153 +2,239 @@
 @inject ITenantWebRepository TenantWebRepository
 
 <AuthorizeView>
-    <Authorized>
-        <div style="width: 800px; margin-left: auto; margin-right: auto;">
-            <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
-                <div style="margin-right: auto; margin-left: auto;">
-                    <div>
-                        <label class="input-container">
-                            Navigation
-                        </label>
-                    </div>
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <div style="padding-right: 20px;">
-                            <a href="/" type="button" class="btn btn-warning" style="width: 150px; margin: auto;">Back</a>
-                        </div>
-                        <div>
-                            <a href="/swagger/index.html" type="button" class="btn btn-secondary" style="width: 150px; margin: auto;">Swagger</a>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="input-container">
-                            Global User Tasks
-                        </label>
-                    </div>
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <div style="padding: 10px">
-                            <a href="/create-user" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Create User</a>
-                        </div>
-                        <div style="padding: 10px">
-                            <a href="/activate-user" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Activate User</a>
-                        </div>
-                        <div style="padding: 10px">
-                            <a href="/create-plan" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Create Plan</a>
-                        </div>
-                        <div style="padding: 10px">
-                            <a href="/create-tenant" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Create Tenant</a>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="input-container">
-                            Global Manager Tasks
-                        </label>
-                    </div>
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <div style="padding: 10px">
-                            <a href="/create-invite" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Add Tenant Invite</a>
-                        </div>
-                        <div style="padding: 10px">
-                            <a href="/accept-invite" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Accept Invites</a>
-                        </div>
-                    </div>
+<Authorized>
+<div style="width: 800px; margin-left: auto; margin-right: auto;">
+    <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
+        <div style="margin-right: auto; margin-left: auto;">
+            <div>
+                <label class="input-container">
+                    Navigation
+                </label>
+            </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding-right: 20px;">
+                    <a href="/" type="button" class="btn btn-warning" style="width: 150px; margin: auto;">Back</a>
+                </div>
+                <div>
+                    <a href="/swagger/index.html" type="button" class="btn btn-secondary" style="width: 150px; margin: auto;">Swagger</a>
                 </div>
             </div>
-            <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
-                @if (UserState != null)
-                {
-                    @if (!string.IsNullOrWhiteSpace(UserState.User.Oid))
+            <div>
+                <label class="input-container">
+                    User Tasks
+                </label>
+            </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/create-user" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Create User</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/activate-user" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Activate</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/accept-invite" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Accept Invites</a>
+                </div>
+            </div>
+            <div>
+                <label class="input-container">
+                    Tenant Tasks
+                </label>
+            </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/create-tenant" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Create Tenant</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/create-invite" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Send Invites</a>
+                </div>
+            </div>
+            <div>
+                <label class="input-container">
+                    global Tasks
+                </label>
+            </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/create-workorder" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Workorder</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/global" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Asset</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/create-part" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Part</a>
+                </div>
+            </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/create-vendor" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Vendor</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/create-location" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Location</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/global" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Stock</a>
+                </div>
+            </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/global" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Tool</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/create-category" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Category</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/create-tag" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Tag</a>
+                </div>
+            </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/global" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Report</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/global" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Subscription</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/create-plan" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Plan</a>
+                </div>
+            </div>
+            <div>
+                <label class="input-container">
+                    User Administrative Tasks
+                </label>
+            </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/global" type="button" class="btn btn-primary" style="width: 250px; margin: auto;">Manage Plans</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/global" type="button" class="btn btn-primary" style="width: 250px; margin: auto;">Manage Tenant Users</a>
+                </div>
+            </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/global" type="button" class="btn btn-primary" style="width: 250px; margin: auto;">Manage Tenants</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/global" type="button" class="btn btn-primary" style="width: 250px; margin: auto;">Manage All Users</a>
+                </div>
+            </div>
+            <div>
+                <label class="input-container">
+                    Global Administrative Tasks
+                </label>
+            </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/global" type="button" class="btn btn-primary" style="width: 250px; margin: auto;">Manage Vendors</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/global" type="button" class="btn btn-primary" style="width: 250px; margin: auto;">Manage Parts</a>
+                </div>
+            </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/global" type="button" class="btn btn-primary" style="width: 250px; margin: auto;">Manage Customers</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/global" type="button" class="btn btn-primary" style="width: 250px; margin: auto;">Manage Users</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
+    @if (UserState != null)
+    {
+        @if (!string.IsNullOrWhiteSpace(UserState.User.Oid))
+        {
+            <table class="table table-striped" style="width: 700px; margin: auto;">
+                <thead>
+                <tr>
+                    <td>Name</td>
+                    <td>Value</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Name</td>
+                    <td>@UserState.User.Name</td>
+                </tr>
+                <tr>
+                    <td>Oid</td>
+                    <td>@UserState.User.Oid</td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td>@UserState.User.Email</td>
+                </tr>
+
+                <tr>
+                    <td>First Login</td>
+                    <td>@UserState.User.IsFirstLogin</td>
+                </tr>
+
+                <tr>
+                    <td>Is activated</td>
+                    <td>
+                        <p>@UserState.User.HasBeenActivated</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Has user in DB</td>
+                    <td>@HasDbUser</td>
+                </tr>
+                <tr>
+                    <td>User has tenant invites</td>
+                    <td>@UserHasInvites</td>
+                </tr>
+                <tr>
+                    <td>Invites Count</td>
+                    @if (@InvitedUsers.Count != 0)
                     {
-                        <table class="table table-striped" style="width: 700px; margin: auto;">
-                            <thead>
-                            <tr>
-                                <td>Name</td>
-                                <td>Value</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>Name</td>
-                                <td>@UserState.User.Name</td>
-                            </tr>
-                            <tr>
-                                <td>Oid</td>
-                                <td>@UserState.User.Oid</td>
-                            </tr>
-                            <tr>
-                                <td>Email</td>
-                                <td>@UserState.User.Email</td>
-                            </tr>
-
-                            <tr>
-                                <td>First Login</td>
-                                <td>@UserState.User.IsFirstLogin</td>
-                            </tr>
-
-                            <tr>
-                                <td>Is activated</td>
-                                <td>
-                                    <p>@UserState.User.HasBeenActivated</p>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>Has user in DB</td>
-                                <td>@HasDbUser</td>
-                            </tr>
-                            <tr>
-                                <td>User has tenant invites</td>
-                                <td>@UserHasInvites</td>
-                            </tr>
-                            <tr>
-                                <td>Invites Count</td>
-                                @if (@InvitedUsers.Count != 0)
-                                {
-                                    <td>@InvitedUsers.Count</td>
-                                }
-                                else
-                                {
-                                    <td>0</td>
-                                }
-                            </tr>
-
-                            <tr>
-                                <td>Tenant Count</td>
-                                @if (Tenants.Count != 0)
-                                {
-                                    <td>@Tenants.Count</td>
-                                }
-                                else
-                                {
-                                    <td>0</td>
-                                }
-                            </tr>
-                            </tbody>
-                        </table>
+                        <td>@InvitedUsers.Count</td>
                     }
                     else
                     {
-                        <p>Loading...</p>
+                        <td>0</td>
                     }
-                }
-                else
-                {
-                    <p>Loading...</p>
-                }
-            </div>
-        </div>
-    </Authorized>
-    <NotAuthorized>
-        <p>You must be signed in to see this content.</p>
-    </NotAuthorized>
+                </tr>
+
+                <tr>
+                    <td>Tenant Count</td>
+                    @if (Tenants.Count != 0)
+                    {
+                        <td>@Tenants.Count</td>
+                    }
+                    else
+                    {
+                        <td>0</td>
+                    }
+                </tr>
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>Loading...</p>
+        }
+    }
+    else
+    {
+        <p>Loading...</p>
+    }
+</div>
+<br />
+</Authorized>
 </AuthorizeView>
 
 @code {
-    private List<Tenant> Tenants = new List<Tenant>();
-    private List<Tenant> InvitedUsers = new List<Tenant>();
+    private List<Tenant> Tenants = new();
+    private List<Tenant> InvitedUsers = new();
 
     private bool UserHasInvites = false;
     private bool HasDbUser = false;
-    
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();

@@ -15,4 +15,5 @@ public class Vendor : Base
     public string PhoneNumber { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
     public bool Approved { get; set; } = false;
+    public MUser Creator { get; set; } = null!;
 }

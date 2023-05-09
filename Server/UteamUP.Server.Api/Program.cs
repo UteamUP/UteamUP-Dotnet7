@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.TryAddScoped<IMUserRepository, MUserRepository>();
 builder.Services.TryAddScoped<ITenantRepository, TenantRepository>();
 builder.Services.TryAddScoped<IPlanRepository, PlanRepository>();
+builder.Services.TryAddScoped<IVendorRepository, VendorRepository>();
 
 // Add Database Service
 builder.Services.AddDbContext<pgContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("UteamupDB"),
