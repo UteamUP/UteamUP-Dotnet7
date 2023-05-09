@@ -1,4 +1,4 @@
-@page "/create-workorder"
+@page "/create-part"
 @using UteamUP.Client.Wizard.ActivateUser.Forms
 @using UteamUP.Client.Components.Enums
 @using UteamUP.Client.Web.Repository.Interfaces
@@ -46,7 +46,7 @@
     string? _name = "";
     string? _email = "";
 
-    AddNewWorkorderForm _model = new AddNewWorkorderForm();
+    AddNewPartForm _model = new AddNewPartForm();
 
     protected int _activeStepIndex = 0;
 

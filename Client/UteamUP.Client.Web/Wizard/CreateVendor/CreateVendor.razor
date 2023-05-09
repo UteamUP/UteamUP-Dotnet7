@@ -1,0 +1,87 @@
+@page "/create-vendor"
+@using UteamUP.Client.Web.Repository.Interfaces
+@using UteamUP.Client.Web.Wizard.CreateVendor.Forms
+
+@inject IUserWebRepository UserWebRepository
+
+<Form Steps="@_steps"
+      BackUrl="/creation"
+      ActiveStepIndex="@_activeStepIndex"
+      Title="Create Vendor"
+      OnClickBackButton="OnClickBackButton"
+      OnClickContinueButton="OnClickContinueButtonAsync"
+      OnClickSubmitButton="OnClickSubmitButtonAsync">
+    @switch (_activeStepIndex)
+    {
+        case 0:
+            <EditForm Model="@_model.BasicVendorInfoForm">
+                <HorizonInput Label="Vendor Name" Placeholder="Type in the subject of the workorder" @bind-Value="@_model.BasicVendorInfoForm.Name"/>
+                <HorizonInput Label="Email" Placeholder="Select the priority" @bind-Value="@_model.BasicVendorInfoForm.Email"/>
+                <HorizonInput Label="Phone Number" Placeholder="Select the status" @bind-Value="@_model.BasicVendorInfoForm.PhoneNumber"/>
+                <HorizonInput Label="Website" Placeholder="Select the status" @bind-Value="@_model.BasicVendorInfoForm.WebSite"/>
+            </EditForm>
+            break;
+        case 2:
+            <EditForm Model="@_model">
+                <HorizonInput Label="Description" Placeholder="Description" @bind-Value="@_model.VendorDetailsForm.Description"/>
+            </EditForm>
+            break;
+        default:
+            break;
+    }
+</Form>
+
+@code {
+    string? _oid = "";
+    string? _name = "";
+    string? _email = "";
+    
+    string? _opensAt = "";
+    string? _closesAt = "";
+
+    AddNewVendorForm _model = new AddNewVendorForm();
+
+    protected int _activeStepIndex = 0;
+
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Vendor Basic Information", false },
+        { "Vendor Description", false },
+    };
+
+    FluentValidationValidator? _fluentValidationValidator;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _oid = UserState.User.Oid;
+        _name = UserState.User.Name;
+        _email = UserState.User.Email;
+    }
+
+    private async Task OnClickSubmitButtonAsync()
+    {
+        Console.WriteLine("Submit button clicked");
+
+    // Save create the plan and redirect to global page
+        //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
+        //if (results == false)
+        //    // TODO: Should popup an error box in the client
+        //    throw new Exception("Could not activate the user");
+        //else
+        //    NavigationManager.NavigateTo("/global");
+    }
+
+    private async Task OnClickContinueButtonAsync()
+    {
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+    }
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+
+}
