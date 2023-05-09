@@ -5,10 +5,28 @@ namespace UteamUP.Shared.States
 {
     public class GlobalState
     {
-        public Tenant ActiveTenant { get; init; }
-        public List<TenantDto> Tenants { get; init; }
-        public List<InvitedUserDto> TenantsInvited { get; init; }
+        private Tenant? _activeTenant;
+        public Tenant? ActiveTenant {
+            get => _activeTenant;
+            set
+            {
+                _activeTenant = value;
+                NotifyInitialized();
+            }
+        }
+        
+        public List<Tenant> Tenants { get; set; }
+        public List<Tenant> _tenantsInvited;
+        public List<Tenant> TenantsInvited {
+            get => _tenantsInvited;
+            set
+            {
+                _tenantsInvited = value;
+                NotifyInitialized();
+            }
+        }
         public bool HasTenantInvites { get; set; }
+        public int DefaultTenantId { get; set; }
 
         private string? _oid;
         public string? Oid
@@ -53,5 +71,34 @@ namespace UteamUP.Shared.States
         {
             OnInitialized?.Invoke();
         }
+
+        /*
+        public GlobalState(
+            string name, 
+            Tenant? _activeTenant, 
+            string? _oid, 
+            string? _email, 
+            List<Tenant> _tenantsInvited, 
+            bool _isActivated, 
+            List<Tenant> _tenants,
+            bool _hasTenantInvites,
+            int _defaultTenantId,
+            bool _hasDatabaseUser,
+            bool _firstLogin
+            )
+        {
+            Name = name;
+            ActiveTenant = _activeTenant;
+            Oid = _oid;
+            Email = _email;
+            TenantsInvited = _tenantsInvited;
+            IsActivated = _isActivated;
+            Tenants = _tenants;
+            HasTenantInvites = _hasTenantInvites;
+            DefaultTenantId = _defaultTenantId;
+            HasDatabaseUser = _hasDatabaseUser;
+            FirstLogin = _firstLogin;
+        }
+        */
     }
 }

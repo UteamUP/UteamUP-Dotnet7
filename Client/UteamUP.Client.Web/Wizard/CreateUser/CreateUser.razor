@@ -113,8 +113,6 @@
 </Form>
 
 @code {
-    [CascadingParameter] public GlobalState? AppState { get; set; }
-    
     string? _oid = "";
     string? _name = "";
     string? _email = "";
@@ -137,9 +135,9 @@
     {
         await base.OnInitializedAsync();
 
-        _oid = AppState?.Oid;
-        _name = AppState?.Name;
-        _email = AppState?.Email;
+        _oid = UserState.User.Oid;
+        _name = UserState.User.Name;
+        _email = UserState.User.Email;
         
         _model.BasicUserDetailsForm.Name = _name;
         _model.BasicUserDetailsForm.Email = _email;

@@ -123,6 +123,39 @@ public class TenantRepository : ITenantRepository
         return tenants;
     }
 
+    public async Task<List<Tenant>> GetOwnedTenantsAsync(string oid)
+    {
+        // Check if user exists
+        if (string.IsNullOrWhiteSpace(oid))
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetOwnedTenantsAsync)}: Oid is null");
+            return new List<Tenant>();
+        }
+        
+        // Get user by oid
+        var user = await _context.Users.Where(a => a.Oid == oid).FirstOrDefaultAsync();
+
+        // Check if user exists
+        if (user == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetOwnedTenantsAsync)}: User is null");
+            return new List<Tenant>();
+        }
+        
+        // Get all tenants by owner id
+        var tenants = await _context.Tenants.Where(x => x.OwnerId == user.Id).ToListAsync();
+        
+        // Check if tenants are null
+        if (tenants == null)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(GetOwnedTenantsAsync)}: You don't own any tenants");
+            return new List<Tenant>();
+        }
+        
+        // Return tenants
+        return tenants;
+    }
+
     private bool TenantExists(int id)
     {
         return _context.Tenants.Any(e => e.Id == id);

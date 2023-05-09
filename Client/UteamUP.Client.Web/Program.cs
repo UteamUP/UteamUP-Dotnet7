@@ -4,6 +4,7 @@ using Blazored.Toast;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using UteamUP.Client.Web.Repository.Implementations;
 using UteamUP.Client.Web.Repository.Interfaces;
+using UteamUP.Client.Web.Services;
 using UteamUP.Client.Web.Shared;
 using UteamUP.Shared.States;
 
@@ -14,16 +15,18 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 // Add Base Component Services
-builder.Services.TryAddScoped<AppState>();
+builder.Services.AddScoped<UserState>();
+builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+//builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<CustomAuthenticationStateProvider>());
 
 // Add Repositories and Services
-builder.Services.TryAddScoped<ITenantWebRepository, TenantWebRepository>();
-builder.Services.TryAddScoped<IUserWebRepository, UserWebRepository>();
-builder.Services.TryAddScoped<IPlanWebRepository, PlanWebRepository>();
-builder.Services.TryAddScoped<IHeaderRepository, HeaderRepository>();
+builder.Services.AddScoped<ITenantWebRepository, TenantWebRepository>();
+builder.Services.AddScoped<IUserWebRepository, UserWebRepository>();
+builder.Services.AddScoped<IPlanWebRepository, PlanWebRepository>();
+builder.Services.AddScoped<IHeaderRepository, HeaderRepository>();
 
 // Supply HttpClient instances that include access tokens when making requests to the server project
-builder.Services.TryAddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("UteamUP.ServerAPI"));
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("UteamUP.ServerAPI"));
 
 // Add Local Session Storage
 builder.Services.AddBlazoredLocalStorage(config => 

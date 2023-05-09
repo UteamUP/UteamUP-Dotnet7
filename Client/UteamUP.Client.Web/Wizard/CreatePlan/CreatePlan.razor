@@ -63,9 +63,6 @@
 
 @code {
 
-    [CascadingParameter]
-    public GlobalState? AppState { get; set; }
-
     string? _oid = "";
     string? _name = "";
     string? _email = "";
@@ -105,9 +102,9 @@
     {
         await base.OnInitializedAsync();
 
-        _oid = AppState?.Oid;
-        _name = AppState?.Name;
-        _email = AppState?.Email;
+        _oid = UserState.User.Oid;
+        _name = UserState.User.Name;
+        _email = UserState.User.Email;
         
         _model.BasicPlanForm.Name = "My Premium Plan";
         _model.BasicPlanForm.Sku = "PREMIUM_SKU_001";

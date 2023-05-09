@@ -5,12 +5,12 @@ public class AddNewTenantInviteForm
     public TenantSelectForm TenantSelectForm { get; set; }
     public UserInviteForm UserInviteForm { get; set; }
     public UserInviteListForm UserInviteListForm { get; set; }
+    
 
-    public AddNewTenantInviteForm(TenantSelectForm tenantSelectForm, UserInviteForm userInviteForm, UserInviteListForm userInviteListForm)
+    public AddNewTenantInviteForm()
     {
-        TenantSelectForm = tenantSelectForm;
-        UserInviteForm = userInviteForm;
-        UserInviteListForm = userInviteListForm;
+        TenantSelectForm = new TenantSelectForm();
+        UserInviteForm = new UserInviteForm();
+        UserInviteListForm = new UserInviteListForm();
     }
-
 }

@@ -1,8 +1,13 @@
+using UteamUP.Shared.ModelDto;
+
 namespace UteamUP.Shared.States;
 
 public class UserState
 {
-    public string OID { get; set; }
-    public string Name { get; set; }
-    public string Email { get; set; }
+    public MUser User { get; private set; }
+
+    public void SetUser(MUser user)
+    {
+        User = user;
+    }
 }

@@ -1,5 +1,6 @@
 ﻿@page "/"
-@using UteamUP.Shared.States
+
+@inject CustomAuthenticationStateProvider CustomAuthStateProvider
 
 <div style="width: 800px; margin-left: auto; margin-right: auto;">
     <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
@@ -9,9 +10,9 @@
         <a href="/creation" type="button" class="btn btn-primary">Additional Buttons</a>
     </div>
     <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center;">
-    @if(AppState != null)
+    @if(UserState.User != null)
     {
-        <p>Hello @AppState.Name</p>
+        <p>Hello @UserState.User.Name</p>
     }
     else
     {
@@ -21,10 +22,20 @@
 </div>
 
 @code {
-    [CascadingParameter] public GlobalState AppState { get; set; }
-    
     protected override async Task OnInitializedAsync()
     {
+        var authState = await CustomAuthStateProvider.GetAuthenticationStateAsync();
 
+        if (authState.User.Identity.IsAuthenticated)
+        {
+            await CustomAuthStateProvider.UpdateAppStateWithUserAsync(authState.User);
+        }
+        CustomAuthStateProvider.OnGlobalStateChanged += RefreshPage;
+
+    }
+    
+    private void RefreshPage()
+    {
+        StateHasChanged();
     }
 }

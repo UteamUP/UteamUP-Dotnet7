@@ -116,4 +116,35 @@ public class TenantController : ControllerBase
 
         return Ok(tenants);
     }
+    
+    // Get all my owned tenants
+    [HttpGet("owned/{oid}")]
+    public async Task<IActionResult> GetOwnedTenantsAsync(string oid)
+    {
+        var user = await ValidateUser();
+        // Check if the oid is the same as the user oid
+        if (user.Oid != oid)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetOwnedTenantsAsync)}: Could not validate user");
+            return BadRequest("Could not validate user");
+        }
+
+        List<Tenant> tenantList = new();
+
+        if (string.IsNullOrWhiteSpace(oid))
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetOwnedTenantsAsync)}: Oid is null or empty");
+            return NotFound(tenantList);
+        }
+
+        _logger.Log(LogLevel.Information, $"{nameof(GetOwnedTenantsAsync)}: Getting user by oid {oid}");
+        var tenants = await _tenant.GetOwnedTenantsAsync(oid);
+        if (tenants.Count == 0)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(GetOwnedTenantsAsync)}: No owned tenants found for user with oid {oid}");
+            return Ok(tenantList);
+        }
+
+        return Ok(tenants);
+    }
 }

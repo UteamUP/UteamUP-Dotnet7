@@ -45,6 +45,22 @@ public class UserWebRepository : IUserWebRepository
         return await _httpClient.GetFromJsonAsync<MUser>($"{Url}/{oid}");
     }
 
+    public async Task<bool> CreateUserAsync(MUserDto user)
+    {
+        await GetHttpClientHeaderToken();
+        var newUser = await _httpClient.PostAsJsonAsync($"{Url}", user);
+        if (newUser.IsSuccessStatusCode)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(CreateUserAsync)}: User created successfully");
+            return true;
+        }
+        else
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(CreateUserAsync)}: User creation failed with status code {newUser.StatusCode} and reason {newUser.ReasonPhrase}");
+            return false;
+        }
+    }
+
     public async Task<MUserUpdateDto?> UpdateUserByOid(MUserUpdateDto? userUpdateDto, string oid)
     {
         await GetHttpClientHeaderToken();

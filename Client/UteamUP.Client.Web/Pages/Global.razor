@@ -1,4 +1,6 @@
 @page "/global"
+@inject ITenantWebRepository TenantWebRepository
+
 <AuthorizeView>
     <Authorized>
         <div style="width: 800px; margin-left: auto; margin-right: auto;">
@@ -38,7 +40,7 @@
                     </div>
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                         <div style="padding: 10px">
-                            <a href="/global" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Add Tenant Invite</a>
+                            <a href="/create-invite" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Add Tenant Invite</a>
                         </div>
                         <div style="padding: 10px">
                             <a href="/accept-invite" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Accept Invites</a>
@@ -47,9 +49,9 @@
                 </div>
             </div>
             <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
-                @if (AppState != null)
+                @if (UserState != null)
                 {
-                    @if (!string.IsNullOrWhiteSpace(AppState.Oid))
+                    @if (!string.IsNullOrWhiteSpace(UserState.User.Oid))
                     {
                         <table class="table table-striped" style="width: 700px; margin: auto;">
                             <thead>
@@ -61,42 +63,42 @@
                             <tbody>
                             <tr>
                                 <td>Name</td>
-                                <td>@AppState.Name</td>
+                                <td>@UserState.User.Name</td>
                             </tr>
                             <tr>
                                 <td>Oid</td>
-                                <td>@AppState.Oid</td>
+                                <td>@UserState.User.Oid</td>
                             </tr>
                             <tr>
                                 <td>Email</td>
-                                <td>@AppState.Email</td>
+                                <td>@UserState.User.Email</td>
                             </tr>
 
                             <tr>
                                 <td>First Login</td>
-                                <td>@AppState.FirstLogin</td>
+                                <td>@UserState.User.IsFirstLogin</td>
                             </tr>
 
                             <tr>
                                 <td>Is activated</td>
                                 <td>
-                                    <p>@AppState.IsActivated</p>
+                                    <p>@UserState.User.HasBeenActivated</p>
                                 </td>
                             </tr>
 
                             <tr>
                                 <td>Has user in DB</td>
-                                <td>@AppState.HasDatabaseUser</td>
+                                <td>@HasDbUser</td>
                             </tr>
                             <tr>
                                 <td>User has tenant invites</td>
-                                <td>@AppState.HasTenantInvites</td>
+                                <td>@UserHasInvites</td>
                             </tr>
                             <tr>
                                 <td>Invites Count</td>
-                                @if (@AppState.TenantsInvited != null)
+                                @if (@InvitedUsers.Count != 0)
                                 {
-                                    <td>@AppState.TenantsInvited.Count</td>
+                                    <td>@InvitedUsers.Count</td>
                                 }
                                 else
                                 {
@@ -106,9 +108,9 @@
 
                             <tr>
                                 <td>Tenant Count</td>
-                                @if (@AppState.Tenants != null)
+                                @if (Tenants.Count != 0)
                                 {
-                                    <td>@AppState.Tenants.Count</td>
+                                    <td>@Tenants.Count</td>
                                 }
                                 else
                                 {
@@ -136,8 +138,25 @@
 </AuthorizeView>
 
 @code {
-    // TODO: Figure out why we get "Unhandled exception rendering component: Object reference not set to an instance of an object."
-    [CascadingParameter]
-    public GlobalState? AppState { get; set; }
+    private List<Tenant> Tenants = new List<Tenant>();
+    private List<Tenant> InvitedUsers = new List<Tenant>();
+
+    private bool UserHasInvites = false;
+    private bool HasDbUser = false;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (UserState?.User?.Oid != null)
+        {
+            Tenants = await TenantWebRepository.GetOwnedTenantsAsync(UserState.User.Oid);
+            InvitedUsers = await TenantWebRepository.GetInvitesAsync(UserState.User.Oid);
+
+            if (UserState.User.HasBeenActivated != null)
+            {
+                HasDbUser = true;
+            }
+        }
+    }
 
 }

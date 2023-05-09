@@ -38,7 +38,7 @@ public class TenantWebRepository : ITenantWebRepository
         
         if (result.IsSuccessStatusCode)
         {
-            _logger.Log(LogLevel.Information, "CreateTenantAsync: Tenant created successfully");
+            _logger.Log(LogLevel.Information, $"{nameof(CreateTenantAsync)}: Tenant created successfully");
             return await result.Content.ReadFromJsonAsync<Tenant>();
         }
         else
@@ -49,24 +49,43 @@ public class TenantWebRepository : ITenantWebRepository
         }
     }
 
-    public async Task<List<Tenant?>?> GetTenantsForUserAsync(string oid, bool onlyOwned)
+    public async Task<List<Tenant>> GetOwnedTenantsAsync(string oid)
     {
         await GetHttpClientHeaderToken();
-        var result = await _httpClient.GetAsync($"{Url}/all/{oid}/{onlyOwned}");
+        var result = await _httpClient.GetAsync($"{Url}/owned/{oid}");
         
         if (result.IsSuccessStatusCode)
         {
-            _logger.Log(LogLevel.Information, $"{nameof(CreateTenantAsync)}: Tenant created successfully");
+            _logger.Log(LogLevel.Information, $"{nameof(GetOwnedTenantsAsync)}: Showing all owned tenants");
             return await result.Content.ReadFromJsonAsync<List<Tenant>>();
         }
         else
         {
             _logger.Log(LogLevel.Error,
-                $"{nameof(CreateTenantAsync)}: Tenant creation failed, because of : " + result.StatusCode + " and " +
+                $"{nameof(GetOwnedTenantsAsync)}: Showing owned tenants failed: " + result.StatusCode + " and " +
                 result.ReasonPhrase);
-            return new List<Tenant?>();
+            return new List<Tenant>();
         }
 
+    }
+
+    public async Task<List<Tenant>> GetMyTenantsAsync(string oid)
+    {
+        await GetHttpClientHeaderToken();
+        var result = await _httpClient.GetAsync($"{Url}/my/{oid}");
+        
+        if (result.IsSuccessStatusCode)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(GetMyTenantsAsync)}: Showing all my tenants");
+            return await result.Content.ReadFromJsonAsync<List<Tenant>>();
+        }
+        else
+        {
+            _logger.Log(LogLevel.Error,
+                $"{nameof(GetMyTenantsAsync)}: Showing my tenants failed: " + result.StatusCode + " and " +
+                result.ReasonPhrase);
+            return new List<Tenant>();
+        }
     }
 
     public async Task<List<Tenant>> GetInvitesAsync(string oid)

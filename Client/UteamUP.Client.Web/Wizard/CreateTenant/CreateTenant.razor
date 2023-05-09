@@ -65,8 +65,6 @@
 
 @code {
 
-    [CascadingParameter]
-    public GlobalState? AppState { get; set; }
 
     string? _oid = "";
     string? _name = "";
@@ -98,11 +96,10 @@
     {
         await base.OnInitializedAsync();
 
-        _oid = AppState?.Oid;
-        _name = AppState?.Name;
-        _email = AppState?.Email;
+        _oid = UserState.User.Oid;
+        _name = UserState.User.Name;
+        _email = UserState.User.Email;
 
-        //var user = await UserWebRepository.GetUserByOid(_oid);
         _plans = await PlanWebRepository.GetAllPlansAsync();
 
         _planSelector = _plans.ToDictionary(x => x.Name, x => x.Name);

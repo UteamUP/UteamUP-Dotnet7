@@ -1,6 +1,7 @@
 @page "/create-invite"
 @using UteamUP.Client.Web.Repository.Interfaces
 @using UteamUP.Client.Web.Wizard.CreateTenantInvites.Forms
+@using UteamUP.Client.Components.Enums
 
 @inject IUserWebRepository UserWebRepository
 @inject ITenantWebRepository TenantWebRepository
@@ -15,11 +16,21 @@
     @switch (_activeStepIndex)
     {
         case 0:
-            <EditForm Model="@_model">
+            <EditForm Model="@_tenants">
+                <HorizonSelect Options="@_tenants" Label="Select Tenant" Placeholder="Choose Tenant" @bind-Value="_selectedTenant"/>
             </EditForm>
             break;
         case 1:
-            <EditForm Model="@_model">
+            <EditForm Model="@_model.UserInviteForm">
+                <div>
+                    <div>
+                        <HorizonInput Label="Enter Email Address" Placeholder="Set the Email address you want to invite" @bind-Value="@_model.UserInviteForm.Email"/>
+                        <HorizonButton Appearance="ButtonAppearance.Secondary">Add Email</HorizonButton>
+                    </div>
+                    <div>
+                        <p>Here are the users</p>
+                    </div>
+                </div>
             </EditForm>
             break;
         default:
@@ -29,35 +40,59 @@
 
 @code {
 
-    [CascadingParameter]
-    public GlobalState? AppState { get; set; }
 
     string? _oid = "";
     string? _name = "";
     string? _email = "";
 
-    AddNewTenantInviteForm _model;
+    string _selectedTenant = "Tenant";
+
+    AddNewTenantInviteForm _model = new();
 
     protected int _activeStepIndex = 0;
 
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
         { "Select Tenant", false },
-        { "Add Invites to Tenant", false },
+        { "Invite Emails", false }
+    };
+
+
+    private IDictionary<string, string> _tenants = new Dictionary<string, string>()
+    {
+        { "Tenant", "Tenant" }
     };
 
     FluentValidationValidator? _fluentValidationValidator;
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
+        await base.OnParametersSetAsync();
 
-        _oid = AppState?.Oid;
-        _name = AppState?.Name;
-        _email = AppState?.Email;
+        if (UserState.User != null)
+        {
+            _oid = UserState.User.Oid;
+            _name = UserState.User.Name;
+            _email = UserState.User.Email;
 
-        // Get all the tenants for the user
-        var tenants = await TenantWebRepository.GetTenantsForUserAsync(AppState.Oid, true);
+    // Get all the tenants for the user
+            var tenants = await TenantWebRepository.GetOwnedTenantsAsync(UserState.User.Oid);
+
+            if (tenants.Count >= 1)
+            {
+                _tenants.Clear();
+            }
+
+    // Update _tenants with the tenants list
+            foreach (var tenant in tenants)
+            {
+                _tenants.Add(tenant.Name, tenant.Id.ToString());
+            }
+        }
+        else
+        {
+            Console.WriteLine("No app state, not logged in");
+        }
     }
 
     private async Task OnClickSubmitButtonAsync()
@@ -65,12 +100,12 @@
         Console.WriteLine("Submit button clicked");
 
     // Save create the plan and redirect to global page
-        //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, AppState.Oid);
-        //if (results == false)
-        //    // TODO: Should popup an error box in the client
-        //    throw new Exception("Could not activate the user");
-        //else
-        //    NavigationManager.NavigateTo("/global");
+    //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
+    //if (results == false)
+    //    // TODO: Should popup an error box in the client
+    //    throw new Exception("Could not activate the user");
+    //else
+    //    NavigationManager.NavigateTo("/global");
     }
 
     private async Task OnClickContinueButtonAsync()

@@ -12,6 +12,9 @@ public interface ITenantRepository
     Task<Tenant?> CreateTenantAsync(TenantDto tenant, string oid);
 
     Task<List<Tenant>> GetInvitesAsync(string oid);
+    // Get the users owned tenants
+    Task<List<Tenant>> GetOwnedTenantsAsync(string oid);
+
     /*
     // Get all tenants which the user is owner of the tenant
     Task<List<Tenant>> GetAllOwnedTenantsAsync(string oid);

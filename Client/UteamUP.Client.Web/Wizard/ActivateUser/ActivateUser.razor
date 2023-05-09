@@ -18,7 +18,7 @@
             <EditForm Model="@_model">
                 <HorizonInput Label="Activation Number" Placeholder="Type in the activation number you got in email and click on submit" @bind-Value="@_model.ActivationNumber"/>
                 <div>
-                    <p>Did you not recieve your activation number, you can press "Resend Activation Code" to send it to your registered email. This will take a few minutes, you can either click on the link you get with the email or copy the code and paste it to this box and submit. If you have problem with activiating your account, please refer to support at this link <a href="mailto:support@uteamup.com?subject=Activation Issue - ref:@AppState.Oid">support</a></p>
+                    <p>Did you not recieve your activation number, you can press "Resend Activation Code" to send it to your registered email. This will take a few minutes, you can either click on the link you get with the email or copy the code and paste it to this box and submit. If you have problem with activiating your account, please refer to support at this link <a href="mailto:support@uteamup.com?subject=Activation Issue - ref:@UserState.User.Oid">support</a></p>
                     <HorizonButton Appearance="ButtonAppearance.Secondary">Resend Activation Code</HorizonButton>
                 </div>
             </EditForm>
@@ -29,10 +29,6 @@
 </Form>
 
 @code {
-
-    [CascadingParameter]
-    public GlobalState? AppState { get; set; }
-
     string? _oid = "";
     string? _name = "";
     string? _email = "";
@@ -52,9 +48,9 @@
     {
         await base.OnInitializedAsync();
 
-        _oid = AppState?.Oid;
-        _name = AppState?.Name;
-        _email = AppState?.Email;
+        _oid = UserState.User.Oid;
+        _name = UserState.User.Name;
+        _email = UserState.User.Email;
 
         _model.ActivationNumber = "";
     }
@@ -64,7 +60,7 @@
         Console.WriteLine("Submit button clicked");
 
     // Save create the plan and redirect to global page
-        var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, AppState.Oid);
+        var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
         if (results == false)
             // TODO: Should popup an error box in the client
             throw new Exception("Could not activate the user");

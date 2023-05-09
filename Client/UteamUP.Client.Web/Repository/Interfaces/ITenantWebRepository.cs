@@ -5,7 +5,8 @@ namespace UteamUP.Client.Repository.Interfaces;
 public interface ITenantWebRepository
 {
     Task<Tenant?> CreateTenantAsync(TenantDto tenant);
-    Task<List<Tenant?>?> GetTenantsForUserAsync(string oid, bool onlyOwned);
+    Task<List<Tenant>> GetOwnedTenantsAsync(string oid);
+    Task<List<Tenant>> GetMyTenantsAsync(string oid);
     Task<List<Tenant>> GetInvitesAsync(string oid);
 
     /*
