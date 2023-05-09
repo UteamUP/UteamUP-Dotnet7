@@ -4,15 +4,16 @@
 
 <div style="width: 800px; margin-left: auto; margin-right: auto;">
     <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
-        <a href="/global" type="button" class="btn btn-primary">Global</a>
+        <a href="/global" type="button" class="btn btn-primary" style="width: 240px;">Global</a>
     </div>
     <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
-        <a href="/creation" type="button" class="btn btn-primary">Additional Buttons</a>
+        <a href="/creation" type="button" class="btn btn-primary" style="width: 240px;">Creational</a>
     </div>
+    <br />
     <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center;">
     @if(UserState.User != null)
     {
-        <p>Hello @UserState.User.Name</p>
+        <p>Welcome @UserState.User.Name to development board.</p>
     }
     else
     {

@@ -24,6 +24,7 @@ builder.Services.AddScoped<ITenantWebRepository, TenantWebRepository>();
 builder.Services.AddScoped<IUserWebRepository, UserWebRepository>();
 builder.Services.AddScoped<IPlanWebRepository, PlanWebRepository>();
 builder.Services.AddScoped<IHeaderRepository, HeaderRepository>();
+builder.Services.AddScoped<IWorkorderWebRepository, WorkorderWebRepository>();
 
 // Supply HttpClient instances that include access tokens when making requests to the server project
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("UteamUP.ServerAPI"));

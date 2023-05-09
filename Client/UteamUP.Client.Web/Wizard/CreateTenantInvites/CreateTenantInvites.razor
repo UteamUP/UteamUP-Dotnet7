@@ -24,11 +24,7 @@
             <EditForm Model="@_model.UserInviteForm">
                 <div>
                     <div>
-                        <HorizonInput Label="Enter Email Address" Placeholder="Set the Email address you want to invite" @bind-Value="@_model.UserInviteForm.Email"/>
-                        <HorizonButton Appearance="ButtonAppearance.Secondary">Add Email</HorizonButton>
-                    </div>
-                    <div>
-                        <p>Here are the users</p>
+                        <HorizonEmailChipInput Label="Email Addresses" @bind-Value="_emailAddresses"/>
                     </div>
                 </div>
             </EditForm>
@@ -39,7 +35,7 @@
 </Form>
 
 @code {
-
+    private List<string> _emailAddresses = new();
 
     string? _oid = "";
     string? _name = "";
@@ -67,31 +63,25 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnParametersSetAsync();
+    //await base.OnParametersSetAsync();
+        await base.OnInitializedAsync();
 
-        if (UserState.User != null)
-        {
-            _oid = UserState.User.Oid;
-            _name = UserState.User.Name;
-            _email = UserState.User.Email;
+        _oid = UserState.User.Oid;
+        _name = UserState.User.Name;
+        _email = UserState.User.Email;
 
     // Get all the tenants for the user
-            var tenants = await TenantWebRepository.GetOwnedTenantsAsync(UserState.User.Oid);
+        var tenants = await TenantWebRepository.GetOwnedTenantsAsync(_oid);
 
-            if (tenants.Count >= 1)
-            {
-                _tenants.Clear();
-            }
+        if (tenants.Count >= 1)
+        {
+            _tenants.Clear();
+        }
 
     // Update _tenants with the tenants list
-            foreach (var tenant in tenants)
-            {
-                _tenants.Add(tenant.Name, tenant.Id.ToString());
-            }
-        }
-        else
+        foreach (var tenant in tenants)
         {
-            Console.WriteLine("No app state, not logged in");
+            _tenants.Add(tenant.Name, tenant.Id.ToString());
         }
     }
 

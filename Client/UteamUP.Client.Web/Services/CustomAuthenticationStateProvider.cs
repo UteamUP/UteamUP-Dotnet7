@@ -43,6 +43,25 @@ namespace UteamUP.Client.Web.Services
                     new Claim("email", globalState.Email),
                     new Claim("oid", globalState.Oid)
                 };
+
+                MUser muser = new MUser()
+                {
+                    Name = globalState.Name,
+                    Email = globalState.Email,
+                    Oid = globalState.Oid,
+                    Tenants = globalState.Tenants,
+                    DefaultTenantId = globalState.DefaultTenantId,
+                    HasBeenActivated = globalState.IsActivated,
+                    IsFirstLogin = globalState.FirstLogin,
+                    
+                    /*
+                    if(tenants != null) Tenants = tenants,
+                    if(TenantsInvited != null) TenantsInvited = invites,
+                    if(TenantsInvited != null) HasTenantInvites = invites.Count > 0
+                    */
+                };
+                
+                _userState.SetUser(muser);
             }
             else
             {
@@ -91,7 +110,7 @@ namespace UteamUP.Client.Web.Services
 
             if (oidClaim != null)
             {
-                MUser getUser = await GetUserInformationFromDB(oidClaim.Value);
+                MUser muser = await GetUserInformationFromDB(oidClaim.Value);
 
                 // Check if the global state exists
                 GlobalState globalState = await _localStorageService.GetItemAsync<GlobalState>("globalState");
@@ -99,7 +118,6 @@ namespace UteamUP.Client.Web.Services
                 // if the global state does not exist, create it and update it with the user information
                 if (globalState == null)
                 {
-                    var muser = await GetUserInformationFromDB(oidClaim.Value);
                     Console.WriteLine("Got DB user");
                     
                     MUserDto newMUserDto = new MUserDto
@@ -150,7 +168,7 @@ namespace UteamUP.Client.Web.Services
                     Console.WriteLine("GlobalState has been created in local storage");
                 }
 
-                _userState.SetUser(getUser);
+                _userState.SetUser(muser);
             }
             else
             {
@@ -174,6 +192,8 @@ namespace UteamUP.Client.Web.Services
             }
         }
 
+        
+        
         // Add a method to retrieve the GlobalState
         public void GetGlobalState()
         {

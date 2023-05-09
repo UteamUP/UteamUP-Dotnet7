@@ -1,4 +1,4 @@
-@page "/activate-user"
+@page "/create-workorder"
 @using UteamUP.Client.Wizard.ActivateUser.Forms
 @using UteamUP.Client.Components.Enums
 @using UteamUP.Client.Web.Repository.Interfaces
@@ -6,9 +6,9 @@
 @inject IUserWebRepository UserWebRepository
 
 <Form Steps="@_steps"
-      BackUrl="/global"
+      BackUrl="/creation"
       ActiveStepIndex="@_activeStepIndex"
-      Title="Activate User"
+      Title="Create Workorder"
       OnClickBackButton="OnClickBackButton"
       OnClickContinueButton="OnClickContinueButtonAsync"
       OnClickSubmitButton="OnClickSubmitButtonAsync">
@@ -33,7 +33,7 @@
     string? _name = "";
     string? _email = "";
 
-    AddNewActivateUserForm _model = new AddNewActivateUserForm();
+    AddNewWorkorderForm _model = new AddNewWorkorderForm();
 
     protected int _activeStepIndex = 0;
 

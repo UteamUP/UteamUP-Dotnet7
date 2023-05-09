@@ -1,4 +1,4 @@
-@page "/activate-user"
+@page "/create-location"
 @using UteamUP.Client.Wizard.ActivateUser.Forms
 @using UteamUP.Client.Components.Enums
 @using UteamUP.Client.Web.Repository.Interfaces
@@ -6,9 +6,9 @@
 @inject IUserWebRepository UserWebRepository
 
 <Form Steps="@_steps"
-      BackUrl="/global"
+      BackUrl="/creation"
       ActiveStepIndex="@_activeStepIndex"
-      Title="Activate User"
+      Title="Create Location"
       OnClickBackButton="OnClickBackButton"
       OnClickContinueButton="OnClickContinueButtonAsync"
       OnClickSubmitButton="OnClickSubmitButtonAsync">
@@ -16,10 +16,19 @@
     {
         case 0:
             <EditForm Model="@_model">
-                <HorizonInput Label="Activation Number" Placeholder="Type in the activation number you got in email and click on submit" @bind-Value="@_model.ActivationNumber"/>
-                <div>
-                    <p>If you have not received your activation number, please click on the "Resend Activation Code" button to have it resent to your registered email address. The delivery may take a few minutes. Upon receipt, you may either click the link provided within the email or copy the code and paste it into the designated box before submitting. If you encounter any issues during the activation process, kindly refer to our support resources available at this link: <a href="mailto:support@uteamup.com?subject=Activation Issue - ref:@UserState.User.Oid">Email Support</a></p>
-                    <HorizonButton Appearance="ButtonAppearance.Secondary">Resend Activation Code</HorizonButton>
+                <HorizonInput Label="Location Name" Placeholder="Type in the name of the location" @bind-Value="@_model.LocationName"/>
+            </EditForm>
+            break;
+        case 1:
+            <EditForm Model="@_model">
+                <h2>Location Description</h2>
+                <div class="input-container">
+                    <label class="form-label">Description</label>
+                    <HorizonRichTextEditor Height="300px">
+                        <EditorContent>
+                            @((MarkupString)@_model.LocationDescription)
+                        </EditorContent>
+                    </HorizonRichTextEditor>
                 </div>
             </EditForm>
             break;
@@ -33,13 +42,14 @@
     string? _name = "";
     string? _email = "";
 
-    AddNewActivateUserForm _model = new AddNewActivateUserForm();
+    AddNewLocationForm _model = new AddNewLocationForm();
 
     protected int _activeStepIndex = 0;
 
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
-        { "Activation Information", false },
+        { "Location Basic Information", false },
+        { "Location Details", false },
     };
 
     FluentValidationValidator? _fluentValidationValidator;
@@ -52,7 +62,7 @@
         _name = UserState.User.Name;
         _email = UserState.User.Email;
 
-        _model.ActivationNumber = "";
+        _model.LocationName = "";
     }
 
     private async Task OnClickSubmitButtonAsync()
@@ -60,12 +70,12 @@
         Console.WriteLine("Submit button clicked");
 
     // Save create the plan and redirect to global page
-        var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
-        if (results == false)
+        //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
+        //if (results == false)
             // TODO: Should popup an error box in the client
-            throw new Exception("Could not activate the user");
-        else
-            NavigationManager.NavigateTo("/global");
+        //    throw new Exception("Could not activate the user");
+        //else
+        //    NavigationManager.NavigateTo("/global");
     }
 
     private async Task OnClickContinueButtonAsync()

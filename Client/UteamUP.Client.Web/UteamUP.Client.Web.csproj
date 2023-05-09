@@ -70,6 +70,8 @@
         <Folder Include="Wizard\AcceptInvite\Forms\" />
         <Folder Include="Wizard\AcceptInvite\Modals\" />
         <Folder Include="Wizard\AcceptInvite\Profiles\" />
+        <Folder Include="Wizard\CreateLocation\Modals\" />
+        <Folder Include="Wizard\CreateLocation\Profiles\" />
         <Folder Include="Wizard\CreateTenantInvites\Modals\" />
         <Folder Include="Wizard\CreateTenantInvites\Profiles\" />
         <Folder Include="Wizard\ActivateUser\Modals\" />
@@ -78,6 +80,8 @@
         <Folder Include="Wizard\CreatePlan\Profiles\" />
         <Folder Include="Wizard\CreateTenant\Modals\" />
         <Folder Include="Wizard\CreateTenant\Profiles\" />
+        <Folder Include="Wizard\CreateWorkorder\Modals\" />
+        <Folder Include="Wizard\CreateWorkorder\Profiles\" />
     </ItemGroup>
 
 </Project>
