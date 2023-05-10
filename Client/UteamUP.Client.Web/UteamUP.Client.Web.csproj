@@ -72,10 +72,14 @@
         <Folder Include="Wizard\AcceptInvite\Profiles\" />
         <Folder Include="Wizard\CreateAsset\Modals\" />
         <Folder Include="Wizard\CreateAsset\Profiles\" />
+        <Folder Include="Wizard\CreateCategory\Modals\" />
+        <Folder Include="Wizard\CreateCategory\Profiles\" />
         <Folder Include="Wizard\CreateLocation\Modals\" />
         <Folder Include="Wizard\CreateLocation\Profiles\" />
         <Folder Include="Wizard\CreatePart\Modals\" />
         <Folder Include="Wizard\CreatePart\Profiles\" />
+        <Folder Include="Wizard\CreateTag\Modals\" />
+        <Folder Include="Wizard\CreateTag\Profiles\" />
         <Folder Include="Wizard\CreateTenantInvites\Modals\" />
         <Folder Include="Wizard\CreateTenantInvites\Profiles\" />
         <Folder Include="Wizard\ActivateUser\Modals\" />

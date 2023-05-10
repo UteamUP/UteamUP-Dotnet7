@@ -35,6 +35,7 @@ public class pgContext : DbContext
     public DbSet<WorkorderSchedule> WorkorderSchedules { get; set; }
     public DbSet<WorkorderStatusCategory> WorkorderStatusCategories { get; set; }
     public DbSet<WorkorderTemplate> WorkorderTemplates { get; set; }
+    public DbSet<Log> Logs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -49,9 +50,6 @@ public class pgContext : DbContext
             .IsUnique();
         
         modelBuilder.Entity<Tenant>().HasIndex(b => b.Name).IsUnique();
-        
         modelBuilder.Entity<Vendor>().HasIndex(b => b.Name).IsUnique();
-
-
     }
 }

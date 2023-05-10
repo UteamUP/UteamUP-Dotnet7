@@ -102,7 +102,7 @@
 
         _plans = await PlanWebRepository.GetAllPlansAsync();
 
-        _planSelector = _plans.ToDictionary(x => x.Name, x => x.Name);
+        _planSelector = _plans.ToDictionary(x => x.Name, x => x.Id.ToString());
         
         _model.BasicTenantDetailsForm.Name = "UteamUP Inc.";
         _model.BasicTenantDetailsForm.Description = "UteamUP Inc. is a company that provides a platform for managing projects and teams.";
@@ -147,8 +147,8 @@
         tenantDto.State = _model.AddressTenantDetailsForm.State;
         tenantDto.PostalCode = _model.AddressTenantDetailsForm.PostalCode;
 
-        // Print out json tenantDto
-        Console.WriteLine(JsonSerializer.Serialize(tenantDto));
+        // TODO: Need to create a subscription with extra licenses.
+        // TODO: Need to assign plan to subscription
         
         var results = await TenantWebRepository.CreateTenantAsync(tenantDto);
         if (!string.IsNullOrWhiteSpace(results.Name))

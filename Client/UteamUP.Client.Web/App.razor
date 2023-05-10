@@ -1,4 +1,5 @@
 ﻿@namespace UteamUP.Client
+@inject CustomAuthenticationStateProvider CustomAuthStateProvider
 
 <CascadingAuthenticationState>
     <CascadingBlazoredModal HideCloseButton="true">
@@ -35,10 +36,14 @@
 
         if (authState.User.Identity.IsAuthenticated)
         {
-            await CustomAuthStateProvider.UpdateAppStateWithUserAsync(authState.User);
+            var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+
+            if (!globalState.IsUpToDate)
+            {
+                await CustomAuthStateProvider.UpdateAppStateWithUserAsync(authState.User);
+            }
         }
         CustomAuthStateProvider.OnGlobalStateChanged += RefreshPage;
-
     }
     
     private void RefreshPage()

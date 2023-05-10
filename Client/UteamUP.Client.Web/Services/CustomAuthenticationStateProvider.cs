@@ -10,106 +10,107 @@ namespace UteamUP.Client.Web.Services
     {
         private readonly ILocalStorageService _localStorageService;
         private readonly IUserWebRepository _userWebRepository;
-        private readonly ITenantWebRepository _tenantWebRepository;
         private readonly IAccessTokenProvider _accessTokenProvider;
         private readonly UserState _userState;
+        private readonly ILogger<CustomAuthenticationStateProvider> _logger;
 
         public CustomAuthenticationStateProvider(
             ILocalStorageService localStorageService,
             IUserWebRepository userWebRepository,
-            IAccessTokenProvider accessTokenProvider, UserState userState, ITenantWebRepository tenantWebRepository)
+            IAccessTokenProvider accessTokenProvider, 
+            UserState userState, 
+            ILogger<CustomAuthenticationStateProvider> logger
+            )
         {
             _localStorageService = localStorageService;
             _userWebRepository = userWebRepository;
             _accessTokenProvider = accessTokenProvider;
             _userState = userState;
-            _tenantWebRepository = tenantWebRepository;
+            _logger = logger;
         }
 
+        // Retrieves the authentication state asynchronously
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            ClaimsIdentity identity;
-            var claims = Enumerable.Empty<Claim>();
-            var savedStateJson = await _localStorageService.GetItemAsStringAsync("globalState");
-            OnGlobalStateChanged?.Invoke();
-            
-            if (!string.IsNullOrEmpty(savedStateJson))
-            {
-                Console.WriteLine("Found saved state");
-                GlobalState globalState = await _localStorageService.GetItemAsync<GlobalState>("globalState");
-                claims = new[]
-                {
-                    new Claim("name", globalState.Name),
-                    new Claim("email", globalState.Email),
-                    new Claim("oid", globalState.Oid)
-                };
-
-                MUser muser = new MUser()
-                {
-                    Name = globalState.Name,
-                    Email = globalState.Email,
-                    Oid = globalState.Oid,
-                    Tenants = globalState.Tenants,
-                    DefaultTenantId = globalState.DefaultTenantId,
-                    HasBeenActivated = globalState.IsActivated,
-                    IsFirstLogin = globalState.FirstLogin,
-                    
-                    /*
-                    if(tenants != null) Tenants = tenants,
-                    if(TenantsInvited != null) TenantsInvited = invites,
-                    if(TenantsInvited != null) HasTenantInvites = invites.Count > 0
-                    */
-                };
-                
-                _userState.SetUser(muser);
-            }
-            else
-            {
-                Console.WriteLine("No saved state, requesting token");
-                var tokenResult = await _accessTokenProvider.RequestAccessToken();
-
-                if (tokenResult.TryGetToken(out var accessToken))
-                {
-                    Console.WriteLine("Got token");
-                    var handler = new JwtSecurityTokenHandler();
-                    var jwtToken = handler.ReadJwtToken(accessToken.Value);
-
-                    var name = jwtToken.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
-                    var email = jwtToken.Claims.FirstOrDefault(c => c.Type == "signInNames.emailAddress")?.Value;
-                    var oid = jwtToken.Claims.FirstOrDefault(c => c.Type == "oid")?.Value;
-                    Console.WriteLine("Got claims from token, oid: " + oid + " email: " + email + " name: " + name);
-
-                    if (!string.IsNullOrEmpty(oid))
-                    {
-                        Console.WriteLine("Building Claims");
-                        claims = new[]
-                        {
-                            new Claim("name", name),
-                            new Claim("email", email),
-                            new Claim("oid", oid)
-                        };
-                    }
-                }
-            }
-            
-            identity = new ClaimsIdentity(claims, "Authentication");
+            _logger.Log(LogLevel.Information, $"{nameof(GetAuthenticationStateAsync)}: Getting authentication claims state");
+            var claims = await GetClaimsFromLocalStorageAsync() ?? await GetClaimsFromTokenAsync();
+            var identity = new ClaimsIdentity(claims, "Authentication");
             var user = new ClaimsPrincipal(identity);
             return new AuthenticationState(user);
         }
 
+        // Retrieves claims from local storage asynchronously
+        private async Task<IEnumerable<Claim>> GetClaimsFromLocalStorageAsync()
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(GetClaimsFromLocalStorageAsync)}: Getting claims from local storage");
+            var savedStateJson = await _localStorageService.GetItemAsStringAsync("globalState");
+            OnGlobalStateChanged?.Invoke();
+
+            if (string.IsNullOrEmpty(savedStateJson)) return null;
+            
+            _logger.Log(LogLevel.Information, $"{nameof(GetClaimsFromLocalStorageAsync)}: Found saved state");
+            var globalState = await _localStorageService.GetItemAsync<GlobalState>("globalState");
+
+            _userState.SetUser(CreateMUserFromGlobalState(globalState));
+
+            return new[]
+            {
+                new Claim("name", globalState.Name),
+                new Claim("email", globalState.Email),
+                new Claim("oid", globalState.Oid)
+            };
+        }
+
+        // Retrieves claims from the token asynchronously
+        private async Task<IEnumerable<Claim>> GetClaimsFromTokenAsync()
+        {
+            var tokenResult = await _accessTokenProvider.RequestAccessToken();
+
+            if (!tokenResult.TryGetToken(out var accessToken)) return null;
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(accessToken.Value);
+
+            var name = jwtToken.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+            var email = jwtToken.Claims.FirstOrDefault(c => c.Type == "signInNames.emailAddress")?.Value;
+            var oid = jwtToken.Claims.FirstOrDefault(c => c.Type == "oid")?.Value;
+
+            return string.IsNullOrEmpty(oid) ? null : new[]
+            {
+                new Claim("name", name),
+                new Claim("email", email),
+                new Claim("oid", oid)
+            };
+        }
+
+        // Creates an MUser from the given global state
+        private static MUser CreateMUserFromGlobalState(GlobalState globalState)
+        {
+            return new MUser
+            {
+                Name = globalState.Name,
+                Email = globalState.Email,
+                Oid = globalState.Oid,
+                Tenants = globalState.Tenants,
+                DefaultTenantId = globalState.DefaultTenantId,
+                HasBeenActivated = globalState.IsActivated,
+                IsFirstLogin = globalState.FirstLogin
+            };
+        }
+
+        // Updates the app state with the user information
         public async Task UpdateAppStateWithUserAsync(ClaimsPrincipal user)
         {
+            _logger.Log(LogLevel.Information, $"{nameof(UpdateAppStateWithUserAsync)}: Updating app state with user information");
             var oidClaim = user.Claims.FirstOrDefault(c => c.Type == "oid");
             var nameClaim = user.Claims.FirstOrDefault(c => c.Type == "name");
-            var emailClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
-
-            if (emailClaim?.Value == null)
-                emailClaim = user.Claims.FirstOrDefault(c => c.Type == "signInNames.emailAddress");
-            if (emailClaim?.Value == null)
-                emailClaim = user.Claims.FirstOrDefault(c => c.Type == "email");
+            var emailClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email) ??
+                             user.Claims.FirstOrDefault(c => c.Type == "signInNames.emailAddress") ??
+                             user.Claims.FirstOrDefault(c => c.Type == "email");
 
             if (oidClaim != null)
             {
+                _logger.Log(LogLevel.Information, $"{nameof(UpdateAppStateWithUserAsync)}: Getting user information from database");
                 MUser muser = await GetUserInformationFromDB(oidClaim.Value);
 
                 // Check if the global state exists
@@ -118,65 +119,59 @@ namespace UteamUP.Client.Web.Services
                 // if the global state does not exist, create it and update it with the user information
                 if (globalState == null)
                 {
-                    Console.WriteLine("Got DB user");
-                    
                     MUserDto newMUserDto = new MUserDto
                     {
                         Name = nameClaim?.Value,
                         Email = emailClaim?.Value,
                         Oid = oidClaim.Value,
                     };
-                    Console.WriteLine("Creating new MUserDto with the following details oid: " + oidClaim.Value + " name: " + nameClaim?.Value + " email: " + emailClaim?.Value);
+
                     // if the muser is null, create a new user and return it
                     if (muser == null)
                     {
-                        Console.WriteLine("MUser is null, creating new user");
+                        _logger.Log(LogLevel.Information, $"{nameof(UpdateAppStateWithUserAsync)}: Creating new user, since the user does not exist with the oid: {oidClaim.Value}");
                         var tmuser = await _userWebRepository.CreateUserAsync(newMUserDto);
-                        if(tmuser)
+                        if (tmuser)
                         {
-                            Console.WriteLine("User has been created");
+                            _logger.Log(LogLevel.Information, $"{nameof(UpdateAppStateWithUserAsync)}: User created successfully and retrieved from database user with the oid: {oidClaim.Value}");
                             muser = await GetUserInformationFromDB(oidClaim.Value);
                         }
                     }
-                    
-                    Console.WriteLine("Getting Tenants");
-                    //var tenants = await _tenantWebRepository.GetMyTenantsAsync(oidClaim.Value);
-                    Console.WriteLine("Getting Invites");
-                    //var invites = await _tenantWebRepository.GetInvitesAsync(oidClaim.Value);
 
-                    Console.WriteLine("Creating GlobalState");
-                    GlobalState newGlobalState = new GlobalState
-                    {
-                        Name = muser.Name,
-                        Email = muser.Email,
-                        Oid = muser.Oid,
-                        HasDatabaseUser = true,
-                        IsActivated = muser.HasBeenActivated,
-                        FirstLogin = muser.IsFirstLogin,
-                        DefaultTenantId = muser.DefaultTenantId,
-
-                        /*
-                        if(tenants != null) Tenants = tenants,
-                        if(TenantsInvited != null) TenantsInvited = invites,
-                        if(TenantsInvited != null) HasTenantInvites = invites.Count > 0
-                        */
-                    };
+                    GlobalState newGlobalState = CreateGlobalStateFromMUser(muser);
                     
+                    _logger.Log(LogLevel.Information, $"{nameof(UpdateAppStateWithUserAsync)}: Setting global state with the oid: {oidClaim.Value}");
                     await _localStorageService.SetItemAsync("globalState", newGlobalState);
                     OnGlobalStateChanged?.Invoke();
-                    // Let the page know that the global state has been created or updated
-                    Console.WriteLine("GlobalState has been created in local storage");
                 }
 
                 _userState.SetUser(muser);
             }
             else
             {
-                Console.WriteLine("User claims are empty or not found");
             }
         }
 
+        // Creates a global state from the given MUser
+        private static GlobalState CreateGlobalStateFromMUser(MUser muser)
+        {
+            return new GlobalState
+            {
+                Name = muser.Name,
+                Email = muser.Email,
+                Oid = muser.Oid,
+                HasDatabaseUser = true,
+                IsActivated = muser.HasBeenActivated,
+                FirstLogin = muser.IsFirstLogin,
+                DefaultTenantId = muser.DefaultTenantId,
+                IsUpToDate = true
+            };
+        }
+
+        // Event that gets triggered when the global state changes
         public event Action OnGlobalStateChanged;
+
+        // Retrieves the user information from the database
         public async Task<MUser> GetUserInformationFromDB(string oid)
         {
             // Get the user information from the database
@@ -184,20 +179,21 @@ namespace UteamUP.Client.Web.Services
 
             if (!string.IsNullOrEmpty(user?.Email))
             {
+                _logger.Log(LogLevel.Information, $"{nameof(GetUserInformationFromDB)}: User retrieved from database with the oid: {oid}");
                 return user;
             }
             else
             {
+                _logger.Log(LogLevel.Warning, $"{nameof(GetUserInformationFromDB)}: User does not exist with the oid: {oid}");
                 return new MUser();
             }
         }
 
-        
-        
-        // Add a method to retrieve the GlobalState
-        public void GetGlobalState()
+        public async Task<GlobalState> GetGlobalStateAsync()
         {
-            // Your logic to return the GlobalState
+            _logger.Log(LogLevel.Information, $"{nameof(GetGlobalStateAsync)}: Getting global state");
+            return await _localStorageService.GetItemAsync<GlobalState>("globalState");
         }
     }
 }
+

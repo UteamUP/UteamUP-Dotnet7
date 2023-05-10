@@ -14,16 +14,9 @@ public class AssetDto
     public string CheckInProcedure { get; set; } = string.Empty;
     public string CheckOutProcedure { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
-
-    [ForeignKey("Tenant")] public int? TenantId { get; set; }
     public Tenant? Tenant { get; set; }
-
-    [ForeignKey("Vendor")] public int? VendorId { get; set; }
     public Vendor? Vendor { get; set; }
-
-    [ForeignKey("Category")] public int? CategoryId { get; set; }
     public Category? Category { get; set; }
-
     public virtual List<Part>? Parts { get; set; } = new();
     public virtual List<Location>? Locations { get; set; } = new();
     public virtual List<Tag>? Tags { get; set; } = new();

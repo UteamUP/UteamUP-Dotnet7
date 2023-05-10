@@ -1,0 +1,74 @@
+@page "/create-tag"
+@using UteamUP.Client.Wizard.ActivateUser.Forms
+@using UteamUP.Client.Web.Repository.Interfaces
+@using UteamUP.Client.Components.Enums
+
+@inject IUserWebRepository UserWebRepository
+
+<Form
+    BackUrl="/global"
+    Title="Create Tags"
+>
+    @switch (_activeStepIndex)
+    {
+        case 0:
+            <HorizonChipInput Label="Tags" @bind-Value="_tagNames"/>
+            <HorizonButton Appearance="ButtonAppearance.Primary" OnClick="OnClickSubmitButtonAsync">Submit</HorizonButton>
+            break;
+        default:
+            break;
+    }
+</Form>
+
+@code {
+    string? _oid = "";
+    string? _name = "";
+    string? _email = "";
+    
+    private List<string> _tagNames = new();
+
+    AddNewTagForm _model = new AddNewTagForm();
+
+    protected int _activeStepIndex = 0;
+
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Category Names", false },
+    };
+
+    FluentValidationValidator? _fluentValidationValidator;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _oid = UserState.User.Oid;
+        _name = UserState.User.Name;
+        _email = UserState.User.Email;
+    }
+
+    private async Task OnClickSubmitButtonAsync()
+    {
+        Console.WriteLine("Submit button clicked");
+
+    // Save create the plan and redirect to global page
+        //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
+        //if (results == false)
+            // TODO: Should popup an error box in the client
+        //    throw new Exception("Could not activate the user");
+        //else
+        //    NavigationManager.NavigateTo("/global");
+    }
+
+    private async Task OnClickContinueButtonAsync()
+    {
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+    }
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+
+}

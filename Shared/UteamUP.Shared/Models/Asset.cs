@@ -26,6 +26,7 @@ public class Asset : Base
     public string CheckInProcedure { get; set; } = string.Empty;
     public string CheckOutProcedure { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
+    public MUser Creator { get; set; } // To show who created the category
 
     [ForeignKey("Tenant")] public int? TenantId { get; set; }
     public Tenant? Tenant { get; set; }

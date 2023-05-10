@@ -91,7 +91,6 @@ public class TenantWebRepository : ITenantWebRepository
     public async Task<List<Tenant>> GetInvitesAsync(string oid)
     {
         await GetHttpClientHeaderToken();
-        Console.WriteLine($"{Url}/invites/{oid}");
         var result = await _httpClient.GetAsync($"{Url}/invites/{oid}");
         if (result.IsSuccessStatusCode)
         {

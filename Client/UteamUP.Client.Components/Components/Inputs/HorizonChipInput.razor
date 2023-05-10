@@ -1,6 +1,6 @@
 ﻿@namespace UteamUP.Client.Components.Inputs
-@using System.Text.RegularExpressions;
 
+@using System.Text.RegularExpressions
 @inherits InputBase<List<string>>
 
 <div class="input-container">
@@ -11,17 +11,16 @@
 
     <div class="input-chip-wrapper">
         <div class="root">
-            @foreach (var email in Value)
+            @foreach (var item in Value)
             {
                 <div class="chip">
-                    @email
-                                        <span class="chip-close" @onclick="(() => RemoveItem(email))">
-                                            &times;
-                                        </span>
+                    @item
+                    <span class="chip-close" @onclick="(() => RemoveItem(item))">
+                        &times;
+                    </span>
                 </div>
             }
             <input @onkeyup="OnKeyDown" @onblur="OnBlur" type="text" @oninput="(e) => _inputValue = (string)e.Value" value="@BindConverter.FormatValue(_inputValue)" />
-
         </div>
     </div>
 </div>
@@ -31,9 +30,25 @@
 
     [Parameter]
     public string Label { get; set; }
+    
+    private void OnBlur(FocusEventArgs e) => ValidateEnteredItem();
 
-    private void OnBlur(FocusEventArgs e) => ValidateEnteredEmailAddress();
+    private void ValidateEnteredItem()
+    {
+        _inputValue = Regex.Replace(_inputValue, @"\s+", "");
+        
+        // Check if the input value is empty or already exists in the list
+        if (string.IsNullOrEmpty(_inputValue) || Value.Contains(_inputValue))
+        {
+            _inputValue = null;
+            return;
+        }
 
+        Value.Add(_inputValue);
+        
+        _inputValue = null;
+    }
+    
     private void OnKeyDown(KeyboardEventArgs e)
     {
         if(e.Key == "Backspace" && string.IsNullOrEmpty(_inputValue))
@@ -43,25 +58,8 @@
         
         if(e.Key == "Tab" || e.Key == " " || e.Key == "Enter")
         {
-            ValidateEnteredEmailAddress();
+            ValidateEnteredItem();
         }
-    }
-
-    private void ValidateEnteredEmailAddress()
-    {
-        _inputValue = Regex.Replace(_inputValue, @"\s+", "");
-
-        if (RegexUtilities.IsValidEmail(_inputValue) && !Value.Contains(_inputValue))
-        {
-            Value.Add(_inputValue);
-        }
-
-        _inputValue = null;
-    }
-
-    protected override string FormatValueAsString(List<string> value)
-    {
-        return base.FormatValueAsString(value);
     }
 
     protected override bool TryParseValueFromString(string value, [MaybeNullWhen(false)] out List<string> result, [NotNullWhen(false)] out string validationErrorMessage)

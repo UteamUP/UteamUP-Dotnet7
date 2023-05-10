@@ -11,4 +11,6 @@ public class Category : Base
 
     [ForeignKey("Tenant")] public int? TenantId { get; set; }
     public Tenant? Tenant { get; set; }
+    
+    public MUser Creator { get; set; } // To show who created the category
 }

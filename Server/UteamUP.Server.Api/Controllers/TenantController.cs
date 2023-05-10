@@ -61,7 +61,6 @@ public class TenantController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateTenantAsync(TenantDto tenant)
     {
-        Console.WriteLine("I am in CreateTenantAsync controller");
         if (tenant == null)
         {
             _logger.Log(LogLevel.Error, $"CreateTenantAsync: Tenant is null");

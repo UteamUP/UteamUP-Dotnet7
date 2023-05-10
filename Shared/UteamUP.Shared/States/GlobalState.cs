@@ -5,6 +5,16 @@ namespace UteamUP.Shared.States
 {
     public class GlobalState
     {
+        private bool _isUpToDate;
+        public bool IsUpToDate
+        {
+            get => _isUpToDate;
+            set
+            {
+                _isUpToDate = value;
+                NotifyInitialized();
+            }
+        }
         private Tenant? _activeTenant;
         public Tenant? ActiveTenant {
             get => _activeTenant;

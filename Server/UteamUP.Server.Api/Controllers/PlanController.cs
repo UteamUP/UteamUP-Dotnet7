@@ -34,7 +34,6 @@ public class PlanController : ControllerBase
         
         // Validate that the user is admin
         var muser = await _user.GetByOidAsync(oid);
-        Console.WriteLine("The user with the oid: " + oid + " is admin: " + muser.IsAdmin);
         if(muser.IsAdmin == false) return Unauthorized("You are not authorized to perform this action");
 
         return Ok(true);
