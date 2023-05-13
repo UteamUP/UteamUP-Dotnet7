@@ -47,7 +47,7 @@ public class TenantController : ControllerBase
         }
 
         _logger.Log(LogLevel.Information, $"Getting user by oid {oid}");
-        var tenants = await _tenant.GetAllTenantsAsyncByOid(oid);
+        var tenants = await _tenant.GetAllTenantsByOidAsync(oid);
         if (tenants.Count == 0)
         {
             _logger.Log(LogLevel.Information, $"No tenants found for user with oid {oid}");
@@ -145,5 +145,26 @@ public class TenantController : ControllerBase
         }
 
         return Ok(tenants);
+    }
+    
+    // Get tenant by id
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetTenantByIdAsync(int id)
+    {
+        if (id <= 0)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetTenantByIdAsync)}: Id is null or empty");
+            return NotFound();
+        }
+
+        _logger.Log(LogLevel.Information, $"{nameof(GetTenantByIdAsync)}: Getting tenant by id {id}");
+        var tenant = await _tenant.GetTenantById(id.ToString());
+        if (tenant == null)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(GetTenantByIdAsync)}: No tenant found for id {id}");
+            return NotFound();
+        }
+
+        return Ok(tenant);
     }
 }

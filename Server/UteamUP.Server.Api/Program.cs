@@ -8,10 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Adding generic repository services.
 
 // Adding Global repository services.
-builder.Services.TryAddScoped<IMUserRepository, MUserRepository>();
-builder.Services.TryAddScoped<ITenantRepository, TenantRepository>();
-builder.Services.TryAddScoped<IPlanRepository, PlanRepository>();
-builder.Services.TryAddScoped<IVendorRepository, VendorRepository>();
+builder.Services.AddScoped<IMUserRepository, MUserRepository>();
+builder.Services.AddScoped<ITenantRepository, TenantRepository>();
+builder.Services.AddScoped<IPlanRepository, PlanRepository>();
+builder.Services.AddScoped<IVendorRepository, VendorRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 
 // Add Database Service
 builder.Services.AddDbContext<pgContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("UteamupDB"),

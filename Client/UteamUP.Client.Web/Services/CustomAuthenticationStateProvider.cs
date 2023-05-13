@@ -10,6 +10,7 @@ namespace UteamUP.Client.Web.Services
     {
         private readonly ILocalStorageService _localStorageService;
         private readonly IUserWebRepository _userWebRepository;
+        private readonly ITenantWebRepository _tenantWebRepository;
         private readonly IAccessTokenProvider _accessTokenProvider;
         private readonly UserState _userState;
         private readonly ILogger<CustomAuthenticationStateProvider> _logger;
@@ -19,7 +20,8 @@ namespace UteamUP.Client.Web.Services
             IUserWebRepository userWebRepository,
             IAccessTokenProvider accessTokenProvider, 
             UserState userState, 
-            ILogger<CustomAuthenticationStateProvider> logger
+            ILogger<CustomAuthenticationStateProvider> logger, 
+            ITenantWebRepository tenantWebRepository
             )
         {
             _localStorageService = localStorageService;
@@ -27,6 +29,7 @@ namespace UteamUP.Client.Web.Services
             _accessTokenProvider = accessTokenProvider;
             _userState = userState;
             _logger = logger;
+            _tenantWebRepository = tenantWebRepository;
         }
 
         // Retrieves the authentication state asynchronously
@@ -112,7 +115,7 @@ namespace UteamUP.Client.Web.Services
             {
                 _logger.Log(LogLevel.Information, $"{nameof(UpdateAppStateWithUserAsync)}: Getting user information from database");
                 MUser muser = await GetUserInformationFromDB(oidClaim.Value);
-
+                
                 // Check if the global state exists
                 GlobalState globalState = await _localStorageService.GetItemAsync<GlobalState>("globalState");
 
@@ -139,6 +142,32 @@ namespace UteamUP.Client.Web.Services
                     }
 
                     GlobalState newGlobalState = CreateGlobalStateFromMUser(muser);
+                    
+                    // Updating tenant information
+                    var defaultTenant = await GetDefaultTenantByIdAsync(muser.DefaultTenantId.ToString());
+                    var allMyTenants = await GetMyTenantsAsync(muser.Oid);
+                    
+                    if (muser.DefaultTenantId != 0)
+                    {
+                        newGlobalState.DefaultTenantId = muser.DefaultTenantId;
+                        newGlobalState.ActiveTenant = muser.Tenants.FirstOrDefault(t => t.Id == muser.DefaultTenantId);
+                    }
+                    
+                    if(defaultTenant != null || defaultTenant.Id != 0 || newGlobalState.DefaultTenantId != 0){
+                        newGlobalState.ActiveTenant = defaultTenant;
+                        newGlobalState.DefaultTenantId = defaultTenant.Id;
+                    }
+                    
+                    if(newGlobalState.ActiveTenant.Id == 0 && newGlobalState.DefaultTenantId == 0){
+                        // get the first tenant from allMyTenants and set it as the default tenant
+                        newGlobalState.ActiveTenant = allMyTenants[0];
+                        newGlobalState.DefaultTenantId = allMyTenants[0].Id;
+                        // Save the default tenant id to the database
+                        await _userWebRepository.UpdateDefaultTenantId(newGlobalState.DefaultTenantId, muser.Oid);
+                    }
+                    
+                    if(allMyTenants != null && allMyTenants.Count > 0)
+                        newGlobalState.Tenants = allMyTenants;
                     
                     _logger.Log(LogLevel.Information, $"{nameof(UpdateAppStateWithUserAsync)}: Setting global state with the oid: {oidClaim.Value}");
                     await _localStorageService.SetItemAsync("globalState", newGlobalState);
@@ -168,6 +197,43 @@ namespace UteamUP.Client.Web.Services
             };
         }
 
+        public async Task<Tenant> GetDefaultTenantByIdAsync(string defaultTenantId)
+        {
+            Tenant tenant = new Tenant();
+            
+            // This will get the default tenant from the database
+            if(defaultTenantId != null && defaultTenantId != "0"){
+                _logger.Log(LogLevel.Information, $"{nameof(GetDefaultTenantByIdAsync)}: Getting default tenant with the id: {defaultTenantId}");
+                tenant = await _tenantWebRepository.GetTenantById(defaultTenantId);
+            }
+            
+            return tenant;
+        }
+
+        public async Task<List<Tenant>> GetAllMyTenantsByOidAsync(string oid)
+        {
+            List<Tenant> tenant = new List<Tenant>();
+            
+            // This will get the default tenant from the database
+            if(oid != null){
+                _logger.Log(LogLevel.Information, $"{nameof(GetAllMyTenantsByOidAsync)}: Getting all tenants for the oid: {oid}");
+                tenant = await _tenantWebRepository.GetAllTenantsByOidAsync(oid);
+            }
+            
+            return tenant;
+        }
+
+        
+        public async Task<List<Tenant>> GetMyTenantsAsync(string oid)
+        {
+            Console.WriteLine("Getting my tenants for the oid: " + oid);
+            var results = await _tenantWebRepository.GetAllTenantsByOidAsync(oid);
+            if(results != null)
+                return results;
+            else
+                return new List<Tenant>();
+        }
+        
         // Event that gets triggered when the global state changes
         public event Action OnGlobalStateChanged;
 
@@ -192,7 +258,9 @@ namespace UteamUP.Client.Web.Services
         public async Task<GlobalState> GetGlobalStateAsync()
         {
             _logger.Log(LogLevel.Information, $"{nameof(GetGlobalStateAsync)}: Getting global state");
-            return await _localStorageService.GetItemAsync<GlobalState>("globalState");
+            var state = await _localStorageService.GetItemAsync<GlobalState>("globalState");
+            
+            return state;
         }
     }
 }

@@ -3,19 +3,18 @@ using UteamUP.Client.Web.Repository.Interfaces;
 
 namespace UteamUP.Client.Web.Repository.Implementations;
 
-public class PlanWebRepository : IPlanWebRepository
+public class CategoryWebRepository : ICategoryWebRepository
 {
     private readonly HttpClient _httpClient;
     private readonly AuthenticationStateProvider _authenticationStateProvider;
     private readonly IHeaderRepository _headerRepository;
-    private readonly ILogger<PlanWebRepository> _logger;
-    private protected string ServerUrl = "https://localhost:5001";
-    private protected string Url = "api/plan";
+    private readonly ILogger<CategoryWebRepository> _logger;
+    private protected string Url = "api/category";
 
-    public PlanWebRepository(
+    public CategoryWebRepository(
         HttpClient httpClient, 
         AuthenticationStateProvider authenticationStateProvider, 
-        IHeaderRepository headerRepository, ILogger<PlanWebRepository> logger)
+        IHeaderRepository headerRepository, ILogger<CategoryWebRepository> logger)
     {
         _httpClient = httpClient;
         _authenticationStateProvider = authenticationStateProvider;
@@ -31,38 +30,38 @@ public class PlanWebRepository : IPlanWebRepository
         _httpClient.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
     }
     
-    // Create the plan
-    public async Task<bool> CreatePlanAsync(PlanDto? plan)
+    // Create the category
+    public async Task<bool> CreateAsync(List<CategoryDto> categories, int id)
     {
         await GetHttpClientHeaderToken();
-        var result = await _httpClient.PostAsJsonAsync<PlanDto>($"{Url}", plan);
+        var result = await _httpClient.PostAsJsonAsync($"{Url}/{id}", categories);
         if (result.IsSuccessStatusCode)
         {
-            await result.Content.ReadFromJsonAsync<PlanDto>();
-            _logger.Log(LogLevel.Information, $"{nameof(CreatePlanAsync)}: Plan created successfully");
+            await result.Content.ReadFromJsonAsync<List<CategoryDto>>();
+            _logger.Log(LogLevel.Information, $"{nameof(CreateAsync)}: Category created successfully");
             return true;
         }
         else
         {
             _logger.Log(LogLevel.Error,
-                $"{nameof(CreatePlanAsync)}: Plan creation failed, because of : " + result.StatusCode);
+                $"{nameof(CreateAsync)}: Category creation failed, because of : " + result.StatusCode);
             return false;
         }
     }
 
-    public async Task<List<Plan?>?> GetAllPlansAsync()
+    public async Task<List<Category>> GetAllAsync(int tenantId)
     {
-        var result = await _httpClient.GetAsync($"{Url}");
-        if (result.IsSuccessStatusCode)
+        await GetHttpClientHeaderToken();
+        var result = await _httpClient.GetFromJsonAsync<List<Category>>($"{Url}/{tenantId}");
+        if (result != null)
         {
-            _logger.Log(LogLevel.Information, $"{nameof(GetAllPlansAsync)}: Got all plans successfully");
-            return await result.Content.ReadFromJsonAsync<List<Plan?>>();
+            _logger.Log(LogLevel.Information, $"{nameof(GetAllAsync)}: Categories retrieved successfully");
+            return result;
         }
         else
         {
-            _logger.Log(LogLevel.Error,
-                $"{nameof(GetAllPlansAsync)}: Failed to get all plans, because of : " + result.StatusCode);
-            return new List<Plan?>();
+            _logger.Log(LogLevel.Error, $"{nameof(GetAllAsync)}: Categories retrieval failed");
+            return null;
         }
     }
 }

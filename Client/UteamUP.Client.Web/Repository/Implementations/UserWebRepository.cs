@@ -78,6 +78,22 @@ public class UserWebRepository : IUserWebRepository
         }
     }
 
+    public async Task<MUser?> UpdateDefaultTenantId(int tenantId, string oid)
+    {
+        await GetHttpClientHeaderToken();
+        var user = await _httpClient.PutAsJsonAsync<MUser>($"{Url}/{oid}/defaulttenant/{tenantId}", null);
+        if (user.IsSuccessStatusCode)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(UpdateDefaultTenantId)}: User updated successfully");
+            return await user.Content.ReadFromJsonAsync<MUser>();
+        }
+        else
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(UpdateDefaultTenantId)}: User update failed with status code {user.StatusCode} and reason {user.ReasonPhrase}");
+            return new MUser();
+        }
+    }
+
     public async Task<bool> ActivateUser(string activationCode, string oid)
     {
         await GetHttpClientHeaderToken();

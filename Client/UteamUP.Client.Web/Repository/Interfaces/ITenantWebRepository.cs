@@ -6,7 +6,8 @@ public interface ITenantWebRepository
 {
     Task<Tenant?> CreateTenantAsync(TenantDto tenant);
     Task<List<Tenant>> GetOwnedTenantsAsync(string oid);
-    Task<List<Tenant>> GetMyTenantsAsync(string oid);
+    Task<List<Tenant>> GetAllTenantsByOidAsync(string oid);
+    Task<Tenant> GetTenantById(string tenantId);
     Task<List<Tenant>> GetInvitesAsync(string oid);
 
     /*

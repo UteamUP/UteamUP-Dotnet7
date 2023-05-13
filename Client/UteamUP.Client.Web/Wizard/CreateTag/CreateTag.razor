@@ -2,8 +2,10 @@
 @using UteamUP.Client.Wizard.ActivateUser.Forms
 @using UteamUP.Client.Web.Repository.Interfaces
 @using UteamUP.Client.Components.Enums
+@using UteamUP.Client.Web.Repository.Implementations
 
 @inject IUserWebRepository UserWebRepository
+@inject ITagWebRepository TagWebRepository
 
 <Form
     BackUrl="/global"
@@ -26,6 +28,7 @@
     string? _email = "";
     
     private List<string> _tagNames = new();
+    private List<TagDto> _tags = new();
 
     AddNewTagForm _model = new AddNewTagForm();
 
@@ -49,15 +52,19 @@
 
     private async Task OnClickSubmitButtonAsync()
     {
-        Console.WriteLine("Submit button clicked");
-
+        // Update _tags with the _tagNames
+        foreach (var tagName in _tagNames)
+        {
+            _tags.Add(new TagDto() { Name = tagName });
+        }
+        
     // Save create the plan and redirect to global page
-        //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
-        //if (results == false)
-            // TODO: Should popup an error box in the client
-        //    throw new Exception("Could not activate the user");
-        //else
-        //    NavigationManager.NavigateTo("/global");
+        var results = await TagWebRepository.CreateAsync(_tags);
+        if (results == false)
+    // TODO: Should popup an error box in the client
+        throw new Exception("Could not create tags");
+    else
+        NavigationManager.NavigateTo("/global");
     }
 
     private async Task OnClickContinueButtonAsync()

@@ -69,23 +69,26 @@ public class TenantWebRepository : ITenantWebRepository
 
     }
 
-    public async Task<List<Tenant>> GetMyTenantsAsync(string oid)
+    public async Task<List<Tenant>> GetAllTenantsByOidAsync(string oid)
     {
         await GetHttpClientHeaderToken();
-        var result = await _httpClient.GetAsync($"{Url}/my/{oid}");
-        
-        if (result.IsSuccessStatusCode)
-        {
-            _logger.Log(LogLevel.Information, $"{nameof(GetMyTenantsAsync)}: Showing all my tenants");
-            return await result.Content.ReadFromJsonAsync<List<Tenant>>();
-        }
-        else
-        {
-            _logger.Log(LogLevel.Error,
-                $"{nameof(GetMyTenantsAsync)}: Showing my tenants failed: " + result.StatusCode + " and " +
-                result.ReasonPhrase);
+        Console.WriteLine($"{Url}/oid/{oid}");
+        if (oid == null || oid == "0")
             return new List<Tenant>();
-        }
+
+        var result = await _httpClient.GetFromJsonAsync<List<Tenant>>($"{Url}/oid/{oid}");
+        return result;
+    }
+
+    public async Task<Tenant> GetTenantById(string tenantId)
+    {
+        await GetHttpClientHeaderToken();
+        Console.WriteLine($"{Url}/{tenantId}");
+        if(tenantId == "0" || tenantId == null)
+            return new Tenant();
+        
+        var result = await _httpClient.GetFromJsonAsync<Tenant>($"{Url}/{tenantId}");
+        return result;
     }
 
     public async Task<List<Tenant>> GetInvitesAsync(string oid)

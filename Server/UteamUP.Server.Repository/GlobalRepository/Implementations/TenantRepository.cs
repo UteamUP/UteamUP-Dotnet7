@@ -13,7 +13,7 @@ public class TenantRepository : ITenantRepository
         _logger = logger;
     }
 
-    public async Task<List<Tenant>> GetAllTenantsAsyncByOid(string oid)
+    public async Task<List<Tenant>> GetAllTenantsByOidAsync(string oid)
     {
         // Get all tenants by oid
         var tenants = await _context.Tenants.Where(x => x.Users.Any(y => y.Oid == oid)).ToListAsync();
@@ -21,7 +21,7 @@ public class TenantRepository : ITenantRepository
         // Check if the tenants are null
         if (tenants == null)
         {
-            _logger.Log(LogLevel.Warning, $"{nameof(GetAllTenantsAsyncByOid)}: No tenants found");
+            _logger.Log(LogLevel.Warning, $"{nameof(GetAllTenantsByOidAsync)}: No tenants found");
             return new List<Tenant>();
         }
 
@@ -154,6 +154,20 @@ public class TenantRepository : ITenantRepository
         
         // Return tenants
         return tenants;
+    }
+
+    public async Task<Tenant> GetTenantById(string tenantId)
+    {
+        // Check if tenant id is null
+        if (string.IsNullOrWhiteSpace(tenantId))
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetTenantById)}: Tenant id is null");
+            return new Tenant();
+        }
+        
+        // Get tenant by id
+        var tenant = await _context.Tenants.FirstOrDefaultAsync(x => x.Id == int.Parse(tenantId));
+        return tenant ?? new Tenant();
     }
 
     private bool TenantExists(int id)

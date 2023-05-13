@@ -195,6 +195,35 @@ public class MUserRepository : IMUserRepository
         
     }
 
+    public async Task<MUser?> UpdateDefaultTenantId(int tenantId, string oid)
+    {
+        // Find the user
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Oid == oid);
+        
+        // Check if the user is null
+        if (user == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(UpdateDefaultTenantId)}: User with oid {oid} not found");
+            return new MUser();
+        }
+        
+        // Check if the default tenant id is null or 0
+        if (tenantId == 0)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(UpdateDefaultTenantId)}: Tenant id is null or 0");
+            return new MUser();
+        }
+        
+        // Update the default tenant id
+        user.DefaultTenantId = tenantId;
+        
+        // Save the changes
+        await _context.SaveChangesAsync();
+        
+        // Return the user
+        return user;
+    }
+
     private bool UserExists(int id)
     {
         return _context.Users.Any(e => e.Id == id);

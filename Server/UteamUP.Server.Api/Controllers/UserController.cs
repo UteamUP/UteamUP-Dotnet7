@@ -88,4 +88,19 @@ public class UserController : ControllerBase
         _logger.Log(LogLevel.Information, $"{nameof(PutAsync)}: User updated");
         return Ok(result);
     }
+    
+    [HttpPut("oid/{oid}/defaulttenant/{tenantId}")]
+    public async Task<IActionResult> PutDefaultTenantIdAsync(int tenantId, string oid)
+    {
+        if (string.IsNullOrWhiteSpace(oid))
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(PutDefaultTenantIdAsync)}: User data is null or empty");
+            return new BadRequestResult();
+        }
+
+        var result = await _user.UpdateDefaultTenantId(tenantId, oid);
+        _logger.Log(LogLevel.Information, $"{nameof(PutDefaultTenantIdAsync)}: User updated");
+        return Ok(result);
+    }
+    
 }

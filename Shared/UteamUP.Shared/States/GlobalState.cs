@@ -5,6 +5,17 @@ namespace UteamUP.Shared.States
 {
     public class GlobalState
     {
+        private DateTime _lastUpdated;
+        public DateTime LastUpdated
+        {
+            get => _lastUpdated;
+            set
+            {
+                _lastUpdated = value;
+                NotifyInitialized();
+            }
+        }
+        
         private bool _isUpToDate;
         public bool IsUpToDate
         {

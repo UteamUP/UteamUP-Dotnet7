@@ -4,6 +4,7 @@
 @using UteamUP.Client.Components.Enums
 
 @inject IUserWebRepository UserWebRepository
+@inject ICategoryWebRepository CategoryWebRepository
 
 <Form
     BackUrl="/global"
@@ -24,8 +25,10 @@
     string? _oid = "";
     string? _name = "";
     string? _email = "";
+    Tenant? _activeTenant;
     
     private List<string> _categoryNames = new();
+    private List<CategoryDto> _categories = new();
 
     AddNewCategoryForm _model = new AddNewCategoryForm();
 
@@ -45,25 +48,29 @@
         _oid = UserState.User.Oid;
         _name = UserState.User.Name;
         _email = UserState.User.Email;
+        
+        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+        _activeTenant = globalState.ActiveTenant;
     }
 
     private async Task OnClickSubmitButtonAsync()
     {
-        Console.WriteLine("Submit button clicked");
-        
-        // Print out the contents of the categories
+        // Add _categoryNames to _categories
         foreach (var categoryName in _categoryNames)
         {
-            Console.WriteLine(categoryName);
+            _categories.Add(new CategoryDto()
+            {
+                Name = categoryName
+            });
         }
-
-    // Save create the plan and redirect to global page
-        //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
-        //if (results == false)
+        
+        // Get ActiveTenant from localStorage
+        var results = await CategoryWebRepository.CreateAsync(_categories, _activeTenant.Id);
+        if (results == false)
             // TODO: Should popup an error box in the client
-        //    throw new Exception("Could not activate the user");
-        //else
-        //    NavigationManager.NavigateTo("/global");
+            throw new Exception("Could not activate the user");
+        else
+            NavigationManager.NavigateTo("/global");
     }
 
     private async Task OnClickContinueButtonAsync()

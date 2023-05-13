@@ -1,71 +1,116 @@
 @page "/create-asset"
 @using UteamUP.Client.Wizard.ActivateUser.Forms
-@using UteamUP.Client.Components.Enums
 @using UteamUP.Client.Web.Repository.Interfaces
 
-@inject IUserWebRepository UserWebRepository
+@inject IVendorWebRepository VendorWebRepository
+@inject ICategoryWebRepository CategoryWebRepository
 
 <Form Steps="@_steps"
       BackUrl="/global"
       ActiveStepIndex="@_activeStepIndex"
-      Title="Create Workorder"
+      Title="Create Asset"
       OnClickBackButton="OnClickBackButton"
       OnClickContinueButton="OnClickContinueButtonAsync"
       OnClickSubmitButton="OnClickSubmitButtonAsync">
     @switch (_activeStepIndex)
     {
         case 0:
-            <EditForm Model="@_model">
-                <HorizonInput Label="Workorder Name" Placeholder="Type in the subject of the workorder" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="Priority" Placeholder="Select the priority" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="Status" Placeholder="Select the status" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="Assign User" Placeholder="Select the status" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="Assign Asset" Placeholder="Select the status" @bind-Value="@_model.ActivationNumber"/>
+            <EditForm Model="@_model.BasicAssetForm">
+                <HorizonInput Label="Name" Placeholder="Type in the name of the asset" @bind-Value="@_model.BasicAssetForm.Name"/>
+                <HorizonSelect Options="@_categoryList" Label="Select Category" Placeholder="Type here" @bind-Value="_model.BasicAssetForm.Category"/>
+                <HorizonSelect Options="@_vendorList" Label="Select Vendors" Placeholder="Type here" @bind-Value="_model.BasicAssetForm.VendorName"/>
             </EditForm>
+
             break;
         case 1:
-            <EditForm Model="@_model">
-                <HorizonInput Label="Start Date" Placeholder="Type in the subject of the workorder" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="End Date" Placeholder="Select the priority" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="Stop Required" Placeholder="Select the priority" @bind-Value="@_model.ActivationNumber"/>
+            <EditForm Model="@_model.AssetDetailsForm">
+                <HorizonInput Label="Serial Number" Placeholder="Type in the serial number" @bind-Value="@_model.AssetDetailsForm.SerialNumber"/>
+                <HorizonInput Label="Reference Number" Placeholder="Type in the reference number" @bind-Value="@_model.AssetDetailsForm.ReferenceNumber"/>
+                <HorizonInput Label="Model Number" Placeholder="Type in the model number" @bind-Value="@_model.AssetDetailsForm.ModelNumber"/>
+                <HorizonInput Label="UPC Number" Placeholder="Type in the upc number" @bind-Value="@_model.AssetDetailsForm.UPCNumber"/>
             </EditForm>
             break;
         case 2:
-            <EditForm Model="@_model">
-                <HorizonInput Label="Description" Placeholder="Description" @bind-Value="@_model.ActivationNumber"/>
-                <HorizonInput Label="Notes" Placeholder="Other Notes" @bind-Value="@_model.ActivationNumber"/>
+            <div class="input-container">
+                <HorizonFileUpload/>
+            </div>
+            break;
+        case 3:
+            <EditForm Model="@_model.AssetDescriptionForm">
+                <div class="input-container">
+                    <label class="form-label">Description</label>
+                    <HorizonRichTextEditor Height="300px">
+                        <EditorContent>
+                            @((MarkupString)@_model.AssetDescriptionForm.Description)
+                        </EditorContent>
+                    </HorizonRichTextEditor>
+                </div>
             </EditForm>
             break;
+        case 4:
+            <EditForm Model="@_model.AssetNotesForm">
+                <div class="input-container">
+                    <label class="form-label">Notes</label>
+                    <HorizonRichTextEditor Height="300px">
+                        <EditorContent>
+                            @((MarkupString)@_model.AssetNotesForm.Notes)
+                        </EditorContent>
+                    </HorizonRichTextEditor>
+                </div>
+            </EditForm>
+            break;
+
         default:
             break;
     }
 </Form>
 
 @code {
-    string? _oid = "";
-    string? _name = "";
-    string? _email = "";
+    bool _stopRequired = false;
 
-    AddNewAssetForm _model = new AddNewAssetForm();
+    List<Vendor> _vendors = new();
+    List<Category> _categories = new();
+
+    AddNewAssetForm _model = new();
 
     protected int _activeStepIndex = 0;
 
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
-        { "Activation Information", false },
+        { "Basic Information", false },
+        { "Model Information", false },
+        { "Documentations or images", false },
+        { "Description", false },
+        { "Notes", false }
     };
 
+    private IDictionary<string, string> _vendorList = new Dictionary<string, string>()
+    {
+        { "", "" }
+    };
+    
+    private IDictionary<string, string> _categoryList = new Dictionary<string, string>()
+    {
+        { "", "" }
+    };
+    
     FluentValidationValidator? _fluentValidationValidator;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
-        _oid = UserState.User.Oid;
-        _name = UserState.User.Name;
-        _email = UserState.User.Email;
-
-        _model.ActivationNumber = "";
+        // Get selected tenant
+        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+        if(globalState.ActiveTenant == null)
+            // TODO: Should popup an error box in the client or redirect to the global page to select default tenant
+            throw new Exception("No tenant selected");
+        
+        _vendors = await VendorWebRepository.GetAllAsync();
+        _vendorList = _vendors.ToDictionary(x => x.Name, x => x.Id.ToString());
+        
+        _categories = await CategoryWebRepository.GetAllAsync(globalState.DefaultTenantId);
+        _categoryList = _categories.ToDictionary(x => x.Name, x => x.Id.ToString());
     }
 
     private async Task OnClickSubmitButtonAsync()
@@ -73,12 +118,12 @@
         Console.WriteLine("Submit button clicked");
 
     // Save create the plan and redirect to global page
-        var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
-        if (results == false)
-            // TODO: Should popup an error box in the client
-            throw new Exception("Could not activate the user");
-        else
-            NavigationManager.NavigateTo("/global");
+        //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
+        //if (results == false)
+    // TODO: Should popup an error box in the client
+        //    throw new Exception("Could not activate the user");
+        //else
+        //    NavigationManager.NavigateTo("/global");
     }
 
     private async Task OnClickContinueButtonAsync()
