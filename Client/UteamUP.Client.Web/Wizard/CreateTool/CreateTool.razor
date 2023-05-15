@@ -1,0 +1,193 @@
+@page "/create-tool"
+@using UteamUP.Client.Wizard.ActivateUser.Forms
+@using UteamUP.Client.Components.Enums
+@using UteamUP.Client.Web.Repository.Interfaces
+
+@inject ICategoryWebRepository CategoryWebRepository
+
+<Form Steps="@_steps"
+      BackUrl="/global"
+      ActiveStepIndex="@_activeStepIndex"
+      Title="Create Tool"
+      OnClickBackButton="OnClickBackButton"
+      OnClickContinueButton="OnClickContinueButtonAsync"
+      OnClickSubmitButton="OnClickSubmitButtonAsync">
+    @switch (_activeStepIndex)
+    {
+        case 0:
+            <EditForm Model="@_model.BasicToolForm">
+                <HorizonInput Label="Tool Name" Placeholder="Type in the name of the tool" @bind-Value="@_model.BasicToolForm.Name"/>
+                <HorizonSelect Options="@_categoryList" Label="Select Category" Placeholder="Type here" @bind-Value="_model.BasicToolForm.Category"/>
+                <HorizonChipTag Label="Tags" @bind-Value="_tagNames" Placeholder="Type in the tags you want to add to the tool"/>
+            </EditForm>
+            break;
+        case 1:
+            <EditForm Model="@_model.ToolDetailsForm">
+                <HorizonInput Label="Barcode Number" Placeholder="Type in the barcode number of the tool" @bind-Value="@_model.ToolDetailsForm.BarcodeNumber"/>
+                <HorizonInput Label="Model Number" Placeholder="Type in the model number of the tool" @bind-Value="@_model.ToolDetailsForm.ModelNumber"/>
+                <HorizonInput Label="Reference Number" Placeholder="Type in the reference number of the tool" @bind-Value="@_model.ToolDetailsForm.ReferenceNumber"/>
+                <HorizonInput Label="Serial Number" Placeholder="Type in the serial number of the tool" @bind-Value="@_model.ToolDetailsForm.SerialNumber"/>
+                <HorizonInput Label="Tool Number" Placeholder="Type in the tool number of the tool" @bind-Value="@_model.ToolDetailsForm.ToolNumber"/>
+                <HorizonInput Label="Value" Placeholder="Type in the value of the tool" @bind-Value="@_Value"/>
+            </EditForm>
+            break;
+        case 2:
+            <div>
+                <label class="input-container">
+                    <InputCheckbox @bind-Value=@_model.ToolSettingsForm.IsActive/>
+                    Tool is active
+                </label>
+            </div>
+
+            <div>
+
+                <label class="input-container">
+                    <InputCheckbox @bind-Value=@_model.ToolSettingsForm.IsDestroyed/>
+                    Tool is destroyed
+                </label>
+            </div>
+
+            <div>
+
+                <label class="input-container">
+                    <InputCheckbox @bind-Value=@_model.ToolSettingsForm.IsLost/>
+                    Tool is lost
+                </label>
+            </div>
+            break;
+        case 3:
+            <EditForm Model="@_model.ToolSettingsForm">
+                <HorizonInput Label="Width" Placeholder="Type in the width of the tool" @bind-Value="@_Width"/>
+                <HorizonInput Label="Height" Placeholder="Type in the height of the tool" @bind-Value="@_Height"/>
+                <HorizonInput Label="Length" Placeholder="Type in the length of the tool" @bind-Value="@_Length"/>
+                <HorizonInput Label="Depth" Placeholder="Type in the depth of the tool" @bind-Value="@_Depth"/>
+                <HorizonInput Label="Weight" Placeholder="Type in the weight of the tool" @bind-Value="@_Weight"/>
+            </EditForm>
+            break;
+        case 4:
+            <EditForm Model="@_model.ToolDescriptionForm">
+                <h2>Tool Description</h2>
+                <div class="input-container">
+                    <label class="form-label">Description</label>
+                    <HorizonRichTextEditor Height="300px">
+                        <EditorContent>
+                            @((MarkupString)@_model.ToolDescriptionForm.Description)
+                        </EditorContent>
+                    </HorizonRichTextEditor>
+                </div>
+            </EditForm>
+            break;
+        case 5:
+            <EditForm Model="@_model.ToolDescriptionForm">
+                <h2>Tool Notes</h2>
+                <div class="input-container">
+                    <label class="form-label">Notes</label>
+                    <HorizonRichTextEditor Height="300px">
+                        <EditorContent>
+                            @((MarkupString)@_model.ToolDescriptionForm.Notes)
+                        </EditorContent>
+                    </HorizonRichTextEditor>
+                </div>
+            </EditForm>
+            break;
+        case 6:
+            <EditForm Model="@_model.ToolDescriptionForm">
+                <h2>Tool Addititional Information</h2>
+                <div class="input-container">
+                    <label class="form-label">Additional Information</label>
+                    <HorizonRichTextEditor Height="300px">
+                        <EditorContent>
+                            @((MarkupString)@_model.ToolDescriptionForm.AdditionalInfo)
+                        </EditorContent>
+                    </HorizonRichTextEditor>
+                </div>
+            </EditForm>
+            break;
+        case 7:
+            <div class="input-container">
+                <HorizonFileUpload/>
+            </div>
+            break;
+        default:
+            break;
+    }
+</Form>
+
+@code {
+    private List<string> _tagNames = new();
+    List<Category> _categories = new();
+
+    string _Width;
+    string _Height;
+    string _Length;
+    string _Depth;
+    string _Weight;
+    string _Value;
+
+    AddNewToolForm _model = new();
+
+    protected int _activeStepIndex = 0;
+
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Tool Basic Information", false },
+        { "Model, Serial, etc Information", false },
+        { "Settings", false },
+        { "Tool Size Information", false },
+        { "Description", false },
+        { "Notes", false },
+        { "Additional Information", false },
+        { "Documentations or images", false }
+    };
+
+    private IDictionary<string, string> _categoryList = new Dictionary<string, string>()
+    {
+        { "", "" }
+    };
+
+    FluentValidationValidator? _fluentValidationValidator;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _tagNames.AddRange(new List<string>() { "TeamField 1", "TeamField 2", "TeamField 3" });
+
+    // Get selected tenant
+        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+        if (globalState.DefaultTenantId == null || globalState.DefaultTenantId == 0)
+            throw new Exception("No tenant selected");
+
+        _categories = await CategoryWebRepository.GetAllCategoriesByTenantIdAsync(globalState.DefaultTenantId);
+        if (_categories.Count != 0)
+            _categoryList = _categories.ToDictionary(x => x.Name, x => x.Id.ToString());
+    }
+
+    private async Task OnClickSubmitButtonAsync()
+    {
+        Console.WriteLine("Submit button clicked");
+
+    // Add tags to _model.Tags
+        _model.BasicToolForm.Tags = _tagNames;
+
+    // Save create the plan and redirect to global page
+    //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
+    //if (results == false)
+    // TODO: Should popup an error box in the client
+    //    throw new Exception("Could not activate the user");
+    //else
+    //    NavigationManager.NavigateTo("/global");
+    }
+
+    private async Task OnClickContinueButtonAsync()
+    {
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+    }
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+
+}

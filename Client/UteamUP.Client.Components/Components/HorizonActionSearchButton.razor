@@ -7,7 +7,7 @@
         <Toggler>
             <BSToggle IsButton="true">
                 <div class="action-btn--content">
-                    <img src="_content/UTeamUP.Horizon.Components/assets/user-icon.png" alt="" />
+                    <img src="_content/UteamUP.Client.Components/assets/user-icon.png" alt="" />
                     @CurrentValueAsString
                 </div>
             </BSToggle>
@@ -24,7 +24,7 @@
             {
                 <BSDropdownItem Class="@(IsItemSelected(item) ? "selected" : string.Empty)" OnClick="@(() => OnItemClicked(item))">
                     <div class="dropdown-menu--item">
-                        <img src="_content/UTeamUP.Horizon.Components/assets/user-icon.png" alt="" />
+                        <img src="_content/UteamUP.Client.Components/assets/user-icon.png" alt="" />
                         @item
                     </div>
                     @if (IsItemSelected(item))

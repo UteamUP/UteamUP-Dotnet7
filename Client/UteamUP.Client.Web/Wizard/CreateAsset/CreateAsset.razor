@@ -19,8 +19,8 @@
                 <HorizonInput Label="Name" Placeholder="Type in the name of the asset" @bind-Value="@_model.BasicAssetForm.Name"/>
                 <HorizonSelect Options="@_categoryList" Label="Select Category" Placeholder="Type here" @bind-Value="_model.BasicAssetForm.Category"/>
                 <HorizonSelect Options="@_vendorList" Label="Select Vendors" Placeholder="Type here" @bind-Value="_model.BasicAssetForm.VendorName"/>
+                <HorizonChipTag Label="Tags" @bind-Value="_tagNames" Placeholder="Type in the tags for the asset"/>
             </EditForm>
-
             break;
         case 1:
             <EditForm Model="@_model.AssetDetailsForm">
@@ -32,7 +32,7 @@
             break;
         case 2:
             <div class="input-container">
-                <HorizonFileUpload/>
+                <HorizonFileUpload />
             </div>
             break;
         case 3:
@@ -59,7 +59,6 @@
                 </div>
             </EditForm>
             break;
-
         default:
             break;
     }
@@ -70,7 +69,8 @@
 
     List<Vendor> _vendors = new();
     List<Category> _categories = new();
-
+    private List<string> _tagNames = new List<string>();
+    
     AddNewAssetForm _model = new();
 
     protected int _activeStepIndex = 0;
@@ -102,15 +102,36 @@
 
         // Get selected tenant
         var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
-        if(globalState.ActiveTenant == null)
-            // TODO: Should popup an error box in the client or redirect to the global page to select default tenant
+        if(globalState.DefaultTenantId == null || globalState.DefaultTenantId == 0)
             throw new Exception("No tenant selected");
-        
+
         _vendors = await VendorWebRepository.GetAllAsync();
-        _vendorList = _vendors.ToDictionary(x => x.Name, x => x.Id.ToString());
+        if(_vendors.Count != 0)
+            _vendorList = _vendors.ToDictionary(x => x.Name, x => x.Id.ToString());
         
-        _categories = await CategoryWebRepository.GetAllAsync(globalState.DefaultTenantId);
-        _categoryList = _categories.ToDictionary(x => x.Name, x => x.Id.ToString());
+        _categories = await CategoryWebRepository.GetAllCategoriesByTenantIdAsync(globalState.DefaultTenantId);
+        if(_categories.Count != 0)
+            _categoryList = _categories.ToDictionary(x => x.Name, x => x.Id.ToString());
+        
+        // pRINT OUT the _tagNames
+        foreach(var tag in _tagNames)
+            Console.WriteLine(tag);
+
+        _model.BasicAssetForm.Name = "Cutter 1x2";
+        _model.BasicAssetForm.Category = "electric";
+        _model.BasicAssetForm.VendorName = "UteamUP Vendor";
+        
+        _model.AssetDetailsForm.SerialNumber = "8376671-234U78U3-23I73";
+        _model.AssetDetailsForm.ReferenceNumber = "SER-1X2-123";
+        _model.AssetDetailsForm.ModelNumber = "MOD1X2-CUTTER";
+        _model.AssetDetailsForm.UPCNumber = "821028937864";
+        
+        _model.AssetDescriptionForm.Description = "Cutter for cutting a one thing into two things, and make it look good.";
+        
+        _model.AssetNotesForm.Notes = "This is a note for the cutter. It is a very good cutter. It cuts things very well.";
+        
+        _tagNames.AddRange(new List<string>() { "cutter", "1x2" });
+        
     }
 
     private async Task OnClickSubmitButtonAsync()

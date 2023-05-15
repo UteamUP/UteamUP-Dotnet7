@@ -1,6 +1,5 @@
 ﻿@namespace UteamUP.Client.Components.Inputs
 @using System.Text.RegularExpressions;
-
 @inherits InputBase<List<string>>
 
 <div class="input-container">
@@ -15,13 +14,12 @@
             {
                 <div class="chip">
                     @email
-                                        <span class="chip-close" @onclick="(() => RemoveItem(email))">
-                                            &times;
-                                        </span>
+                    <span class="chip-close" @onclick="() => RemoveItem(email)">
+                        &times;
+                    </span>
                 </div>
             }
-            <input @onkeyup="OnKeyDown" @onblur="OnBlur" type="text" @oninput="(e) => _inputValue = (string)e.Value" value="@BindConverter.FormatValue(_inputValue)" />
-
+            <input @onkeyup="OnKeyDown" @onblur="OnBlur" type="text" @oninput="(e) => _inputValue = (string)e.Value" value="@BindConverter.FormatValue(_inputValue)"/>
         </div>
     </div>
 </div>
@@ -32,16 +30,19 @@
     [Parameter]
     public string Label { get; set; }
 
-    private void OnBlur(FocusEventArgs e) => ValidateEnteredEmailAddress();
+    private void OnBlur(FocusEventArgs e)
+    {
+        ValidateEnteredEmailAddress();
+    }
 
     private void OnKeyDown(KeyboardEventArgs e)
     {
-        if(e.Key == "Backspace" && string.IsNullOrEmpty(_inputValue))
+        if (e.Key == "Backspace" && string.IsNullOrEmpty(_inputValue))
         {
             Value.RemoveAt(Value.Count - 1);
         }
-        
-        if(e.Key == "Tab" || e.Key == " " || e.Key == "Enter")
+
+        if (e.Key == "Tab" || e.Key == " " || e.Key == "Enter")
         {
             ValidateEnteredEmailAddress();
         }
@@ -68,9 +69,10 @@
     {
         throw new NotImplementedException();
     }
-    
+
     private void RemoveItem(string item)
     {
         Value.Remove(item);
     }
+
 }

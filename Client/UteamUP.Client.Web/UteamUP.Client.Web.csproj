@@ -78,8 +78,10 @@
         <Folder Include="Wizard\CreateLocation\Profiles\" />
         <Folder Include="Wizard\CreatePart\Modals\" />
         <Folder Include="Wizard\CreatePart\Profiles\" />
-        <Folder Include="Wizard\CreateReport\" />
-        <Folder Include="Wizard\CreateStock\" />
+        <Folder Include="Wizard\CreateReport\Modals\" />
+        <Folder Include="Wizard\CreateReport\Profiles\" />
+        <Folder Include="Wizard\CreateStock\Modals\" />
+        <Folder Include="Wizard\CreateStock\Profiles\" />
         <Folder Include="Wizard\CreateTag\Modals\" />
         <Folder Include="Wizard\CreateTag\Profiles\" />
         <Folder Include="Wizard\CreateTenantInvites\Modals\" />
@@ -90,7 +92,8 @@
         <Folder Include="Wizard\CreatePlan\Profiles\" />
         <Folder Include="Wizard\CreateTenant\Modals\" />
         <Folder Include="Wizard\CreateTenant\Profiles\" />
-        <Folder Include="Wizard\CreateTool\" />
+        <Folder Include="Wizard\CreateTool\Modals\" />
+        <Folder Include="Wizard\CreateTool\Profiles\" />
         <Folder Include="Wizard\CreateVendor\Modals\" />
         <Folder Include="Wizard\CreateVendor\Profiles\" />
         <Folder Include="Wizard\CreateWorkorder\Modals\" />

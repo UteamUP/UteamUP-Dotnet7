@@ -1,4 +1,4 @@
-@page "/create-location"
+@page "/create-report"
 @using UteamUP.Client.Wizard.ActivateUser.Forms
 @using UteamUP.Client.Components.Enums
 @using UteamUP.Client.Web.Repository.Interfaces
@@ -41,7 +41,7 @@
 @code {
     private List<string> _tagNames = new List<string>();
 
-    AddNewLocationForm _model = new AddNewLocationForm();
+    AddNewReportForm _model = new AddNewReportForm();
 
     protected int _activeStepIndex = 0;
 

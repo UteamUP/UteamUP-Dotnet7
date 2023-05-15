@@ -47,7 +47,7 @@
     {
         if (firstRender)
         {
-            _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/UTeamUP.Horizon.Components/Components/Inputs/HorizonFileUpload.razor.js");
+            _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/UteamUP.Client.Components/Components/Inputs/HorizonFileUpload.razor.js");
             await _module.InvokeVoidAsync("setupDropZone", _id, _fileInputid);
         }
     }

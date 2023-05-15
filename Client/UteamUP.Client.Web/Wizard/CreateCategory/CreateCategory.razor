@@ -26,6 +26,7 @@
     string? _name = "";
     string? _email = "";
     Tenant? _activeTenant;
+    int _defaultTenantId;
     
     private List<string> _categoryNames = new();
     private List<CategoryDto> _categories = new();
@@ -50,7 +51,10 @@
         _email = UserState.User.Email;
         
         var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
-        _activeTenant = globalState.ActiveTenant;
+        
+        _defaultTenantId = globalState.DefaultTenantId;
+        if(_defaultTenantId == 0)
+            NavigationManager.NavigateTo("/global");
     }
 
     private async Task OnClickSubmitButtonAsync()
@@ -65,10 +69,10 @@
         }
         
         // Get ActiveTenant from localStorage
-        var results = await CategoryWebRepository.CreateAsync(_categories, _activeTenant.Id);
+        var results = await CategoryWebRepository.CreateAsync(_categories, _defaultTenantId);
         if (results == false)
             // TODO: Should popup an error box in the client
-            throw new Exception("Could not activate the user");
+            throw new Exception("Could not create categories");
         else
             NavigationManager.NavigateTo("/global");
     }

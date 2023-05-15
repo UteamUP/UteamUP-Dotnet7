@@ -1,4 +1,4 @@
-﻿@namespace UteamUP.Client.Components.Inputs
+@namespace UteamUP.Client.Components.Inputs
 @using System.Text.RegularExpressions
 @inherits InputBase<List<string>>
 
@@ -6,20 +6,21 @@
     @if (!string.IsNullOrEmpty(Label))
     {
         <label class="form-label">@Label</label>
+        <i><label> (Enter/Tab on keyboard for new tag)</label></i>
     }
 
     <div class="input-chip-wrapper">
         <div class="root">
             @foreach (var item in Value)
             {
-                <div class="chip">
+                <div class="chip-green">
                     @item
                     <span class="chip-close" @onclick="(() => RemoveItem(item))">
                         &times;
                     </span>
                 </div>
             }
-            <input @onkeyup="OnKeyDown" @onblur="OnBlur" type="text" @oninput="(e) => _inputValue = (string)e.Value" value="@BindConverter.FormatValue(_inputValue)" />
+            <input @onkeyup="OnKeyDown" @onblur="OnBlur" type="text" @oninput="(e) => _inputValue = (string)e.Value" value="@BindConverter.FormatValue(_inputValue)" placeholder="@Placeholder" />
         </div>
     </div>
 </div>
@@ -30,11 +31,21 @@
     [Parameter]
     public string Label { get; set; }
     
+    [Parameter]
+    public string Placeholder { get; set; }
+    
+    public string _tmpPlaceholder { get; set; }
+    
     private void OnBlur(FocusEventArgs e) => ValidateEnteredItem();
 
+    protected override async Task OnInitializedAsync()
+    {
+        _tmpPlaceholder = Placeholder;
+    }
+    
     private void ValidateEnteredItem()
     {
-        _inputValue = Regex.Replace(_inputValue, @"\s+", "");
+        //_inputValue = Regex.Replace(_inputValue, @"\s+", "");
         
         // Check if the input value is empty or already exists in the list
         if (string.IsNullOrEmpty(_inputValue) || Value.Contains(_inputValue))
@@ -43,9 +54,23 @@
             return;
         }
 
-        Value.Add(_inputValue);
+        Value.Add(_inputValue.ToLower());
+        
+        UpdatePlaceHolder();
         
         _inputValue = null;
+    }
+
+    private void UpdatePlaceHolder()
+    {
+        if (Value.Count == 0)
+        {
+            Placeholder = _tmpPlaceholder;
+        }
+        else
+        {
+            Placeholder = null;
+        }
     }
     
     private void OnKeyDown(KeyboardEventArgs e)
@@ -53,9 +78,10 @@
         if(e.Key == "Backspace" && string.IsNullOrEmpty(_inputValue))
         {
             Value.RemoveAt(Value.Count - 1);
+            UpdatePlaceHolder();
         }
         
-        if(e.Key == "Tab" || e.Key == " " || e.Key == "Enter")
+        if(e.Key == "Tab" || e.Key == "Enter")
         {
             ValidateEnteredItem();
         }

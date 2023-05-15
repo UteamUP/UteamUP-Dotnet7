@@ -169,15 +169,13 @@ namespace UteamUP.Client.Web.Services
                     if(allMyTenants != null && allMyTenants.Count > 0)
                         newGlobalState.Tenants = allMyTenants;
                     
+                    newGlobalState.LastUpdated = DateTime.Now.ToUniversalTime();
                     _logger.Log(LogLevel.Information, $"{nameof(UpdateAppStateWithUserAsync)}: Setting global state with the oid: {oidClaim.Value}");
                     await _localStorageService.SetItemAsync("globalState", newGlobalState);
                     OnGlobalStateChanged?.Invoke();
                 }
 
                 _userState.SetUser(muser);
-            }
-            else
-            {
             }
         }
 
@@ -197,6 +195,15 @@ namespace UteamUP.Client.Web.Services
             };
         }
 
+        public async Task UpdateDateAsync()
+        {
+            // Get the global state and update the date
+            GlobalState globalState = await GetGlobalStateAsync();
+            globalState.LastUpdated = DateTime.Now.ToUniversalTime();
+            await _localStorageService.SetItemAsync("globalState", globalState);
+            OnGlobalStateChanged?.Invoke();
+        }
+        
         public async Task<Tenant> GetDefaultTenantByIdAsync(string defaultTenantId)
         {
             Tenant tenant = new Tenant();
@@ -209,20 +216,6 @@ namespace UteamUP.Client.Web.Services
             
             return tenant;
         }
-
-        public async Task<List<Tenant>> GetAllMyTenantsByOidAsync(string oid)
-        {
-            List<Tenant> tenant = new List<Tenant>();
-            
-            // This will get the default tenant from the database
-            if(oid != null){
-                _logger.Log(LogLevel.Information, $"{nameof(GetAllMyTenantsByOidAsync)}: Getting all tenants for the oid: {oid}");
-                tenant = await _tenantWebRepository.GetAllTenantsByOidAsync(oid);
-            }
-            
-            return tenant;
-        }
-
         
         public async Task<List<Tenant>> GetMyTenantsAsync(string oid)
         {

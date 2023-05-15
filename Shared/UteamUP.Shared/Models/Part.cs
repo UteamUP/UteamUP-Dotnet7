@@ -21,9 +21,9 @@ public class Part : Base
     public string PartNumber { get; set; } = string.Empty;
     public string AdditionalInfo { get; set; } = string.Empty;
     public string Notes { get; set; } = string.Empty;
-    public bool IsActive { get; set; }
-
-    // TenantID can be empty if IsActive is false, if IsActive is true, then Tenant is required
+    public bool IsPrivate { get; set; }
+    
+    // TenantID can be empty if IsPrivate is false, if IsPrivate is true, then Tenant is required
     [ForeignKey("Tenant")] public int? TenantId { get; set; }
     
     [ForeignKey("Vendor")] public int? VendorId { get; set; }

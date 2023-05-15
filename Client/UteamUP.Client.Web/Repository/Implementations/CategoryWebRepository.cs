@@ -49,18 +49,18 @@ public class CategoryWebRepository : ICategoryWebRepository
         }
     }
 
-    public async Task<List<Category>> GetAllAsync(int tenantId)
+    public async Task<List<Category>> GetAllCategoriesByTenantIdAsync(int tenantId)
     {
         await GetHttpClientHeaderToken();
-        var result = await _httpClient.GetFromJsonAsync<List<Category>>($"{Url}/{tenantId}");
+        var result = await _httpClient.GetFromJsonAsync<List<Category>>($"{Url}/tenant/{tenantId}");
         if (result != null)
         {
-            _logger.Log(LogLevel.Information, $"{nameof(GetAllAsync)}: Categories retrieved successfully");
+            _logger.Log(LogLevel.Information, $"{nameof(GetAllCategoriesByTenantIdAsync)}: Categories retrieved successfully");
             return result;
         }
         else
         {
-            _logger.Log(LogLevel.Error, $"{nameof(GetAllAsync)}: Categories retrieval failed");
+            _logger.Log(LogLevel.Error, $"{nameof(GetAllCategoriesByTenantIdAsync)}: Categories retrieval failed");
             return null;
         }
     }

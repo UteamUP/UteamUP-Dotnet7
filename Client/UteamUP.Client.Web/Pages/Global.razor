@@ -72,12 +72,12 @@
                     <a href="/create-location" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Location</a>
                 </div>
                 <div style="padding: 10px">
-                    <a href="/global" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Stock</a>
+                    <a href="/create-stock" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Stock</a>
                 </div>
             </div>
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
                 <div style="padding: 10px">
-                    <a href="/global" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Tool</a>
+                    <a href="/create-tool" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Tool</a>
                 </div>
                 <div style="padding: 10px">
                     <a href="/create-category" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Category</a>
@@ -231,6 +231,18 @@
                     <td>@HasDbUser</td>
                 </tr>
                 <tr>
+                    <td>Default Tenant ID</td>
+                    <td>@globalState.DefaultTenantId</td>
+                </tr>
+                <tr>
+                    <td>Last DB Cache Updated</td>
+                    <td>@globalState.LastUpdated</td>
+                </tr>
+                <tr>
+                    <td>Next DB Cache Update</td>
+                    <td>@globalState.LastUpdated.AddHours(10)</td>
+                </tr>
+                <tr>
                     <td>User has tenant invites</td>
                     <td>@UserHasInvites</td>
                 </tr>
@@ -280,6 +292,8 @@
 
     private bool UserHasInvites = false;
     private bool HasDbUser = false;
+    
+    private GlobalState globalState = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -288,6 +302,7 @@
         {
             Tenants = await TenantWebRepository.GetOwnedTenantsAsync(UserState.User.Oid);
             InvitedUsers = await TenantWebRepository.GetInvitesAsync(UserState.User.Oid);
+            globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
 
             if (UserState.User.HasBeenActivated != null)
             {

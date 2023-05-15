@@ -1,0 +1,57 @@
+.input-container {
+  margin-bottom: 30px;
+
+  .input-chip-wrapper {
+    background: #f4f2ef;
+    border: 0.75px solid rgba(0, 0, 0, 0.08);
+    padding: 13px 16px;
+    border-radius: 8px;
+
+    .root {
+      border: 0;
+      margin: 0;
+      display: inline-flex;
+      padding: 0;
+      position: relative;
+      min-width: 0;
+      vertical-align: top;
+      gap: 10px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      flex-wrap: wrap;
+
+      .chip-green {
+        margin: 0;
+        height: 41px;
+        padding: 10px;
+        padding-right: 30px; // Increase padding on the right side to make room for the "x"
+        background: #bdf6b9;
+        border-radius: 6px;
+        color: #4c930d;
+        font-size: 14px;
+        font-weight: 400;
+        position: relative;
+
+        .chip-close {
+          position: absolute;
+          top: 50%;
+          right: 8px;
+          cursor: pointer;
+          transform: translateY(-50%); // Center the "x" vertically
+          font-size: 22px;
+        }
+      }
+
+      input {
+        background: none;
+        border: none;
+        flex: 1;
+
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+  }
+}

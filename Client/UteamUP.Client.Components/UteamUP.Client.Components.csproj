@@ -24,5 +24,9 @@
       <PackageReference Include="BlazorStrap" Version="5.1.101" />
       <PackageReference Include="BlazorStrap.V5" Version="5.1.101" />
       <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Shared\UteamUP.Shared\UteamUP.Shared.csproj" />
     </ItemGroup>    
 </Project>

@@ -1,0 +1,95 @@
+@page "/create-stock"
+@using UteamUP.Client.Wizard.ActivateUser.Forms
+@using UteamUP.Client.Components.Enums
+@using UteamUP.Client.Web.Repository.Interfaces
+
+@inject ICategoryWebRepository CategoryWebRepository
+
+<Form Steps="@_steps"
+      BackUrl="/global"
+      ActiveStepIndex="@_activeStepIndex"
+      Title="Create Stock"
+      OnClickBackButton="OnClickBackButton"
+      OnClickContinueButton="OnClickContinueButtonAsync"
+      OnClickSubmitButton="OnClickSubmitButtonAsync">
+    @switch (_activeStepIndex)
+    {
+        case 0:
+            <EditForm Model="@_model.BasicStockForm">
+                <HorizonInput Label="Stock Name" Placeholder="Type in the name of the stock" @bind-Value="@_model.BasicStockForm.Name"/>
+                <HorizonSelect Options="@_categoryList" Label="Select Category" Placeholder="Type here" @bind-Value="_model.StockAssignmentForm.Category"/>
+                <HorizonChipTag Label="Tags" @bind-Value="_tagNames" Placeholder="Type in the tags you want to add to the stock"/>
+            </EditForm>
+            break;
+        case 1:
+            <EditForm Model="@_model.StockDetailsForm">
+                <HorizonInput Label="Shelve Name" Placeholder="Type in the shelve name" @bind-Value="@_model.StockDetailsForm.ShelveName"/>
+                <HorizonInput Label="Shelve Number" Placeholder="Type in the shelve number" @bind-Value="@_model.StockDetailsForm.ShelveNumber"/>
+                <HorizonInput Label="Rack Bar Number" Placeholder="Type in the rack bar number" @bind-Value="@_model.StockDetailsForm.RackBarNumber"/>
+            </EditForm>
+            break;
+        default:
+            break;
+    }
+</Form>
+
+@code {
+    private List<string> _tagNames = new();
+    List<Category> _categories = new();
+
+    AddNewStockForm _model = new AddNewStockForm();
+
+    protected int _activeStepIndex = 0;
+
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Location Basic Information", false },
+        { "Location Details", false },
+    };
+    
+    private IDictionary<string, string> _categoryList = new Dictionary<string, string>()
+    {
+        { "", "" }
+    };
+
+    FluentValidationValidator? _fluentValidationValidator;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        
+        // Get selected tenant
+        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+        if(globalState.DefaultTenantId == null || globalState.DefaultTenantId == 0)
+            throw new Exception("No tenant selected");
+
+        _categories = await CategoryWebRepository.GetAllCategoriesByTenantIdAsync(globalState.DefaultTenantId);
+        if(_categories.Count != 0)
+            _categoryList = _categories.ToDictionary(x => x.Name, x => x.Id.ToString());
+    }
+
+    private async Task OnClickSubmitButtonAsync()
+    {
+        Console.WriteLine("Submit button clicked");
+
+    // Save create the plan and redirect to global page
+        //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
+        //if (results == false)
+            // TODO: Should popup an error box in the client
+        //    throw new Exception("Could not activate the user");
+        //else
+        //    NavigationManager.NavigateTo("/global");
+    }
+
+    private async Task OnClickContinueButtonAsync()
+    {
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+    }
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+
+}

@@ -1,81 +1,36 @@
-@page "/create-tag"
 @using UteamUP.Client.Wizard.ActivateUser.Forms
 @using UteamUP.Client.Web.Repository.Interfaces
 @using UteamUP.Client.Components.Enums
-@using UteamUP.Client.Web.Repository.Implementations
 
-@inject IUserWebRepository UserWebRepository
 @inject ITagWebRepository TagWebRepository
 
-<Form
-    BackUrl="/global"
-    Title="Create Tags"
->
-    @switch (_activeStepIndex)
-    {
-        case 0:
-            <HorizonChipInput Label="Tags" @bind-Value="_tagNames"/>
-            <HorizonButton Appearance="ButtonAppearance.Primary" OnClick="OnClickSubmitButtonAsync">Submit</HorizonButton>
-            break;
-        default:
-            break;
-    }
-</Form>
+<div class="container">
+    <HorizonChipInput Label="Tags" @bind-Value="_tagNames"/>
+    <HorizonButton Appearance="ButtonAppearance.Primary" OnClick="OnClickSubmitButtonAsync">Submit</HorizonButton>
+</div>
 
 @code {
-    string? _oid = "";
-    string? _name = "";
-    string? _email = "";
     
     private List<string> _tagNames = new();
     private List<TagDto> _tags = new();
 
     AddNewTagForm _model = new AddNewTagForm();
 
-    protected int _activeStepIndex = 0;
-
-    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
-    {
-        { "Category Names", false },
-    };
-
-    FluentValidationValidator? _fluentValidationValidator;
-
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
-        _oid = UserState.User.Oid;
-        _name = UserState.User.Name;
-        _email = UserState.User.Email;
     }
 
     private async Task OnClickSubmitButtonAsync()
     {
-        // Update _tags with the _tagNames
+    // Update _tags with the _tagNames
         foreach (var tagName in _tagNames)
         {
             _tags.Add(new TagDto() { Name = tagName });
         }
-        
+
     // Save create the plan and redirect to global page
         var results = await TagWebRepository.CreateAsync(_tags);
-        if (results == false)
-    // TODO: Should popup an error box in the client
-        throw new Exception("Could not create tags");
-    else
-        NavigationManager.NavigateTo("/global");
-    }
-
-    private async Task OnClickContinueButtonAsync()
-    {
-        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
-        _activeStepIndex = _activeStepIndex + 1;
-    }
-
-    private void OnClickBackButton()
-    {
-        _activeStepIndex = _activeStepIndex - 1;
     }
 
 }

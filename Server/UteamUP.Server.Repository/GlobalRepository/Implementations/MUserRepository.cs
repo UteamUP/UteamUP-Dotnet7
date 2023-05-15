@@ -19,31 +19,64 @@ public class MUserRepository : IMUserRepository
 
     public async Task<MUser?> GetByOidAsync(string oid)
     {
-        // Check if oid is null or empty
-        if (string.IsNullOrWhiteSpace(oid))
+        try{
+            // Check if oid is null or empty
+            if (string.IsNullOrWhiteSpace(oid))
+            {
+                _logger.Log(LogLevel.Warning, $"{nameof(GetByOidAsync)}: Oid is null or empty");
+                return new MUser();
+            }
+
+            // Check if the oid string is less than 30 characters
+            if (oid.Length < 30)
+            {
+                _logger.Log(LogLevel.Warning, $"{nameof(GetByOidAsync)}: Oid characters are incorrect");
+                return new MUser();
+            }
+
+            _logger.Log(LogLevel.Information, $"GetByOidAsync: Trying to get user by oid {oid}");
+            var user = await _context.Users.FirstOrDefaultAsync(x => x != null && x.Oid == oid);
+
+            if (string.IsNullOrWhiteSpace(user?.Oid))
+            {
+                _logger.Log(LogLevel.Error, $"{nameof(GetByOidAsync)}: User not found");
+                return new MUser();
+            }
+
+            return user;
+        }
+        catch(Exception ex)
         {
-            _logger.Log(LogLevel.Warning, $"{nameof(GetByOidAsync)}: Oid is null or empty");
+            _logger.LogError(ex, $"{nameof(GetByOidAsync)}: Something went wrong while getting the user. oid: {oid}. Error Message: {ex.Message}");
             return new MUser();
         }
-
-        // Check if the oid string is less than 30 characters
-        if (oid.Length < 30)
-        {
-            _logger.Log(LogLevel.Warning, $"{nameof(GetByOidAsync)}: Oid characters are incorrect");
-            return new MUser();
-        }
-
-        _logger.Log(LogLevel.Information, $"GetByOidAsync: Trying to get user by oid {oid}");
-        var user = await _context.Users.FirstOrDefaultAsync(x => x != null && x.Oid == oid);
-
-        if (string.IsNullOrWhiteSpace(user?.Oid))
-        {
-            _logger.Log(LogLevel.Error, $"{nameof(GetByOidAsync)}: User not found");
-            return new MUser();
-        }
-
-        return user;
     }
+
+    public async Task<MUserDto?> GetByOidDtoAsync(string oid)
+    {
+        try{
+            _logger.Log(LogLevel.Information, $"{nameof(GetByOidDtoAsync)}: Trying to get user by oid {oid}");
+            var user = await GetByOidAsync(oid);
+            if (string.IsNullOrWhiteSpace(user.Oid))
+            {
+                _logger.Log(LogLevel.Error, $"{nameof(GetByOidDtoAsync)}: Could not get user by oid {oid}");
+                throw new Exception($"{nameof(GetByOidDtoAsync)}: Could not get user by oid {oid}");
+            }
+        
+            var userDto = _mapper.Map<MUserDto>(user);
+            if(string.IsNullOrWhiteSpace(userDto.Oid)){
+                _logger.Log(LogLevel.Error, $"{nameof(GetByOidDtoAsync)}: Could not convert user to dto");
+                throw new Exception($"{nameof(GetByOidDtoAsync)}: Could not convert user to dto");
+            }
+        
+            return userDto;
+        }catch(Exception ex)
+        {
+            _logger.LogError(ex, $"{nameof(GetByOidDtoAsync)}: Something went wrong while getting the user. oid: {oid}. Error Message: {ex.Message}");
+            throw;
+        }
+    }
+
 
     public async Task<MUser> CreateUserAsync(MUserDto userDto)
     {
