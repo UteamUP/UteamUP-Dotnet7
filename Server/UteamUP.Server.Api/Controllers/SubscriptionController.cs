@@ -14,9 +14,16 @@ public class SubscriptionController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Get()
+    [HttpPost("add/{tenantId}/{planId}/{extraLicenses}")]
+    public async Task<IActionResult> CreateAsync(int tenantId, int planId, int extraLicenses)
     {
-        return Ok();
+        var result = await _subscription.CreateAsync(tenantId, planId, extraLicenses);
+        if (result == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(CreateAsync)}: Something went wrong while creating the subscription");
+            return BadRequest("Something went wrong while creating the subscription, please review logs for more information");
+        }
+        
+        return Ok(result);
     }
 }

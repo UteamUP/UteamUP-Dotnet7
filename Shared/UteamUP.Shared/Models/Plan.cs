@@ -19,6 +19,8 @@ public class Plan : Base
 
     [Required(ErrorMessage = "You must set the plan type.")]
     public string PlanType { get; set; }
+    
+    public bool IsActive { get; set; } = true;
 
     [Required(ErrorMessage = "You must set amount of licenses included in this plan.")]
     public int LicenseIncluded { get; set; }

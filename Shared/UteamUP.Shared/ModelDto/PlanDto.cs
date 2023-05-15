@@ -11,4 +11,5 @@ public class PlanDto
     public float PricePerLicense { get; set; }
     public float ExtraDiscountPerUser { get; set; }
     public DateTime DiscountExpiry { get; set; }
+    public bool IsActive { get; set; }
 }

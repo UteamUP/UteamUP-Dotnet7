@@ -150,7 +150,7 @@
         // TODO: Need to create a subscription with extra licenses.
         // TODO: Need to assign plan to subscription
         
-        var results = await TenantWebRepository.CreateTenantAsync(tenantDto);
+        var results = await TenantWebRepository.CreateTenantAsync(tenantDto, Convert.ToInt32(_model.PlanDetailsForm.Name), Convert.ToInt32(_model.ExtraLicensesForm.Amount));
         if (!string.IsNullOrWhiteSpace(results.Name))
             // TODO: Show error message
             throw new Exception("Tenant has not been created");

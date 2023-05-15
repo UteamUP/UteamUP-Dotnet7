@@ -12,8 +12,8 @@ using UteamUP.Server.Database.Contexts;
 namespace UteamUP.Server.Api.Migrations
 {
     [DbContext(typeof(pgContext))]
-    [Migration("20230505002729_MaybeFix")]
-    partial class MaybeFix
+    [Migration("20230515020044_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,21 +53,6 @@ namespace UteamUP.Server.Api.Migrations
                     b.HasIndex("TagsId");
 
                     b.ToTable("AssetTag");
-                });
-
-            modelBuilder.Entity("DocumentTag", b =>
-                {
-                    b.Property<int>("DocumentsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TagsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("DocumentsId", "TagsId");
-
-                    b.HasIndex("TagsId");
-
-                    b.ToTable("DocumentTag");
                 });
 
             modelBuilder.Entity("LocationStock", b =>
@@ -130,19 +115,19 @@ namespace UteamUP.Server.Api.Migrations
                     b.ToTable("PartTag");
                 });
 
-            modelBuilder.Entity("StockItemTag", b =>
+            modelBuilder.Entity("StockItemPartTag", b =>
                 {
-                    b.Property<int>("StockItemsId")
+                    b.Property<int>("StockItemPartsId")
                         .HasColumnType("integer");
 
                     b.Property<int>("TagsId")
                         .HasColumnType("integer");
 
-                    b.HasKey("StockItemsId", "TagsId");
+                    b.HasKey("StockItemPartsId", "TagsId");
 
                     b.HasIndex("TagsId");
 
-                    b.ToTable("StockItemTag");
+                    b.ToTable("StockItemPartTag");
                 });
 
             modelBuilder.Entity("StockTag", b =>
@@ -216,6 +201,9 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -260,6 +248,8 @@ namespace UteamUP.Server.Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("CreatorId");
 
                     b.HasIndex("TenantId");
 
@@ -308,6 +298,9 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(512)
@@ -321,12 +314,14 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatorId");
+
                     b.HasIndex("TenantId");
 
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.Document", b =>
+            modelBuilder.Entity("UteamUP.Shared.Models.GPS", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -334,53 +329,39 @@ namespace UteamUP.Server.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("integer");
+                    b.Property<double?>("Accuracy")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Altitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("AltitudeAccuracy")
+                        .HasColumnType("double precision");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
+                    b.Property<double?>("Heading")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Speed")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTimeOffset?>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("Documents");
-                });
-
-            modelBuilder.Entity("UteamUP.Shared.Models.Domain", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DomainName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("Domains");
+                    b.ToTable("Gpses");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.InvitedUser", b =>
@@ -424,49 +405,6 @@ namespace UteamUP.Server.Api.Migrations
                     b.ToTable("InvitedUsers");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.ItemList", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ItemLists");
-                });
-
-            modelBuilder.Entity("UteamUP.Shared.Models.ItemListItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("ItemListId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemListId");
-
-                    b.ToTable("ItemListItems");
-                });
-
             modelBuilder.Entity("UteamUP.Shared.Models.License", b =>
                 {
                     b.Property<int>("Id")
@@ -484,17 +422,7 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<int>("MinLicenses")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("PlanId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("SubscriptionId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -502,11 +430,7 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PlanId");
-
                     b.HasIndex("SubscriptionId");
-
-                    b.HasIndex("TenantId");
 
                     b.ToTable("Licenses");
                 });
@@ -557,18 +481,24 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<int?>("GPSId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
 
                     b.Property<int?>("TenantId")
+                        .IsRequired()
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GPSId");
 
                     b.HasIndex("TenantId");
 
@@ -602,6 +532,34 @@ namespace UteamUP.Server.Api.Migrations
                     b.HasIndex("StockId");
 
                     b.ToTable("LocationStocks");
+                });
+
+            modelBuilder.Entity("UteamUP.Shared.Models.Log", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("CreatorId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("Logs");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.MUser", b =>
@@ -646,6 +604,10 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<bool>("HasBeenActivated")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -689,6 +651,9 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.HasIndex("LicenseId");
 
                     b.HasIndex("Oid")
@@ -722,7 +687,11 @@ namespace UteamUP.Server.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsPrivate")
                         .HasColumnType("boolean");
 
                     b.Property<string>("ModelNumber")
@@ -749,6 +718,9 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<string>("SerialNumber")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -786,6 +758,9 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.Property<float>("ExtraDiscountPerUser")
                         .HasColumnType("real");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("LicenseIncluded")
                         .HasColumnType("integer");
@@ -919,7 +894,44 @@ namespace UteamUP.Server.Api.Migrations
                     b.ToTable("Stocks");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.StockItem", b =>
+            modelBuilder.Entity("UteamUP.Shared.Models.StockItemLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AmountRemoved")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("AssetId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("StockItemPartsId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetId");
+
+                    b.HasIndex("StockItemPartsId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("StockItemLogs");
+                });
+
+            modelBuilder.Entity("UteamUP.Shared.Models.StockItemPart", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -956,44 +968,7 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.HasIndex("StockId");
 
-                    b.ToTable("StockItems");
-                });
-
-            modelBuilder.Entity("UteamUP.Shared.Models.StockItemLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AmountRemoved")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("AssetId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("StockItemId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssetId");
-
-                    b.HasIndex("StockItemId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("StockItemLogs");
+                    b.ToTable("StockItemParts");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Subscription", b =>
@@ -1006,9 +981,6 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
 
                     b.Property<int>("ExtraAmountOfLicenses")
                         .HasColumnType("integer");
@@ -1046,12 +1018,17 @@ namespace UteamUP.Server.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("LocationId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
 
                     b.ToTable("Tags");
                 });
@@ -1074,10 +1051,6 @@ namespace UteamUP.Server.Api.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<string>("CompanyLogo")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("ContactEmail")
                         .IsRequired()
                         .HasMaxLength(512)
@@ -1095,6 +1068,10 @@ namespace UteamUP.Server.Api.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
@@ -1133,39 +1110,10 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Tenants");
-                });
-
-            modelBuilder.Entity("UteamUP.Shared.Models.TenantUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("MUserId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MUserId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("TenantUsers");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Tool", b =>
@@ -1180,18 +1128,44 @@ namespace UteamUP.Server.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("BarcodeNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int?>("CategoryId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<float>("Depth")
+                        .HasColumnType("real");
+
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<float>("Height")
+                        .HasColumnType("real");
+
+                    b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDestroyed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsLost")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("boolean");
+
+                    b.Property<float>("Length")
+                        .HasColumnType("real");
 
                     b.Property<string>("ModelNumber")
                         .IsRequired()
@@ -1214,8 +1188,8 @@ namespace UteamUP.Server.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<float>("Size")
-                        .HasColumnType("real");
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ToolNumber")
                         .IsRequired()
@@ -1224,8 +1198,17 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<float>("Value")
+                        .HasColumnType("real");
+
                     b.Property<int?>("VendorId")
                         .HasColumnType("integer");
+
+                    b.Property<float>("Weight")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Width")
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
@@ -1244,18 +1227,14 @@ namespace UteamUP.Server.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<bool>("Approved")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -1265,9 +1244,6 @@ namespace UteamUP.Server.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<float>("HourlyRate")
-                        .HasColumnType("real");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -1276,12 +1252,6 @@ namespace UteamUP.Server.Api.Migrations
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
 
-                    b.Property<DateTime?>("OpeningHoursFrom")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("OpeningHoursTo")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1289,17 +1259,16 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("VendorType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("WebSite")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Vendor");
                 });
@@ -1456,21 +1425,6 @@ namespace UteamUP.Server.Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DocumentTag", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.Document", null)
-                        .WithMany()
-                        .HasForeignKey("DocumentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("UteamUP.Shared.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("LocationStock", b =>
                 {
                     b.HasOne("UteamUP.Shared.Models.Location", null)
@@ -1531,11 +1485,11 @@ namespace UteamUP.Server.Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("StockItemTag", b =>
+            modelBuilder.Entity("StockItemPartTag", b =>
                 {
-                    b.HasOne("UteamUP.Shared.Models.StockItem", null)
+                    b.HasOne("UteamUP.Shared.Models.StockItemPart", null)
                         .WithMany()
-                        .HasForeignKey("StockItemsId")
+                        .HasForeignKey("StockItemPartsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1597,6 +1551,12 @@ namespace UteamUP.Server.Api.Migrations
                         .WithMany()
                         .HasForeignKey("CategoryId");
 
+                    b.HasOne("UteamUP.Shared.Models.MUser", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("UteamUP.Shared.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId");
@@ -1606,6 +1566,8 @@ namespace UteamUP.Server.Api.Migrations
                         .HasForeignKey("VendorId");
 
                     b.Navigation("Category");
+
+                    b.Navigation("Creator");
 
                     b.Navigation("Tenant");
 
@@ -1633,29 +1595,17 @@ namespace UteamUP.Server.Api.Migrations
 
             modelBuilder.Entity("UteamUP.Shared.Models.Category", b =>
                 {
+                    b.HasOne("UteamUP.Shared.Models.MUser", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("UteamUP.Shared.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId");
 
-                    b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("UteamUP.Shared.Models.Document", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId");
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("UteamUP.Shared.Models.Domain", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Creator");
 
                     b.Navigation("Tenant");
                 });
@@ -1671,40 +1621,15 @@ namespace UteamUP.Server.Api.Migrations
                     b.Navigation("Tenant");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.ItemListItem", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.ItemList", "ItemList")
-                        .WithMany("ItemListItems")
-                        .HasForeignKey("ItemListId");
-
-                    b.Navigation("ItemList");
-                });
-
             modelBuilder.Entity("UteamUP.Shared.Models.License", b =>
                 {
-                    b.HasOne("UteamUP.Shared.Models.Plan", "Plan")
-                        .WithMany()
-                        .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("UteamUP.Shared.Models.Subscription", "Subscription")
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UteamUP.Shared.Models.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Plan");
-
                     b.Navigation("Subscription");
-
-                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.LicenseUser", b =>
@@ -1728,9 +1653,17 @@ namespace UteamUP.Server.Api.Migrations
 
             modelBuilder.Entity("UteamUP.Shared.Models.Location", b =>
                 {
+                    b.HasOne("UteamUP.Shared.Models.GPS", "GPS")
+                        .WithMany()
+                        .HasForeignKey("GPSId");
+
                     b.HasOne("UteamUP.Shared.Models.Tenant", "Tenant")
                         .WithMany("Locations")
-                        .HasForeignKey("TenantId");
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GPS");
 
                     b.Navigation("Tenant");
                 });
@@ -1752,6 +1685,15 @@ namespace UteamUP.Server.Api.Migrations
                     b.Navigation("Location");
 
                     b.Navigation("Stock");
+                });
+
+            modelBuilder.Entity("UteamUP.Shared.Models.Log", b =>
+                {
+                    b.HasOne("UteamUP.Shared.Models.MUser", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("Creator");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.MUser", b =>
@@ -1806,7 +1748,28 @@ namespace UteamUP.Server.Api.Migrations
                     b.Navigation("Tenant");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.StockItem", b =>
+            modelBuilder.Entity("UteamUP.Shared.Models.StockItemLog", b =>
+                {
+                    b.HasOne("UteamUP.Shared.Models.Asset", "Asset")
+                        .WithMany()
+                        .HasForeignKey("AssetId");
+
+                    b.HasOne("UteamUP.Shared.Models.StockItemPart", "StockItemParts")
+                        .WithMany()
+                        .HasForeignKey("StockItemPartsId");
+
+                    b.HasOne("UteamUP.Shared.Models.MUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Asset");
+
+                    b.Navigation("StockItemParts");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("UteamUP.Shared.Models.StockItemPart", b =>
                 {
                     b.HasOne("UteamUP.Shared.Models.Category", "Category")
                         .WithMany()
@@ -1825,27 +1788,6 @@ namespace UteamUP.Server.Api.Migrations
                     b.Navigation("Part");
 
                     b.Navigation("Stock");
-                });
-
-            modelBuilder.Entity("UteamUP.Shared.Models.StockItemLog", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.Asset", "Asset")
-                        .WithMany()
-                        .HasForeignKey("AssetId");
-
-                    b.HasOne("UteamUP.Shared.Models.StockItem", "StockItem")
-                        .WithMany()
-                        .HasForeignKey("StockItemId");
-
-                    b.HasOne("UteamUP.Shared.Models.MUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Asset");
-
-                    b.Navigation("StockItem");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Subscription", b =>
@@ -1867,23 +1809,11 @@ namespace UteamUP.Server.Api.Migrations
                     b.Navigation("Tenant");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.TenantUser", b =>
+            modelBuilder.Entity("UteamUP.Shared.Models.Tag", b =>
                 {
-                    b.HasOne("UteamUP.Shared.Models.MUser", "MUser")
-                        .WithMany()
-                        .HasForeignKey("MUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("UteamUP.Shared.Models.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MUser");
-
-                    b.Navigation("Tenant");
+                    b.HasOne("UteamUP.Shared.Models.Location", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("LocationId");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Tool", b =>
@@ -1903,11 +1833,13 @@ namespace UteamUP.Server.Api.Migrations
 
             modelBuilder.Entity("UteamUP.Shared.Models.Vendor", b =>
                 {
-                    b.HasOne("UteamUP.Shared.Models.Category", "Category")
+                    b.HasOne("UteamUP.Shared.Models.MUser", "Creator")
                         .WithMany()
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Category");
+                    b.Navigation("Creator");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Asset", b =>
@@ -1915,14 +1847,14 @@ namespace UteamUP.Server.Api.Migrations
                     b.Navigation("Parts");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.ItemList", b =>
-                {
-                    b.Navigation("ItemListItems");
-                });
-
             modelBuilder.Entity("UteamUP.Shared.Models.License", b =>
                 {
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("UteamUP.Shared.Models.Location", b =>
+                {
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Tenant", b =>

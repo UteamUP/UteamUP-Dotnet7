@@ -13,17 +13,25 @@ namespace UteamUP.Server.Api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ItemLists",
+                name: "Gpses",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Latitude = table.Column<double>(type: "double precision", nullable: true),
+                    Longitude = table.Column<double>(type: "double precision", nullable: true),
+                    Altitude = table.Column<double>(type: "double precision", nullable: true),
+                    Accuracy = table.Column<double>(type: "double precision", nullable: true),
+                    AltitudeAccuracy = table.Column<double>(type: "double precision", nullable: true),
+                    Heading = table.Column<double>(type: "double precision", nullable: true),
+                    Speed = table.Column<double>(type: "double precision", nullable: true),
+                    Timestamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItemLists", x => x.Id);
+                    table.PrimaryKey("PK_Gpses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -35,7 +43,9 @@ namespace UteamUP.Server.Api.Migrations
                     Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Sku = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    PlanType = table.Column<int>(type: "integer", nullable: false),
+                    PlanAgreement = table.Column<string>(type: "text", nullable: true),
+                    PlanType = table.Column<string>(type: "text", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     LicenseIncluded = table.Column<int>(type: "integer", nullable: false),
                     PricePerLicense = table.Column<float>(type: "real", nullable: false),
                     ExtraDiscountPerUser = table.Column<float>(type: "real", nullable: false),
@@ -46,19 +56,6 @@ namespace UteamUP.Server.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Plans", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Tags",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tags", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -79,7 +76,7 @@ namespace UteamUP.Server.Api.Migrations
                     Website = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    CompanyLogo = table.Column<string>(type: "text", nullable: false),
+                    ImageUrl = table.Column<string>(type: "text", nullable: false),
                     OwnerId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -158,69 +155,6 @@ namespace UteamUP.Server.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemListItems",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ItemListId = table.Column<int>(type: "integer", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemListItems", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ItemListItems_ItemLists_ItemListId",
-                        column: x => x.ItemListId,
-                        principalTable: "ItemLists",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Categories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
-                    TenantId = table.Column<int>(type: "integer", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Categories_Tenants_TenantId",
-                        column: x => x.TenantId,
-                        principalTable: "Tenants",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Domains",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DomainName = table.Column<string>(type: "text", nullable: false),
-                    TenantId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Domains", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Domains_Tenants_TenantId",
-                        column: x => x.TenantId,
-                        principalTable: "Tenants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "InvitedUsers",
                 columns: table => new
                 {
@@ -254,7 +188,8 @@ namespace UteamUP.Server.Api.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    TenantId = table.Column<int>(type: "integer", nullable: false),
+                    GPSId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -262,10 +197,16 @@ namespace UteamUP.Server.Api.Migrations
                 {
                     table.PrimaryKey("PK_Locations", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Locations_Gpses_GPSId",
+                        column: x => x.GPSId,
+                        principalTable: "Gpses",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Locations_Tenants_TenantId",
                         column: x => x.TenantId,
                         principalTable: "Tenants",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -275,7 +216,6 @@ namespace UteamUP.Server.Api.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Guid = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     ExtraAmountOfLicenses = table.Column<int>(type: "integer", nullable: false),
                     PlanId = table.Column<int>(type: "integer", nullable: false),
@@ -330,6 +270,48 @@ namespace UteamUP.Server.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tags",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
+                    LocationId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tags", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tags_Locations_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Locations",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Licenses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    MaxLicenses = table.Column<int>(type: "integer", nullable: false),
+                    MinLicenses = table.Column<int>(type: "integer", nullable: false),
+                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Licenses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Licenses_Subscriptions_SubscriptionId",
+                        column: x => x.SubscriptionId,
+                        principalTable: "Subscriptions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TagWorkorder",
                 columns: table => new
                 {
@@ -354,24 +336,197 @@ namespace UteamUP.Server.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Documents",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
-                    CategoryId = table.Column<int>(type: "integer", nullable: true),
+                    Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    DepartmentCompany = table.Column<string>(type: "text", nullable: true),
+                    Phone = table.Column<string>(type: "text", nullable: true),
+                    DefaultTenantId = table.Column<int>(type: "integer", nullable: false),
+                    Oid = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    IsAdmin = table.Column<bool>(type: "boolean", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    HasBeenActivated = table.Column<bool>(type: "boolean", nullable: false),
+                    IsFirstLogin = table.Column<bool>(type: "boolean", nullable: false),
+                    HasAcceptedLicenseAgreement = table.Column<bool>(type: "boolean", nullable: false),
+                    ImageUrl = table.Column<string>(type: "text", nullable: false),
+                    ActivationCode = table.Column<string>(type: "text", nullable: false),
+                    DefaultLanguage = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Country = table.Column<string>(type: "text", nullable: true),
+                    StreetName = table.Column<string>(type: "text", nullable: true),
+                    City = table.Column<string>(type: "text", nullable: true),
+                    PostalCode = table.Column<string>(type: "text", nullable: true),
+                    Website = table.Column<string>(type: "text", nullable: false),
+                    LicenseId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Documents", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Documents_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
+                        name: "FK_Users_Licenses_LicenseId",
+                        column: x => x.LicenseId,
+                        principalTable: "Licenses",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Categories_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Categories_Users_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LicenseUsers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    LicenseId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    MUserId = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LicenseUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LicenseUsers_Licenses_LicenseId",
+                        column: x => x.LicenseId,
+                        principalTable: "Licenses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LicenseUsers_Users_MUserId",
+                        column: x => x.MUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Logs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Message = table.Column<string>(type: "text", nullable: false),
+                    CreatorId = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Logs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Logs_Users_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MUserTag",
+                columns: table => new
+                {
+                    TagsId = table.Column<int>(type: "integer", nullable: false),
+                    UsersId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MUserTag", x => new { x.TagsId, x.UsersId });
+                    table.ForeignKey(
+                        name: "FK_MUserTag_Tags_TagsId",
+                        column: x => x.TagsId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MUserTag_Users_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MUserTenant",
+                columns: table => new
+                {
+                    TenantsId = table.Column<int>(type: "integer", nullable: false),
+                    UsersId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MUserTenant", x => new { x.TenantsId, x.UsersId });
+                    table.ForeignKey(
+                        name: "FK_MUserTenant_Tenants_TenantsId",
+                        column: x => x.TenantsId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MUserTenant_Users_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Vendor",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    WebSite = table.Column<string>(type: "text", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    Approved = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Vendor", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Vendor_Users_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -406,97 +561,100 @@ namespace UteamUP.Server.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Vendor",
+                name: "Assets",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    OpeningHoursFrom = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    OpeningHoursTo = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    WebSite = table.Column<string>(type: "text", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
-                    Address = table.Column<string>(type: "text", nullable: false),
-                    VendorType = table.Column<string>(type: "text", nullable: false),
-                    HourlyRate = table.Column<float>(type: "real", nullable: false),
+                    SerialNumber = table.Column<string>(type: "text", nullable: false),
+                    ReferenceNumber = table.Column<string>(type: "text", nullable: false),
+                    ModelNumber = table.Column<string>(type: "text", nullable: false),
+                    UpcNumber = table.Column<string>(type: "text", nullable: false),
+                    AdditionalInfo = table.Column<string>(type: "text", nullable: false),
+                    Notes = table.Column<string>(type: "text", nullable: false),
+                    CheckInProcedure = table.Column<string>(type: "text", nullable: false),
+                    CheckOutProcedure = table.Column<string>(type: "text", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    Approved = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    VendorId = table.Column<int>(type: "integer", nullable: true),
                     CategoryId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Vendor", x => x.Id);
+                    table.PrimaryKey("PK_Assets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Vendor_Categories_CategoryId",
+                        name: "FK_Assets_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Assets_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Assets_Users_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Assets_Vendor_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendor",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Licenses",
+                name: "Tools",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    MaxLicenses = table.Column<int>(type: "integer", nullable: false),
-                    MinLicenses = table.Column<int>(type: "integer", nullable: false),
-                    TenantId = table.Column<int>(type: "integer", nullable: false),
-                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
-                    PlanId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Width = table.Column<float>(type: "real", nullable: false),
+                    Height = table.Column<float>(type: "real", nullable: false),
+                    Length = table.Column<float>(type: "real", nullable: false),
+                    Depth = table.Column<float>(type: "real", nullable: false),
+                    Weight = table.Column<float>(type: "real", nullable: false),
+                    Value = table.Column<float>(type: "real", nullable: false),
+                    BarcodeNumber = table.Column<string>(type: "text", nullable: false),
+                    SerialNumber = table.Column<string>(type: "text", nullable: false),
+                    ReferenceNumber = table.Column<string>(type: "text", nullable: false),
+                    ModelNumber = table.Column<string>(type: "text", nullable: false),
+                    ToolNumber = table.Column<string>(type: "text", nullable: false),
+                    AdditionalInfo = table.Column<string>(type: "text", nullable: false),
+                    ImageUrl = table.Column<string>(type: "text", nullable: false),
+                    Notes = table.Column<string>(type: "text", nullable: false),
+                    IsPrivate = table.Column<bool>(type: "boolean", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDestroyed = table.Column<bool>(type: "boolean", nullable: false),
+                    IsLost = table.Column<bool>(type: "boolean", nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    VendorId = table.Column<int>(type: "integer", nullable: true),
+                    CategoryId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Licenses", x => x.Id);
+                    table.PrimaryKey("PK_Tools", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Licenses_Plans_PlanId",
-                        column: x => x.PlanId,
-                        principalTable: "Plans",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Tools_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Licenses_Subscriptions_SubscriptionId",
-                        column: x => x.SubscriptionId,
-                        principalTable: "Subscriptions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Licenses_Tenants_TenantId",
-                        column: x => x.TenantId,
-                        principalTable: "Tenants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DocumentTag",
-                columns: table => new
-                {
-                    DocumentsId = table.Column<int>(type: "integer", nullable: false),
-                    TagsId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DocumentTag", x => new { x.DocumentsId, x.TagsId });
-                    table.ForeignKey(
-                        name: "FK_DocumentTag_Documents_DocumentsId",
-                        column: x => x.DocumentsId,
-                        principalTable: "Documents",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_DocumentTag_Tags_TagsId",
-                        column: x => x.TagsId,
-                        principalTable: "Tags",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Tools_Vendor_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendor",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -576,118 +734,6 @@ namespace UteamUP.Server.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Assets",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    SerialNumber = table.Column<string>(type: "text", nullable: false),
-                    ReferenceNumber = table.Column<string>(type: "text", nullable: false),
-                    ModelNumber = table.Column<string>(type: "text", nullable: false),
-                    UpcNumber = table.Column<string>(type: "text", nullable: false),
-                    AdditionalInfo = table.Column<string>(type: "text", nullable: false),
-                    Notes = table.Column<string>(type: "text", nullable: false),
-                    CheckInProcedure = table.Column<string>(type: "text", nullable: false),
-                    CheckOutProcedure = table.Column<string>(type: "text", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    TenantId = table.Column<int>(type: "integer", nullable: true),
-                    VendorId = table.Column<int>(type: "integer", nullable: true),
-                    CategoryId = table.Column<int>(type: "integer", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Assets", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Assets_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Assets_Tenants_TenantId",
-                        column: x => x.TenantId,
-                        principalTable: "Tenants",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Assets_Vendor_VendorId",
-                        column: x => x.VendorId,
-                        principalTable: "Vendor",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Tools",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    Size = table.Column<float>(type: "real", nullable: false),
-                    SerialNumber = table.Column<string>(type: "text", nullable: false),
-                    ReferenceNumber = table.Column<string>(type: "text", nullable: false),
-                    ModelNumber = table.Column<string>(type: "text", nullable: false),
-                    ToolNumber = table.Column<string>(type: "text", nullable: false),
-                    AdditionalInfo = table.Column<string>(type: "text", nullable: false),
-                    Notes = table.Column<string>(type: "text", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    VendorId = table.Column<int>(type: "integer", nullable: true),
-                    CategoryId = table.Column<int>(type: "integer", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tools", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tools_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tools_Vendor_VendorId",
-                        column: x => x.VendorId,
-                        principalTable: "Vendor",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    DepartmentCompany = table.Column<string>(type: "text", nullable: true),
-                    Phone = table.Column<string>(type: "text", nullable: true),
-                    DefaultTenantId = table.Column<int>(type: "integer", nullable: false),
-                    Oid = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    IsAdmin = table.Column<bool>(type: "boolean", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    HasBeenActivated = table.Column<bool>(type: "boolean", nullable: false),
-                    IsFirstLogin = table.Column<bool>(type: "boolean", nullable: false),
-                    ActivationCode = table.Column<string>(type: "text", nullable: false),
-                    DefaultLanguage = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    LicenseId = table.Column<int>(type: "integer", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_Licenses_LicenseId",
-                        column: x => x.LicenseId,
-                        principalTable: "Licenses",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AssetLocation",
                 columns: table => new
                 {
@@ -749,7 +795,9 @@ namespace UteamUP.Server.Api.Migrations
                     PartNumber = table.Column<string>(type: "text", nullable: false),
                     AdditionalInfo = table.Column<string>(type: "text", nullable: false),
                     Notes = table.Column<string>(type: "text", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsPrivate = table.Column<bool>(type: "boolean", nullable: false),
+                    ImageUrl = table.Column<string>(type: "text", nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: true),
                     VendorId = table.Column<int>(type: "integer", nullable: true),
                     CategoryId = table.Column<int>(type: "integer", nullable: true),
                     AssetId = table.Column<int>(type: "integer", nullable: true),
@@ -796,112 +844,6 @@ namespace UteamUP.Server.Api.Migrations
                         name: "FK_TagTool_Tools_ToolsId",
                         column: x => x.ToolsId,
                         principalTable: "Tools",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LicenseUsers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    LicenseId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
-                    MUserId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LicenseUsers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_LicenseUsers_Licenses_LicenseId",
-                        column: x => x.LicenseId,
-                        principalTable: "Licenses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LicenseUsers_Users_MUserId",
-                        column: x => x.MUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MUserTag",
-                columns: table => new
-                {
-                    TagsId = table.Column<int>(type: "integer", nullable: false),
-                    UsersId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MUserTag", x => new { x.TagsId, x.UsersId });
-                    table.ForeignKey(
-                        name: "FK_MUserTag_Tags_TagsId",
-                        column: x => x.TagsId,
-                        principalTable: "Tags",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MUserTag_Users_UsersId",
-                        column: x => x.UsersId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MUserTenant",
-                columns: table => new
-                {
-                    TenantsId = table.Column<int>(type: "integer", nullable: false),
-                    UsersId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MUserTenant", x => new { x.TenantsId, x.UsersId });
-                    table.ForeignKey(
-                        name: "FK_MUserTenant_Tenants_TenantsId",
-                        column: x => x.TenantsId,
-                        principalTable: "Tenants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MUserTenant_Users_UsersId",
-                        column: x => x.UsersId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TenantUsers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TenantId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
-                    MUserId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TenantUsers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TenantUsers_Tenants_TenantId",
-                        column: x => x.TenantId,
-                        principalTable: "Tenants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TenantUsers_Users_MUserId",
-                        column: x => x.MUserId,
-                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -959,7 +901,7 @@ namespace UteamUP.Server.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StockItems",
+                name: "StockItemParts",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -974,19 +916,19 @@ namespace UteamUP.Server.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StockItems", x => x.Id);
+                    table.PrimaryKey("PK_StockItemParts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StockItems_Categories_CategoryId",
+                        name: "FK_StockItemParts_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_StockItems_Parts_PartId",
+                        name: "FK_StockItemParts_Parts_PartId",
                         column: x => x.PartId,
                         principalTable: "Parts",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_StockItems_Stocks_StockId",
+                        name: "FK_StockItemParts_Stocks_StockId",
                         column: x => x.StockId,
                         principalTable: "Stocks",
                         principalColumn: "Id");
@@ -998,7 +940,7 @@ namespace UteamUP.Server.Api.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    StockItemId = table.Column<int>(type: "integer", nullable: true),
+                    StockItemPartsId = table.Column<int>(type: "integer", nullable: true),
                     AssetId = table.Column<int>(type: "integer", nullable: true),
                     UserId = table.Column<int>(type: "integer", nullable: true),
                     AmountRemoved = table.Column<int>(type: "integer", nullable: false),
@@ -1014,9 +956,9 @@ namespace UteamUP.Server.Api.Migrations
                         principalTable: "Assets",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_StockItemLogs_StockItems_StockItemId",
-                        column: x => x.StockItemId,
-                        principalTable: "StockItems",
+                        name: "FK_StockItemLogs_StockItemParts_StockItemPartsId",
+                        column: x => x.StockItemPartsId,
+                        principalTable: "StockItemParts",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_StockItemLogs_Users_UserId",
@@ -1026,23 +968,23 @@ namespace UteamUP.Server.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StockItemTag",
+                name: "StockItemPartTag",
                 columns: table => new
                 {
-                    StockItemsId = table.Column<int>(type: "integer", nullable: false),
+                    StockItemPartsId = table.Column<int>(type: "integer", nullable: false),
                     TagsId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StockItemTag", x => new { x.StockItemsId, x.TagsId });
+                    table.PrimaryKey("PK_StockItemPartTag", x => new { x.StockItemPartsId, x.TagsId });
                     table.ForeignKey(
-                        name: "FK_StockItemTag_StockItems_StockItemsId",
-                        column: x => x.StockItemsId,
-                        principalTable: "StockItems",
+                        name: "FK_StockItemPartTag_StockItemParts_StockItemPartsId",
+                        column: x => x.StockItemPartsId,
+                        principalTable: "StockItemParts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StockItemTag_Tags_TagsId",
+                        name: "FK_StockItemPartTag_Tags_TagsId",
                         column: x => x.TagsId,
                         principalTable: "Tags",
                         principalColumn: "Id",
@@ -1070,6 +1012,11 @@ namespace UteamUP.Server.Api.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Assets_CreatorId",
+                table: "Assets",
+                column: "CreatorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Assets_TenantId",
                 table: "Assets",
                 column: "TenantId");
@@ -1085,23 +1032,13 @@ namespace UteamUP.Server.Api.Migrations
                 column: "TagsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Categories_CreatorId",
+                table: "Categories",
+                column: "CreatorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Categories_TenantId",
                 table: "Categories",
-                column: "TenantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Documents_CategoryId",
-                table: "Documents",
-                column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DocumentTag_TagsId",
-                table: "DocumentTag",
-                column: "TagsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Domains_TenantId",
-                table: "Domains",
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
@@ -1110,24 +1047,9 @@ namespace UteamUP.Server.Api.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemListItems_ItemListId",
-                table: "ItemListItems",
-                column: "ItemListId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Licenses_PlanId",
-                table: "Licenses",
-                column: "PlanId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Licenses_SubscriptionId",
                 table: "Licenses",
                 column: "SubscriptionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Licenses_TenantId",
-                table: "Licenses",
-                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LicenseUsers_LicenseId",
@@ -1138,6 +1060,11 @@ namespace UteamUP.Server.Api.Migrations
                 name: "IX_LicenseUsers_MUserId",
                 table: "LicenseUsers",
                 column: "MUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Locations_GPSId",
+                table: "Locations",
+                column: "GPSId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Locations_TenantId",
@@ -1158,6 +1085,11 @@ namespace UteamUP.Server.Api.Migrations
                 name: "IX_LocationStocks_StockId",
                 table: "LocationStocks",
                 column: "StockId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Logs_CreatorId",
+                table: "Logs",
+                column: "CreatorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MUserTag_UsersId",
@@ -1200,9 +1132,9 @@ namespace UteamUP.Server.Api.Migrations
                 column: "AssetId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockItemLogs_StockItemId",
+                name: "IX_StockItemLogs_StockItemPartsId",
                 table: "StockItemLogs",
-                column: "StockItemId");
+                column: "StockItemPartsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StockItemLogs_UserId",
@@ -1210,23 +1142,23 @@ namespace UteamUP.Server.Api.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockItems_CategoryId",
-                table: "StockItems",
+                name: "IX_StockItemParts_CategoryId",
+                table: "StockItemParts",
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockItems_PartId",
-                table: "StockItems",
+                name: "IX_StockItemParts_PartId",
+                table: "StockItemParts",
                 column: "PartId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockItems_StockId",
-                table: "StockItems",
+                name: "IX_StockItemParts_StockId",
+                table: "StockItemParts",
                 column: "StockId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockItemTag_TagsId",
-                table: "StockItemTag",
+                name: "IX_StockItemPartTag_TagsId",
+                table: "StockItemPartTag",
                 column: "TagsId");
 
             migrationBuilder.CreateIndex(
@@ -1255,6 +1187,11 @@ namespace UteamUP.Server.Api.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Tags_LocationId",
+                table: "Tags",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TagTool_ToolsId",
                 table: "TagTool",
                 column: "ToolsId");
@@ -1265,14 +1202,10 @@ namespace UteamUP.Server.Api.Migrations
                 column: "WorkordersId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TenantUsers_MUserId",
-                table: "TenantUsers",
-                column: "MUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TenantUsers_TenantId",
-                table: "TenantUsers",
-                column: "TenantId");
+                name: "IX_Tenants_Name",
+                table: "Tenants",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tools_CategoryId",
@@ -1283,6 +1216,12 @@ namespace UteamUP.Server.Api.Migrations
                 name: "IX_Tools_VendorId",
                 table: "Tools",
                 column: "VendorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_LicenseId",
@@ -1296,9 +1235,15 @@ namespace UteamUP.Server.Api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vendor_CategoryId",
+                name: "IX_Vendor_CreatorId",
                 table: "Vendor",
-                column: "CategoryId");
+                column: "CreatorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vendor_Name",
+                table: "Vendor",
+                column: "Name",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -1314,16 +1259,7 @@ namespace UteamUP.Server.Api.Migrations
                 name: "AssetTag");
 
             migrationBuilder.DropTable(
-                name: "DocumentTag");
-
-            migrationBuilder.DropTable(
-                name: "Domains");
-
-            migrationBuilder.DropTable(
                 name: "InvitedUsers");
-
-            migrationBuilder.DropTable(
-                name: "ItemListItems");
 
             migrationBuilder.DropTable(
                 name: "LicenseUsers");
@@ -1333,6 +1269,9 @@ namespace UteamUP.Server.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "LocationStocks");
+
+            migrationBuilder.DropTable(
+                name: "Logs");
 
             migrationBuilder.DropTable(
                 name: "MUserTag");
@@ -1350,7 +1289,7 @@ namespace UteamUP.Server.Api.Migrations
                 name: "StockItemLogs");
 
             migrationBuilder.DropTable(
-                name: "StockItemTag");
+                name: "StockItemPartTag");
 
             migrationBuilder.DropTable(
                 name: "StockTag");
@@ -1362,9 +1301,6 @@ namespace UteamUP.Server.Api.Migrations
                 name: "TagWorkorder");
 
             migrationBuilder.DropTable(
-                name: "TenantUsers");
-
-            migrationBuilder.DropTable(
                 name: "WorkorderSchedules");
 
             migrationBuilder.DropTable(
@@ -1374,16 +1310,7 @@ namespace UteamUP.Server.Api.Migrations
                 name: "WorkorderTemplates");
 
             migrationBuilder.DropTable(
-                name: "Documents");
-
-            migrationBuilder.DropTable(
-                name: "ItemLists");
-
-            migrationBuilder.DropTable(
-                name: "Locations");
-
-            migrationBuilder.DropTable(
-                name: "StockItems");
+                name: "StockItemParts");
 
             migrationBuilder.DropTable(
                 name: "Tools");
@@ -1395,31 +1322,37 @@ namespace UteamUP.Server.Api.Migrations
                 name: "Workorders");
 
             migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
                 name: "Parts");
 
             migrationBuilder.DropTable(
                 name: "Stocks");
 
             migrationBuilder.DropTable(
-                name: "Licenses");
+                name: "Locations");
 
             migrationBuilder.DropTable(
                 name: "Assets");
 
             migrationBuilder.DropTable(
-                name: "Subscriptions");
+                name: "Gpses");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Vendor");
 
             migrationBuilder.DropTable(
-                name: "Plans");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Licenses");
+
+            migrationBuilder.DropTable(
+                name: "Subscriptions");
+
+            migrationBuilder.DropTable(
+                name: "Plans");
 
             migrationBuilder.DropTable(
                 name: "Tenants");

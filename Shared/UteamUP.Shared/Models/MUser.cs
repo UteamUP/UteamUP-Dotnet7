@@ -36,6 +36,8 @@ public class MUser : Base
     public bool HasBeenActivated { get; set; } = false;
     public bool IsFirstLogin { get; set; } = true;
     public bool HasAcceptedLicenseAgreement { get; set; } = false;
+    public string ImageUrl { get; set; } = string.Empty;
+
     public string ActivationCode { get; set; } = string.Empty;
     [MaxLength(50)] [MinLength(2)] public string DefaultLanguage { get; set; } = "en";
     public virtual List<Tag>? Tags { get; set; } = new();

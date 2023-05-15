@@ -44,7 +44,7 @@ public class Tenant : Base
 
     public bool IsActive { get; set; } = true;
     public bool Deleted { get; set; } = false;
-    public string CompanyLogo { get; set; } = string.Empty;
+    public string ImageUrl { get; set; } = string.Empty;
 
     [ForeignKey("MUser")] public int OwnerId { get; set; }
 

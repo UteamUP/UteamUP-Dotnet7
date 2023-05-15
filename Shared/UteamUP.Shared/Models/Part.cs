@@ -22,7 +22,8 @@ public class Part : Base
     public string AdditionalInfo { get; set; } = string.Empty;
     public string Notes { get; set; } = string.Empty;
     public bool IsPrivate { get; set; }
-    
+    public string ImageUrl { get; set; } = string.Empty;
+
     // TenantID can be empty if IsPrivate is false, if IsPrivate is true, then Tenant is required
     [ForeignKey("Tenant")] public int? TenantId { get; set; }
     

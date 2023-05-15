@@ -300,14 +300,23 @@
         await base.OnInitializedAsync();
         if (UserState?.User?.Oid != null)
         {
-            Tenants = await TenantWebRepository.GetOwnedTenantsAsync(UserState.User.Oid);
-            InvitedUsers = await TenantWebRepository.GetInvitesAsync(UserState.User.Oid);
             globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+
+            Tenants = await TenantWebRepository.GetOwnedTenantsAsync(UserState.User.Oid);
+            // Should fix the bad request of no tenants
+            InvitedUsers = await TenantWebRepository.GetInvitesAsync(UserState.User.Oid);
+
+            if(Tenants.Count == 0 && InvitedUsers.Count == 0)
+            {
+                NavigationManager.NavigateTo("/create-tenant");
+            }
+            
 
             if (UserState.User.HasBeenActivated != null)
             {
                 HasDbUser = true;
             }
+            
         }
     }
 

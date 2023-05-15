@@ -25,4 +25,6 @@ public class Location : Base
     public virtual List<Asset>? Assets { get; set; } = new();
     public virtual List<Stock>? Stocks { get; set; }
     public virtual List<Tag>? Tags { get; set; }
+    
+    public virtual GPS? GPS { get; set; }
 }

@@ -29,10 +29,14 @@ public class Tool : Base
     public string AdditionalInfo { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
     public string Notes { get; set; } = string.Empty;
+    public bool IsPrivate { get; set; }
     public bool IsActive { get; set; }
     public bool IsDestroyed { get; set; }
     public bool IsLost { get; set; }
 
+    // TenantID can be empty if IsPrivate is false, if IsPrivate is true, then Tenant is required
+    [ForeignKey("Tenant")] public int? TenantId { get; set; }
+    
     [ForeignKey("Vendor")] public int? VendorId { get; set; }
     public Vendor? Vendor { get; set; }
     

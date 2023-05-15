@@ -9,11 +9,7 @@ public class pgContext : DbContext
     public DbSet<Asset> Assets { get; set; }
     public DbSet<AssetPart> AssetParts { get; set; }
     public DbSet<Category> Categories { get; set; }
-    public DbSet<Document> Documents { get; set; }
-    public DbSet<Domain> Domains { get; set; }
     public DbSet<InvitedUser> InvitedUsers { get; set; }
-    public DbSet<ItemList> ItemLists { get; set; }
-    public DbSet<ItemListItem> ItemListItems { get; set; }
     public DbSet<License> Licenses { get; set; }
     public DbSet<LicenseUser> LicenseUsers { get; set; }
     public DbSet<Location> Locations { get; set; }
@@ -22,7 +18,7 @@ public class pgContext : DbContext
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Report> Reports { get; set; }
     public DbSet<Stock> Stocks { get; set; }
-    public DbSet<StockItem> StockItems { get; set; }
+    public DbSet<StockItemPart> StockItemParts { get; set; }
     public DbSet<StockItemLog> StockItemLogs { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Tag> Tags { get; set; }
@@ -36,6 +32,7 @@ public class pgContext : DbContext
     public DbSet<WorkorderStatusCategory> WorkorderStatusCategories { get; set; }
     public DbSet<WorkorderTemplate> WorkorderTemplates { get; set; }
     public DbSet<Log> Logs { get; set; }
+    public DbSet<GPS> Gpses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

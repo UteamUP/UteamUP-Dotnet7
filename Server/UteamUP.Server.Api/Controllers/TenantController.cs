@@ -7,14 +7,16 @@ public class TenantController : ControllerBase
 {
     private readonly ILogger<TenantController> _logger;
     private readonly ITenantRepository _tenant;
+    private readonly ISubscriptionRepository _subscription;
 
     public TenantController(
         ITenantRepository tenant, 
-        ILogger<TenantController> logger
-        )
+        ILogger<TenantController> logger, 
+        ISubscriptionRepository subscription)
     {
         _tenant = tenant;
         _logger = logger;
+        _subscription = subscription;
     }
     
     private async Task<MUserDto> ValidateUser()
@@ -58,8 +60,8 @@ public class TenantController : ControllerBase
     }
 
     // Create tenant
-    [HttpPost]
-    public async Task<IActionResult> CreateTenantAsync(TenantDto tenant)
+    [HttpPost("add/{planId}/{extraLicenses}")]
+    public async Task<IActionResult> CreateTenantAsync(TenantDto tenant, int planId, int extraLicenses)
     {
         if (tenant == null)
         {
@@ -79,6 +81,14 @@ public class TenantController : ControllerBase
         if (string.IsNullOrWhiteSpace(createdTenant.Name))
         {
             _logger.Log(LogLevel.Error, $"CreateTenantAsync: Tenant could not be created");
+            return BadRequest();
+        }
+        
+        // Create subscription for the tenant
+        var subscription = await _subscription.CreateAsync(createdTenant.Id, planId, extraLicenses);
+        if (subscription == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: Subscription could not be created");
             return BadRequest();
         }
 

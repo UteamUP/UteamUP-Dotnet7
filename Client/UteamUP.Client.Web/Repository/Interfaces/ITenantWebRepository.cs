@@ -4,7 +4,7 @@ namespace UteamUP.Client.Repository.Interfaces;
 
 public interface ITenantWebRepository
 {
-    Task<Tenant?> CreateTenantAsync(TenantDto tenant);
+    Task<Tenant?> CreateTenantAsync(TenantDto tenant, int planId, int extraLicenses);
     Task<List<Tenant>> GetOwnedTenantsAsync(string oid);
     Task<List<Tenant>> GetAllTenantsByOidAsync(string oid);
     Task<Tenant> GetTenantById(string tenantId);

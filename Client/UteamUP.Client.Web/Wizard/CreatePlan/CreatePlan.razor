@@ -62,17 +62,12 @@
 
 
 @code {
-
-    string? _oid = "";
-    string? _name = "";
-    string? _email = "";
     public int? Id { get; set; }
     string discount = "";
     string price = "";
     string licenses = "";
 
     AddNewPlanForm _model = new AddNewPlanForm();
-    
 
     protected int _activeStepIndex = 0;
 
@@ -102,10 +97,6 @@
     {
         await base.OnInitializedAsync();
 
-        _oid = UserState.User.Oid;
-        _name = UserState.User.Name;
-        _email = UserState.User.Email;
-        
         _model.BasicPlanForm.Name = "My Premium Plan";
         _model.BasicPlanForm.Sku = "PREMIUM_SKU_001";
         _model.BasicPlanForm.PlanType = "Premium";

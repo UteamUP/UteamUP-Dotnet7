@@ -1,18 +1,17 @@
 namespace UteamUP.Shared.Models;
 
-public class Document : Base
+public class StockItemPart : Base
 {
-    public Document()
+    public StockItemPart()
     {
         Tags = new List<Tag>();
     }
 
     [Key] public int Id { get; set; }
-
-    [MaxLength(512)]
-    [MinLength(2)]
-    [Required(ErrorMessage = "You must specify the name before you can save.")]
-    public string Name { get; set; } = string.Empty;
+    public Stock? Stock { get; set; }
+    public Part? Part { get; set; }
+    public int MinimumAmount { get; set; }
+    public int CurrentAmount { get; set; }
 
     [ForeignKey("Category")] public int? CategoryId { get; set; }
     public Category? Category { get; set; }
