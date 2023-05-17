@@ -63,27 +63,28 @@ public class TenantController : ControllerBase
     [HttpPost("add/{planId}/{extraLicenses}")]
     public async Task<IActionResult> CreateTenantAsync(TenantDto tenant, int planId, int extraLicenses)
     {
+        /*
         if (tenant == null)
         {
-            _logger.Log(LogLevel.Error, $"CreateTenantAsync: Tenant is null");
+            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: Tenant is null");
             return BadRequest();
         }
-
-        var user = await ValidateUser();
         if (string.IsNullOrWhiteSpace(user.Oid))
         {
-            _logger.Log(LogLevel.Error, $"CreateTenantAsync: User is null");
+            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: User is null");
             return BadRequest();
         }
-        
-        _logger.Log(LogLevel.Information, $"CreateTenantAsync: Creating tenant");
-        var createdTenant = await _tenant.CreateTenantAsync(tenant, user.Oid);
+        */
+        var user = await ValidateUser();
+
+        _logger.Log(LogLevel.Information, $"{nameof(CreateTenantAsync)}: Creating tenant");
+        var createdTenant = await _tenant.CreateTenantAsync(tenant, user.Oid, planId, extraLicenses);
+        /*
         if (string.IsNullOrWhiteSpace(createdTenant.Name))
         {
-            _logger.Log(LogLevel.Error, $"CreateTenantAsync: Tenant could not be created");
+            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: Tenant could not be created");
             return BadRequest();
         }
-        
         // Create subscription for the tenant
         var subscription = await _subscription.CreateAsync(createdTenant.Id, planId, extraLicenses);
         if (subscription == null)
@@ -91,7 +92,7 @@ public class TenantController : ControllerBase
             _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: Subscription could not be created");
             return BadRequest();
         }
-
+        */
         return Ok(createdTenant);
     }
     

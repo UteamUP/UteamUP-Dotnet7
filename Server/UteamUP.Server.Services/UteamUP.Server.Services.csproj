@@ -7,7 +7,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="Properties\launchSettings.json"/>
+        <None Remove="Properties\launchSettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Shared\UteamUP.Shared\UteamUP.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Azure.Storage.Blobs" Version="12.16.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.2.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     </ItemGroup>
 
 </Project>

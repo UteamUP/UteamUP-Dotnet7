@@ -11,7 +11,7 @@ public class UserWebRepository : IUserWebRepository
     private readonly IHeaderRepository _headerRepository;
     private readonly ILogger<UserWebRepository> _logger;
     private protected string ServerUrl = "https://localhost:5001";
-    private protected string Url = "api/user/oid";
+    private protected string Url = "api/user";
     private protected string UserStateUrl = "api/userstate";
 
     public UserWebRepository(
@@ -42,7 +42,17 @@ public class UserWebRepository : IUserWebRepository
 
         _httpClient.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
 
-        return await _httpClient.GetFromJsonAsync<MUser>($"{Url}/{oid}");
+        var mymuser = await _httpClient.GetFromJsonAsync<MUser>($"{Url}/oid/{oid}");
+        if(mymuser != null)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(GetUserByOid)}: User retrieved successfully");
+            return mymuser;
+        }
+        else
+        {
+            _logger.Log(LogLevel.Warning, $"{nameof(GetUserByOid)}: User Does not exist with oid {oid}");
+            return new MUser();
+        }
     }
 
     public async Task<bool> CreateUserAsync(MUserDto user)
@@ -64,7 +74,7 @@ public class UserWebRepository : IUserWebRepository
     public async Task<MUserUpdateDto?> UpdateUserByOid(MUserUpdateDto? userUpdateDto, string oid)
     {
         await GetHttpClientHeaderToken();
-        var user = await _httpClient.PutAsJsonAsync<MUserUpdateDto>($"{Url}/{oid}", userUpdateDto);
+        var user = await _httpClient.PutAsJsonAsync<MUserUpdateDto>($"{Url}/oid/{oid}", userUpdateDto);
         
         if (user.IsSuccessStatusCode)
         {
@@ -81,7 +91,7 @@ public class UserWebRepository : IUserWebRepository
     public async Task<MUser?> UpdateDefaultTenantId(int tenantId, string oid)
     {
         await GetHttpClientHeaderToken();
-        var user = await _httpClient.PutAsJsonAsync<MUser>($"{Url}/{oid}/defaulttenant/{tenantId}", null);
+        var user = await _httpClient.PutAsJsonAsync<MUser>($"{Url}/oid/{oid}/defaulttenant/{tenantId}", null);
         if (user.IsSuccessStatusCode)
         {
             _logger.Log(LogLevel.Information, $"{nameof(UpdateDefaultTenantId)}: User updated successfully");
@@ -97,7 +107,7 @@ public class UserWebRepository : IUserWebRepository
     public async Task<bool> ActivateUser(string activationCode, string oid)
     {
         await GetHttpClientHeaderToken();
-        var user = await _httpClient.PostAsync($"{Url}/{oid}/activate/{activationCode}", null);
+        var user = await _httpClient.PostAsync($"{Url}/oid/{oid}/activate/{activationCode}", null);
         if (user.IsSuccessStatusCode)
         {
             _logger.Log(LogLevel.Information, $"{nameof(ActivateUser)}: User activated successfully");

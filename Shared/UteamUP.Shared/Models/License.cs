@@ -9,5 +9,5 @@ public class License : Base
     [ForeignKey("Subscription")] public int SubscriptionId { get; set; }
     public Subscription Subscription { get; set; }
     
-    public virtual ICollection<MUser>? Users { get; set; }
+    public ICollection<MUser>? MUsers { get; set; } = new List<MUser>();
 }

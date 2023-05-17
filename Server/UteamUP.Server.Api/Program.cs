@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -14,6 +11,10 @@ builder.Services.AddScoped<IPlanRepository, PlanRepository>();
 builder.Services.AddScoped<IVendorRepository, VendorRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+
+// Adding Global Services.
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
 // Add Database Service
 builder.Services.AddDbContext<pgContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("UteamupDB"),

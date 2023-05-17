@@ -27,4 +27,7 @@ public class Workorder : Base
 
     public string AssignedUserName { get; set; }
     public string Assignee { get; set; } = string.Empty;
+    
+    public virtual ICollection<Part>? Parts { get; set; }
+    
 }

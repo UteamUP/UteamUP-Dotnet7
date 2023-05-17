@@ -3,9 +3,7 @@ namespace UteamUP.Shared.Models;
 public class Subscription : Base
 {
     [Key] public int Id { get; set; }
-
-    public string Guid { get; set; }
-    public bool IsActive { get; set; } = true;
+    public bool IsActive { get; set; }
     public int ExtraAmountOfLicenses { get; set; }
 
     [ForeignKey("Plan")] public int PlanId { get; set; }

@@ -28,9 +28,10 @@ public class TenantRepository : ITenantRepository
         return tenants;
     }
 
-    public async Task<Tenant?> CreateTenantAsync(TenantDto tenant, string oid)
+    public async Task<Tenant?> CreateTenantAsync(TenantDto tenant, string oid, int planId, int extraLicenses)
     {
         // Check if tenant is null
+        /*
         if (string.IsNullOrWhiteSpace(tenant.Name))
         {
             _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: Tenant is null");
@@ -43,15 +44,19 @@ public class TenantRepository : ITenantRepository
             _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: Oid is null");
             return new Tenant();
         }
+        */
+        // Get the plan by id
+        var plan = await _context.Plans.FirstOrDefaultAsync(x => x.Id == planId);
         
         // Get user by oid
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Oid == oid);
+        /*
         if (string.IsNullOrWhiteSpace(user?.Oid))
         {
             _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: User is null");
             return new Tenant();
         }
-        
+        */
         // Map tenantdto to tenant
         var mappedTenant = _mapper.Map<Tenant>(tenant);
 
@@ -69,10 +74,60 @@ public class TenantRepository : ITenantRepository
 
             // Add tenant to database
             _context.Tenants.Add(mappedTenant);
+            await _context.SaveChangesAsync();
+
+            // Get the tenant
+            var tenantFromDb = await _context.Tenants.FirstOrDefaultAsync(x => x.Name == mappedTenant.Name && x.OwnerId == user.Id);
+
+            // Create subscription for the tenant
+            var subscription = new Subscription
+            {
+                TenantId = tenantFromDb.Id,
+                PlanId = planId,
+                ExtraAmountOfLicenses = extraLicenses,
+                CreatedAt = DateTime.Now.ToUniversalTime(),
+                UpdatedAt = DateTime.Now.ToUniversalTime()
+            };
+            
+            // Add subscription to database
+            _context.Subscriptions.Add(subscription);
+            await _context.SaveChangesAsync();
+            
+            // Get the subscription from the database
+            var subscriptionFromDb = await _context.Subscriptions.FirstOrDefaultAsync(x => x.TenantId == tenantFromDb.Id);
+            int totalLicenses = plan.LicenseIncluded + extraLicenses;
+            
+            // Create a license for the tenant
+            var license = new License
+            {
+                SubscriptionId = subscriptionFromDb.Id,
+                MaxLicenses = totalLicenses,
+                MinLicenses = plan.LicenseIncluded,
+                CreatedAt = DateTime.Now.ToUniversalTime(),
+                UpdatedAt = DateTime.Now.ToUniversalTime()
+            };
+            
+            // Add license to database
+            await _context.Licenses.AddAsync(license);
+            
+            // Save changes
+            await _context.SaveChangesAsync();
+            
+            // Get the license from database
+            var licenseFromDb = await _context.Licenses.FirstOrDefaultAsync(x => x.SubscriptionId == subscriptionFromDb.Id);
+            
+            // Add users to the license
+            _context.LicenseUsers.Add(new LicenseUsers
+            {
+                LicenseId = licenseFromDb.Id,
+                MUserId = user.Id,
+                CreatedAt = DateTime.Now.ToUniversalTime(),
+                UpdatedAt = DateTime.Now.ToUniversalTime()
+            });
 
             // Save changes
             await _context.SaveChangesAsync();
-
+            
             // Return tenant
             _logger.Log(LogLevel.Information,
                 $"{nameof(CreateTenantAsync)}: Tenant created successfully with id {{MappedTenantId}} and name {{MappedTenantName}}",

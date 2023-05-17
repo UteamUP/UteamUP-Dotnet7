@@ -116,7 +116,7 @@
         _model.AddressTenantDetailsForm.State = "Capital Region";
         _model.AddressTenantDetailsForm.PostalCode = "101";
         
-        _model.PlanDetailsForm.Name = "My Basic Plan";
+        _model.PlanDetailsForm.Name = "My Premium Plan";
         _model.ExtraLicensesForm.Amount = "10";
     }
 
@@ -150,6 +150,7 @@
         // TODO: Need to create a subscription with extra licenses.
         // TODO: Need to assign plan to subscription
         
+        Console.WriteLine("the planid is: "+ _model.PlanDetailsForm.Name + " and the amount is: " + _model.ExtraLicensesForm.Amount);
         var results = await TenantWebRepository.CreateTenantAsync(tenantDto, Convert.ToInt32(_model.PlanDetailsForm.Name), Convert.ToInt32(_model.ExtraLicensesForm.Amount));
         if (!string.IsNullOrWhiteSpace(results.Name))
             // TODO: Show error message

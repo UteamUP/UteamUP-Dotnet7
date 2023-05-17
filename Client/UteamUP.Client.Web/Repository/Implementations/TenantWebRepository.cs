@@ -34,7 +34,7 @@ public class TenantWebRepository : ITenantWebRepository
     public async Task<Tenant?> CreateTenantAsync(TenantDto tenant, int planId, int extraLicenses)
     {
         await GetHttpClientHeaderToken();
-        var result = await _httpClient.PostAsJsonAsync($"{Url}add/{planId}/{extraLicenses}", tenant);
+        var result = await _httpClient.PostAsJsonAsync($"{Url}/add/{planId}/{extraLicenses}", tenant);
         
         if (result.IsSuccessStatusCode)
         {

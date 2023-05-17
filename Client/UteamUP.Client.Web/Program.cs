@@ -19,7 +19,7 @@ builder.Services.AddScoped<UserState>();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 //builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<CustomAuthenticationStateProvider>());
 
-// Add Repositories and Services
+// Add Repositories
 builder.Services.AddScoped<ITenantWebRepository, TenantWebRepository>();
 builder.Services.AddScoped<IUserWebRepository, UserWebRepository>();
 builder.Services.AddScoped<IPlanWebRepository, PlanWebRepository>();
@@ -28,6 +28,10 @@ builder.Services.AddScoped<IWorkorderWebRepository, WorkorderWebRepository>();
 builder.Services.AddScoped<IVendorWebRepository, VendorWebRepository>();
 builder.Services.AddScoped<ICategoryWebRepository, CategoryWebRepository>();
 builder.Services.AddScoped<ITagWebRepository, TagWebRepository>();
+builder.Services.AddScoped<IDocumentWebRepository, DocumentWebRepository>();
+
+// Add Services
+builder.Services.AddScoped<IBlobStorageWebService, BlobStorageWebService>();
 
 // Supply HttpClient instances that include access tokens when making requests to the server project
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("UteamUP.ServerAPI"));

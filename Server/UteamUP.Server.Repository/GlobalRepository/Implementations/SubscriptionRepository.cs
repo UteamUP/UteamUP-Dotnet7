@@ -59,7 +59,6 @@ public class SubscriptionRepository : ISubscriptionRepository
                 PlanId = planId,
                 ExtraAmountOfLicenses = ExtraAmountOfLicenses,
                 IsActive = true,
-                Guid = Guid.NewGuid().ToString(),
                 CreatedAt = DateTime.Now.ToUniversalTime(),
                 UpdatedAt = DateTime.Now.ToUniversalTime()
             };

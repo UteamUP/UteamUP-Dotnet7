@@ -34,7 +34,7 @@
 
     private void ValidateEnteredItem()
     {
-        _inputValue = Regex.Replace(_inputValue, @"\s+", "");
+        //_inputValue = Regex.Replace(_inputValue, @"\s+", "");
         
         // Check if the input value is empty or already exists in the list
         if (string.IsNullOrEmpty(_inputValue) || Value.Contains(_inputValue))
@@ -55,7 +55,7 @@
             Value.RemoveAt(Value.Count - 1);
         }
         
-        if(e.Key == "Tab" || e.Key == " " || e.Key == "Enter")
+        if(e.Key == "Tab" || e.Key == "Enter")
         {
             ValidateEnteredItem();
         }

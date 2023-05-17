@@ -12,8 +12,8 @@ using UteamUP.Server.Database.Contexts;
 namespace UteamUP.Server.Api.Migrations
 {
     [DbContext(typeof(pgContext))]
-    [Migration("20230515020044_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20230517011919_InitialMigration2")]
+    partial class InitialMigration2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -321,6 +321,41 @@ namespace UteamUP.Server.Api.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("UteamUP.Shared.Models.Document", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UrlPath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Documents");
+                });
+
             modelBuilder.Entity("UteamUP.Shared.Models.GPS", b =>
                 {
                     b.Property<int>("Id")
@@ -435,7 +470,7 @@ namespace UteamUP.Server.Api.Migrations
                     b.ToTable("Licenses");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.LicenseUser", b =>
+            modelBuilder.Entity("UteamUP.Shared.Models.LicenseUsers", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -454,9 +489,6 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -639,6 +671,9 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<string>("PostalCode")
                         .HasColumnType("text");
 
+                    b.Property<int?>("ReportId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("StreetName")
                         .HasColumnType("text");
 
@@ -658,6 +693,8 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.HasIndex("Oid")
                         .IsUnique();
+
+                    b.HasIndex("ReportId");
 
                     b.ToTable("Users");
                 });
@@ -728,6 +765,9 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<int?>("VendorId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("WorkorderId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AssetId");
@@ -735,6 +775,8 @@ namespace UteamUP.Server.Api.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("VendorId");
+
+                    b.HasIndex("WorkorderId");
 
                     b.ToTable("Parts");
                 });
@@ -984,10 +1026,6 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.Property<int>("ExtraAmountOfLicenses")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Guid")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -1632,7 +1670,7 @@ namespace UteamUP.Server.Api.Migrations
                     b.Navigation("Subscription");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.LicenseUser", b =>
+            modelBuilder.Entity("UteamUP.Shared.Models.LicenseUsers", b =>
                 {
                     b.HasOne("UteamUP.Shared.Models.License", "License")
                         .WithMany()
@@ -1699,8 +1737,12 @@ namespace UteamUP.Server.Api.Migrations
             modelBuilder.Entity("UteamUP.Shared.Models.MUser", b =>
                 {
                     b.HasOne("UteamUP.Shared.Models.License", null)
-                        .WithMany("Users")
+                        .WithMany("MUsers")
                         .HasForeignKey("LicenseId");
+
+                    b.HasOne("UteamUP.Shared.Models.Report", null)
+                        .WithMany("Users")
+                        .HasForeignKey("ReportId");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Part", b =>
@@ -1716,6 +1758,10 @@ namespace UteamUP.Server.Api.Migrations
                     b.HasOne("UteamUP.Shared.Models.Vendor", "Vendor")
                         .WithMany()
                         .HasForeignKey("VendorId");
+
+                    b.HasOne("UteamUP.Shared.Models.Workorder", null)
+                        .WithMany("Parts")
+                        .HasForeignKey("WorkorderId");
 
                     b.Navigation("Category");
 
@@ -1849,7 +1895,7 @@ namespace UteamUP.Server.Api.Migrations
 
             modelBuilder.Entity("UteamUP.Shared.Models.License", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("MUsers");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Location", b =>
@@ -1857,9 +1903,19 @@ namespace UteamUP.Server.Api.Migrations
                     b.Navigation("Tags");
                 });
 
+            modelBuilder.Entity("UteamUP.Shared.Models.Report", b =>
+                {
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("UteamUP.Shared.Models.Tenant", b =>
                 {
                     b.Navigation("Locations");
+                });
+
+            modelBuilder.Entity("UteamUP.Shared.Models.Workorder", b =>
+                {
+                    b.Navigation("Parts");
                 });
 #pragma warning restore 612, 618
         }

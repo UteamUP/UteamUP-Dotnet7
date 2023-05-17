@@ -14,4 +14,6 @@ public class Report : Base
 
     [ForeignKey("Workorder")] public int WorkorderID { get; set; }
     public Workorder Workorder { get; set; }
+    
+    public virtual ICollection<MUser>? Users { get; set; }
 }

@@ -38,19 +38,31 @@
         {
             var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
 
-            if (!globalState.IsUpToDate)
+            if(globalState != null){
+                if (!globalState.IsUpToDate)
+                {
+                    await CustomAuthStateProvider.UpdateAppStateWithUserAsync(authState.User);
+                    await CustomAuthStateProvider.UpdateDateAsync();
+                }
+                
+                // If globalState.LastUpdated is 10 hours from now or more then update the global state
+                if (globalState.LastUpdated.AddHours(1) < DateTime.Now.ToUniversalTime())
+                {
+                    await CustomAuthStateProvider.UpdateAppStateWithUserAsync(authState.User);
+                    await CustomAuthStateProvider.UpdateDateAsync();
+                }
+                if(globalState.ActiveTenant == null)
+                {
+                    await CustomAuthStateProvider.UpdateTenantStateAsync();
+                    await CustomAuthStateProvider.UpdateDateAsync();
+                }
+            }
+            else
             {
+                Console.WriteLine("Lets try to create the users state");
                 await CustomAuthStateProvider.UpdateAppStateWithUserAsync(authState.User);
                 await CustomAuthStateProvider.UpdateDateAsync();
             }
-            
-            // If globalState.LastUpdated is 10 hours from now or more then update the global state
-            if (globalState.LastUpdated.AddHours(10) < DateTime.Now.ToUniversalTime())
-            {
-                await CustomAuthStateProvider.UpdateAppStateWithUserAsync(authState.User);
-                await CustomAuthStateProvider.UpdateDateAsync();
-            } 
-
         }
         CustomAuthStateProvider.OnGlobalStateChanged += RefreshPage;
     }

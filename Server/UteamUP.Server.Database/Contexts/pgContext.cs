@@ -11,7 +11,7 @@ public class pgContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<InvitedUser> InvitedUsers { get; set; }
     public DbSet<License> Licenses { get; set; }
-    public DbSet<LicenseUser> LicenseUsers { get; set; }
+    public DbSet<LicenseUsers> LicenseUsers { get; set; }
     public DbSet<Location> Locations { get; set; }
     public DbSet<LocationStock> LocationStocks { get; set; }
     public DbSet<Part> Parts { get; set; }
@@ -25,6 +25,7 @@ public class pgContext : DbContext
     public DbSet<Tenant> Tenants { get; set; }
     //public DbSet<TenantUser> TenantUsers { get; set; }
     public DbSet<Tool> Tools { get; set; }
+    public DbSet<Document> Documents { get; set; }
     public DbSet<MUser> Users { get; set; }
     public DbSet<Vendor> Vendor { get; set; }
     public DbSet<Workorder> Workorders { get; set; }

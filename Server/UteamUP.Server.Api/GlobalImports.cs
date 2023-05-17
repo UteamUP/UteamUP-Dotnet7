@@ -22,3 +22,6 @@ global using UteamUP.Shared.ModelDto;
 // Global Repository
 global using UteamUP.Server.Repository.GlobalRepository.Interfaces;
 global using UteamUP.Server.Repository.GlobalRepository.Implementations;
+
+// Global Services
+global using UteamUP.Server.Services.Services;

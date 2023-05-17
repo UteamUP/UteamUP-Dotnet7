@@ -42,6 +42,7 @@ public class UserController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostAsync([FromBody] MUserDto user)
     {
+        
         if (string.IsNullOrWhiteSpace(user.Oid) ||
             string.IsNullOrWhiteSpace(user.Name) ||
             string.IsNullOrWhiteSpace(user.Email))
@@ -49,7 +50,7 @@ public class UserController : ControllerBase
             _logger.Log(LogLevel.Error, $"PostAsync: User data is null or empty");
             return new BadRequestResult();
         }
-
+        
         var result = await _user.CreateUserAsync(user);
         return Ok(result);
     }
