@@ -21,6 +21,14 @@
     @if(_uploadedFiles != null && _uploadedFiles.Any())
     {
         <div style="padding-bottom: 20px;"><strong>Total files going to be uploaded: [@_uploadedFiles.Count]</strong></div>
+                                                                                                                     
+        // Total amount of bytes in MB or GB to be uploaded
+        var totalBytes = _uploadedFiles.Sum(x => x.Size);
+        var totalBytesInMB = totalBytes / 1024 / 1024;
+        var totalBytesInGB = totalBytes / 1024 / 1024 / 1024;
+        var totalBytesInMBOrGB = totalBytesInMB < 1 ? totalBytesInGB + " GB" : totalBytesInMB + " MB";
+        
+        <div style="padding-bottom: 20px;"><strong>Total size of files going to be uploaded: [@totalBytesInMBOrGB]</strong></div>
     }
     <div>
         <aside>
@@ -31,7 +39,7 @@
                     {
                         @foreach (var file in _uploadedFiles.Take(5))
                         {
-                            <li><strong>@file.Name</strong> - <i style="color: #3e98c7">@file.Size bytes</i></li>
+                            <li>@file.Name - <i style="color: #3e98c7">@file.Size bytes</i></li>
                         }
                         <li><strong style="color: #1a8f45">...</strong></li>
                     }
@@ -39,7 +47,7 @@
                     {
                         @foreach (var file in _uploadedFiles)
                         {
-                            <li><strong>@file.Name</strong> - <div style="color: #3e98c7">@file.Size bytes</div></li>
+                            <li>@file.Name - <i style="color: #3e98c7">@file.Size bytes</i></li>
                         }
                     }
                 }
@@ -94,21 +102,22 @@
         {
             foreach (var file in files)
             {
-                // Check file type and size
+    // Check file type and size
                 if (!AllowedFileTypes.Contains(file.ContentType) || file.Size > AllowedFileSize)
                 {
-                    // Notify the page if the file is not allowed
+    // Notify the page if the file is not allowed
                     await OnChange.InvokeAsync(null);
                     return;
                 }
-                
+            
                 _uploadedFiles.Add(file);
             }
 
-            // Notify the page that the upload was successful
+    // Notify the page that the upload was successful
             await OnChange.InvokeAsync(_uploadedFiles);
         }
     }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

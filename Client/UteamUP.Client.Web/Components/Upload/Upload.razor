@@ -28,9 +28,15 @@
             foreach (var file in uploadedFiles)
             {
                 // The file was uploaded successfully, you can continue with the submission
-                Console.WriteLine(file.Name);
-                //Console.WriteLine(file.ContentType);
+                //Console.WriteLine(file.Name);
+                
+                // Get the file stream
+                var stream = file.OpenReadStream();
+                // Print out the stream
+                Console.WriteLine(stream);
+                
             }
         }
     }
+
 }
