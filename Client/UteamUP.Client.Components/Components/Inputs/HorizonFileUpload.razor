@@ -1,6 +1,8 @@
 ﻿@namespace UteamUP.Client.Components.Inputs
 @using System.Runtime.InteropServices.JavaScript;
+@using Azure.Storage.Blobs
 @using Microsoft.JSInterop;
+@using System.Numerics
 
 @inject IJSRuntime JSRuntime
 
@@ -10,19 +12,22 @@
         </path>
     </svg>
     <div role="button" tabindex="0" class="dropzone" @onclick="OnClickBrowseAsync">
-        <h5>Upload your photos</h5>
+        <h5>Upload your photos or documents</h5>
         <p>Drag and drop your files here or <span>Browse...</span></p>
     </div>
-    <InputFile id="@_fileInputid" OnChange="@HandleOnChange" multiple />
+    <InputFile id="@_fileInputid" maxFileSize="@AllowedFileSize" accept="@_fileAcceptance" OnChange="@HandleOnChange" multiple />
+    <hr />
     <aside>
         <ul>
             @if (_uploadedFile != null)
             {
-                <li>@_uploadedFile.Name - @_uploadedFile.Size bytes</li>
+                <li><strong>@_uploadedFile.Name - @_uploadedFile.Size bytes</strong></li>
             }
         </ul>
     </aside>
-    <li>High resolution images and files (PNG, JPG, GIF, PDF, DOX ...)</li>
+    <hr />
+    <li>Allowed files (@string.Join(", ", _allowedFileTypes))</li>
+    <li>Maximum allowed file size is @_allowedFileSize</li>
 </div>
 
 @code {
@@ -36,12 +41,84 @@
     [Parameter]
     public EventCallback<IBrowserFile> OnChange { get; set; }
 
-    private void HandleOnChange(InputFileChangeEventArgs e)
+    // New parameters
+    [Parameter]
+    public string[] AllowedFileTypes { get; set; }
+    private string[] _allowedFileTypes { get; set; }
+    private string _fileAcceptance { get; set; }
+    
+    [Parameter]
+    public long AllowedFileSize { get; set; } = 65 * 1024 * 1024; // default to 65MB
+    private string _allowedFileSize { get; set; }
+
+    [Parameter]
+    public string AzureStorageAccountName { get; set; }
+
+    [Parameter]
+    public string AzureStorageKey { get; set; }
+
+    [Parameter]
+    public string AzureUploadPath { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Split the AllowedFileTypes by "/" and get the last element, set it to uppercase, save it to _allowedFileTypes
+        _allowedFileTypes = AllowedFileTypes.Select(x => x.Split("/").Last().ToUpper()).ToArray();
+        
+        // add period to the beginning of each element in _allowedFileTypes and set it to lowercase, create a single string with comma separated values, save it to _fileAcceptance
+        _fileAcceptance = string.Join(",", _allowedFileTypes.Select(x => "." + x.ToLower()));
+        
+        if((AllowedFileSize / 1024 / 1024) < 1)
+            _allowedFileSize = AllowedFileSize / 1024 + " KB";
+        else if((AllowedFileSize / 1024 / 1024 / 1024) < 1)
+            _allowedFileSize = AllowedFileSize / 1024 / 1024 + " MB";
+        else
+            _allowedFileSize = AllowedFileSize / 1024 / 1024 / 1024 + " GB";
+    }
+    
+    private async Task HandleOnChange(InputFileChangeEventArgs e)
     {
         _uploadedFile = e.FileCount == 0 ? null : e.File;
 
-        OnChange.InvokeAsync(_uploadedFile);
+        if (_uploadedFile != null)
+        {
+            // Check file type and size
+            if (!AllowedFileTypes.Contains(_uploadedFile.ContentType) || _uploadedFile.Size > AllowedFileSize)
+            {
+                // Notify the page if the file is not allowed
+                OnChange.InvokeAsync(null);
+                return;
+            }
+
+            // Upload the file to Azure
+            var connectionString = $"DefaultEndpointsProtocol=https;AccountName={AzureStorageAccountName};AccountKey={AzureStorageKey};EndpointSuffix=core.windows.net";
+        
+            // Create a BlobServiceClient object which will be used to create a container client
+            BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+            //Create a unique name for the container
+            string containerName = AzureUploadPath;
+            // Create the container and return a container client object
+            BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            await containerClient.CreateIfNotExistsAsync();
+
+            // Create a local file in the ./data/ directory for uploading and downloading
+            string localPath = "./data/";
+            string fileName = _uploadedFile.Name;
+            string localFilePath = Path.Combine(localPath, fileName);
+            // Write text to the file
+            await File.WriteAllTextAsync(localFilePath, "Hello, Azure!");
+
+            // Get a reference to a blob
+            BlobClient blobClient = containerClient.GetBlobClient(fileName);
+            Console.WriteLine("Uploading to Blob storage as blob:\n\t {0}\n", blobClient.Uri);
+            // Upload data from the local file
+            await blobClient.UploadAsync(localFilePath, true);
+
+            // Notify the page that the upload was successful
+            OnChange.InvokeAsync(_uploadedFile);
+        }
     }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
