@@ -3,8 +3,9 @@
     <HorizonFileUpload @ref="fileUpload" 
                        AllowedFileTypes="allowedTypes" 
                        OnChange="HandleFileChange" />
-    <div class="input-container" style="margin-left: auto; margin-right: auto; padding-top: 20px;">
+    <div class="input-container" style="padding-left: 190px; padding-top: 20px;">
         <HorizonButton OnClick="SubmitFiles">Save</HorizonButton>
+        <HorizonButton OnClick="ClearFiles">Clear</HorizonButton>
     </div>
 </div>
 
@@ -21,20 +22,41 @@
         uploadedFiles = files;
     }
     
+    private void ClearFiles()
+    {
+        uploadedFiles.Clear();
+    }
+    
     private async Task SubmitFiles()
     {
         if (uploadedFiles != null && uploadedFiles.Any())
         {
             foreach (var file in uploadedFiles)
             {
-                // The file was uploaded successfully, you can continue with the submission
-                //Console.WriteLine(file.Name);
-                
                 // Get the file stream
                 var stream = file.OpenReadStream();
-                // Print out the stream
-                Console.WriteLine(stream);
                 
+                // Get the file name
+                var fileName = file.Name;
+                
+                // Get the file size
+                var fileSize = file.Size;
+                
+                // Get the file bytes
+                var fileBytes = new byte[fileSize];
+                
+                await stream.ReadAsync(fileBytes, 0, (int)fileSize);
+                
+                // Save the file to wwwroot/files
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", fileName);
+                
+                using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                {
+                    using (var outputStream = new FileStream(path, FileMode.Create))
+                    {
+                        await fileStream.CopyToAsync(outputStream);
+                    }
+                }
             }
         }
     }

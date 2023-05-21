@@ -99,6 +99,7 @@
         <Folder Include="Wizard\CreateVendor\Profiles\" />
         <Folder Include="Wizard\CreateWorkorder\Modals\" />
         <Folder Include="Wizard\CreateWorkorder\Profiles\" />
+        <Folder Include="wwwroot\files\" />
     </ItemGroup>
 
 </Project>
