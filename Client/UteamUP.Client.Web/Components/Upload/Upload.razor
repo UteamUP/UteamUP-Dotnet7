@@ -1,10 +1,8 @@
 @page "/upload-document"
-<div class="input-container" style="width: 450px; margin-left: auto; margin-right: auto;">
+<div class="input-container" style="width: 650px; margin-left: auto; margin-right: auto;">
     <HorizonFileUpload @ref="fileUpload" 
                        AllowedFileTypes="allowedTypes" 
-                       AzureStorageAccountName="YourAzureAccountName" 
-                       AzureStorageKey="YourAzureKey" 
-                       AzureUploadPath="YourUploadPath"/>
+                       OnChange="HandleFileChange" />
     <div class="input-container" style="margin-left: auto; margin-right: auto; padding-top: 20px;">
         <HorizonButton OnClick="SubmitFiles">Save</HorizonButton>
     </div>
@@ -12,25 +10,27 @@
 
 @code {
     private HorizonFileUpload fileUpload;
+    private List<IBrowserFile> uploadedFiles = new List<IBrowserFile>(); // Declare the property for uploaded files
     
     private string[] allowedTypes = new string[] { "image/png", "image/jpeg", "image/gif", "image/tiff" };
 
+    
+    
+    private void HandleFileChange(List<IBrowserFile> files)
+    {
+        uploadedFiles = files;
+    }
+    
     private async Task SubmitFiles()
     {
-    // Your submission logic here
-    }
-
-    private void OnChange(IBrowserFile file)
-    {
-        if (file == null)
+        if (uploadedFiles != null && uploadedFiles.Any())
         {
-    // Show an error message if the file is not allowed
-            Console.WriteLine(file.Name);
-        }
-        else
-        {
-    // The file was uploaded successfully, you can continue the submission
-            Console.WriteLine(file.Name);
+            foreach (var file in uploadedFiles)
+            {
+                // The file was uploaded successfully, you can continue with the submission
+                Console.WriteLine(file.Name);
+                //Console.WriteLine(file.ContentType);
+            }
         }
     }
 }
