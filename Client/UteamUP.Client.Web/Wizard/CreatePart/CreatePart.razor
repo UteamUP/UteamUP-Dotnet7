@@ -1,11 +1,12 @@
 @page "/create-part"
-@using UteamUP.Client.Wizard.ActivateUser.Forms
-@using UteamUP.Client.Components.Enums
 @using UteamUP.Client.Web.Repository.Interfaces
 @using UteamUP.Client.Web.Wizard.CreatePart.Forms
 
 @inject IUserWebRepository UserWebRepository
+@inject IPartWebRepository PartWebRepository
 @inject IVendorWebRepository VendorWebRepository
+@inject IBlobStorageWebService BlobStorageWebService
+@inject ILogger<CreatePart> Logger
 
 <Form Steps="@_steps"
       BackUrl="/global"
@@ -32,11 +33,6 @@
             break;
         case 2:
             <div class="input-container">
-                <HorizonFileUpload />
-            </div>
-            break;
-        case 3:
-            <div class="input-container">
                 <label>Write Description</label>
                 <HorizonRichTextEditor Height="300px">
                     <EditorContent>
@@ -44,10 +40,6 @@
                     </EditorContent>
                 </HorizonRichTextEditor>
             </div>
-            <label class="input-container">
-                <InputCheckbox @bind-Value=@_model.PartDescriptionForm.IsPrivate />
-                Make it private for this Tenant
-            </label>
             break;
         default:
             break;
@@ -58,6 +50,10 @@
     string? _oid = "";
     string? _name = "";
     string? _email = "";
+    int _tenantId = 0;
+    
+    private List<IBrowserFile> uploadedFiles = new(); // Declare the property for uploaded files
+    private string[] allowedTypes = new string[] { "image/png", "image/jpeg", "image/gif", "image/tiff", "image/pdf", "image/docx" };
 
     AddNewPartForm _model = new AddNewPartForm();
 
@@ -67,7 +63,6 @@
     {
         { "Basic Part Information", false },
         { "Serial Information", false },
-        { "Documentations or images", false },
         { "Description", false },
     };
     
@@ -84,6 +79,7 @@
         _oid = UserState.User.Oid;
         _name = UserState.User.Name;
         _email = UserState.User.Email;
+        _tenantId = UserState.User.DefaultTenantId;
         
         // Get the list of vendors
         var vendors = await VendorWebRepository.GetAllAsync();
@@ -100,7 +96,7 @@
         _model.PartDetailsForm.PartNumber = "PART-115-2023";
         _model.PartDetailsForm.ModelNumber = "UteamUP-115";
         
-        _model.PartUploadForm.UploadPath = "C:\\Users\\Public\\Pictures\\Sample Pictures\\Chrysanthemum.jpg";
+        //_model.PartUploadForm.UploadPath = "C:\\Users\\Public\\Pictures\\Sample Pictures\\Chrysanthemum.jpg";
         
         _model.PartDescriptionForm.IsPrivate = false;
         _model.PartDescriptionForm.Description = "Element 115 is a energy source that can be used to power up a lot of things. It is a very rare element that can be found in the universe.";
@@ -111,13 +107,33 @@
     {
         Console.WriteLine("Submit button clicked");
 
-    // Save create the plan and redirect to global page
-        //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
-        //if (results == false)
-            // TODO: Should popup an error box in the client
-        //    throw new Exception("Could not activate the user");
-        //else
-        //    NavigationManager.NavigateTo("/global");
+        // Convert _model to PartDto
+        var partDto = new PartDto();
+        partDto.Name = _model.BasicPartForm.Name;
+        partDto.SerialNumber = _model.PartDetailsForm.SerialNumber;
+        partDto.ReferenceNumber = _model.PartDetailsForm.ReferenceNumber;
+        partDto.PartNumber = _model.PartDetailsForm.PartNumber;
+        partDto.ModelNumber = _model.PartDetailsForm.ModelNumber;
+        partDto.Description = _model.PartDescriptionForm.Description;
+        partDto.IsPrivate = _model.PartDescriptionForm.IsPrivate;
+        partDto.ImageUrl = _model.PartUploadForm.UploadPath;
+        partDto.AdditionalInfo = _model.PartAdditionalInfoForm.AdditionalInfo;
+        partDto.Notes = _model.PartAdditionalInfoForm.Notes;
+        
+        // Save create the plan and redirect to global page
+        var results = await PartWebRepository.CreatePartAsync(partDto);
+        if(results.Id != 0){
+            // Get the selected vendor Id in the select list
+            //var selectedVendorId = _vendorOptions.FirstOrDefault(x => x.Key == _model.BasicPartForm.VendorName).Value;
+            
+            //Console.WriteLine($"Part created successfully in the database with id: {results.Id} and vendor id: {selectedVendorId}");
+            //await SubmitFiles(selectedVendorId);
+            NavigationManager.NavigateTo("/global");
+        }
+        else
+        {
+            Logger.Log(LogLevel.Warning, "Could not create the part");
+        }
     }
 
     private async Task OnClickContinueButtonAsync()
@@ -130,5 +146,57 @@
     {
         _activeStepIndex = _activeStepIndex - 1;
     }
+    
+    /*
+    private void HandleFileChange(List<IBrowserFile> files)
+    {
+        uploadedFiles = files;
+    }
 
+    private void ClearFiles()
+    {
+        uploadedFiles.Clear();
+    }
+    
+    private async Task SubmitFiles(string vendorId)
+    {
+        Console.WriteLine($"Total files: {uploadedFiles.Count}");
+        if (uploadedFiles != null && uploadedFiles.Any())
+        {
+            foreach (var file in uploadedFiles)
+            {
+                var stream = file.OpenReadStream();
+                
+                if (stream.Length == 0)
+                {
+                    Console.WriteLine("The file is empty.");
+                    Logger.Log(LogLevel.Warning, $"{nameof(SubmitFiles)}: The file {file.Name} is empty.");
+                }
+
+                var fileName = file.Name;
+                var blobContainerName = "images";
+                
+                //var blobPath = $"global/{vendorId}/{fileName}";
+
+                
+                try{
+                    var blobPath = $"{_tenantId.ToString()}/{_oid}/{fileName}";
+                    Console.WriteLine($"Saving to {blobPath}");
+
+                    var saved = await BlobStorageWebService.UploadImagesAsync(blobContainerName, stream, fileName, blobPath);
+                    if(saved.IsSuccess){
+                        Logger.Log(LogLevel.Information, $"{nameof(SubmitFiles)}: File named {fileName} saved successfully, to blob container {blobContainerName}");
+                    }
+                    else
+                    {
+                        Logger.Log(LogLevel.Error, $"{nameof(SubmitFiles)}: File named {fileName} failed to save, to blob container {blobContainerName}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(LogLevel.Error, $"{nameof(SubmitFiles)}: Error writing file: {ex.Message}");
+                }
+            }
+        }
+    }*/
 }

@@ -44,22 +44,22 @@
         font-style: italic;
       }
     }
-      
+
     .image-font:before {
       content: "\f03e";
     }
-    
+
     .file-font:before {
       content: "\f15b";
     }
-    
+
     .database-font:before {
       content: "\f0a0";
     }
 
-    
+
   }
-  
+
   .custom-list {
     list-style-type: none; /* Remove default bullet points */
 

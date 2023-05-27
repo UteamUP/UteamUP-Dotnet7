@@ -57,9 +57,15 @@
     </div>
     <div role="button" tabindex="2" class="dropzone" @onclick="OnClickBrowseAsync">
         <div class="custom-div-list">
-            <div class="image-font"><div>Allowed files (@string.Join(", ", _allowedFileTypes))</div></div>
-            <div class="file-font"><div>Maximum allowed size per file is @_allowedFileSize</div></div>
-            <div class="database-font"><div>Maximum total size of files is 512MB</div></div>
+            <div class="image-font">
+                <div>Allowed files (@string.Join(", ", _allowedFileTypes))</div>
+            </div>
+            <div class="file-font">
+                <div>Maximum allowed size per file is @_allowedFileSize</div>
+            </div>
+            <div class="database-font">
+                <div>Maximum total size of files is 512MB</div>
+            </div>
         </div>
     </div>
 </div>

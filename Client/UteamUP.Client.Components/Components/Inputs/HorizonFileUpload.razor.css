@@ -1,79 +1,91 @@
 .drop-zone-wrapper {
-  padding: 21px;
-  border: 2px dashed rgba(0, 0, 0, 0.08);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+    padding: 21px;
+    border: 2px dashed rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
+
 .drop-zone-wrapper ::deep input {
-  display: none;
+    display: none;
 }
+
 .drop-zone-wrapper svg {
-  opacity: 0.15;
-  margin-bottom: 20px;
+    opacity: 0.15;
+    margin-bottom: 20px;
 }
+
 .drop-zone-wrapper h5 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #000;
-  text-align: center;
-  margin-bottom: 30px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #000;
+    text-align: center;
+    margin-bottom: 30px;
 }
+
 .drop-zone-wrapper .custom-div-list {
-  list-style-type: none; /* Remove default bullet points */
+    list-style-type: none; /* Remove default bullet points */
 }
+
 .drop-zone-wrapper .custom-div-list .image-font:before,
 .drop-zone-wrapper .custom-div-list .file-font:before,
 .drop-zone-wrapper .custom-div-list .database-font:before {
-  font-family: "Font Awesome 5 Pro";
-  margin-right: 5px;
-  display: inline-block;
-  width: 1.5em; /* Adjust as necessary */
-  height: 1.5em; /* Adjust as necessary */
-  vertical-align: middle;
-  text-align: center;
+    font-family: "Font Awesome 5 Pro";
+    margin-right: 5px;
+    display: inline-block;
+    width: 1.5em; /* Adjust as necessary */
+    height: 1.5em; /* Adjust as necessary */
+    vertical-align: middle;
+    text-align: center;
 }
+
 .drop-zone-wrapper .custom-div-list .image-font div,
 .drop-zone-wrapper .custom-div-list .file-font div,
 .drop-zone-wrapper .custom-div-list .database-font div {
-  display: inline;
-  font-style: italic;
+    display: inline;
+    font-style: italic;
 }
+
 .drop-zone-wrapper .custom-div-list .image-font:before {
-  content: "\f03e";
+    content: "\f03e";
 }
+
 .drop-zone-wrapper .custom-div-list .file-font:before {
-  content: "\f15b";
+    content: "\f15b";
 }
+
 .drop-zone-wrapper .custom-div-list .database-font:before {
-  content: "\f0a0";
+    content: "\f0a0";
 }
+
 .drop-zone-wrapper .custom-list {
-  list-style-type: none; /* Remove default bullet points */
+    list-style-type: none; /* Remove default bullet points */
 }
+
 .drop-zone-wrapper .custom-list li:before {
-  content: "\f093"; /* Unicode for "arrow up" */
-  color: yellowgreen;
-  font-family: "Font Awesome 5 Pro";
-  margin-right: 5px;
-  display: inline-block;
-  width: 1.5em; /* Adjust as necessary */
-  height: 1.5em; /* Adjust as necessary */
-  vertical-align: middle;
-  text-align: center;
+    content: "\f093"; /* Unicode for "arrow up" */
+    color: yellowgreen;
+    font-family: "Font Awesome 5 Pro";
+    margin-right: 5px;
+    display: inline-block;
+    width: 1.5em; /* Adjust as necessary */
+    height: 1.5em; /* Adjust as necessary */
+    vertical-align: middle;
+    text-align: center;
 }
+
 .drop-zone-wrapper .custom-list li span:after {
-  content: "\f1f8"; /* Unicode for second icon */
-  font-family: "Font Awesome 5 Pro";
-  margin-right: 5px; /* Adjust as necessary */
-  display: inline-block;
-  color: red;
-  width: 1.5em; /* Adjust as necessary */
-  height: 1.5em; /* Adjust as necessary */
-  vertical-align: middle;
-  text-align: center;
-  cursor: pointer; /* Add this line */
+    content: "\f1f8"; /* Unicode for second icon */
+    font-family: "Font Awesome 5 Pro";
+    margin-right: 5px; /* Adjust as necessary */
+    display: inline-block;
+    color: red;
+    width: 1.5em; /* Adjust as necessary */
+    height: 1.5em; /* Adjust as necessary */
+    vertical-align: middle;
+    text-align: center;
+    cursor: pointer; /* Add this line */
 }
 
 /*# sourceMappingURL=HorizonFileUpload.razor.css.map */

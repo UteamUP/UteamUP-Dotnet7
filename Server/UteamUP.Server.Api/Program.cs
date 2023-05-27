@@ -12,6 +12,7 @@ builder.Services.AddScoped<IVendorRepository, VendorRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<IPartRepository, PartRepository>();
 
 // Adding Global Services.
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();

@@ -1,4 +1,6 @@
 @page "/upload-document"
+@inject IBlobStorageWebService BlobStorageWebService
+
 <div class="input-container" style="width: 650px; margin-left: auto; margin-right: auto;">
     <HorizonFileUpload @ref="fileUpload"
                        AllowedFileTypes="allowedTypes"
@@ -14,7 +16,16 @@
     private HorizonFileUpload fileUpload;
     private List<IBrowserFile> uploadedFiles = new(); // Declare the property for uploaded files
 
-    private string[] allowedTypes = new string[] { "image/png", "image/jpeg", "image/gif", "image/tiff" };
+    private string[] allowedTypes = new string[] { "image/png", "image/jpeg", "image/gif", "image/svg" };
+    
+    string? _oid = "";
+    int _tenantId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _oid = UserState.User.Oid;
+        _tenantId = UserState.User.DefaultTenantId;
+    }
 
     private void HandleFileChange(List<IBrowserFile> files)
     {
@@ -32,69 +43,33 @@
         {
             foreach (var file in uploadedFiles)
             {
-    // Get the file stream
                 var stream = file.OpenReadStream();
-
-    // Check if the file contains any stream
+                
                 if (stream.Length == 0)
                 {
                     Console.WriteLine("The file is empty.");
                 }
 
-    // Get the file name
                 var fileName = file.Name;
+                var blobContainerName = "images";
 
-    // Save the file to wwwroot/files
-                var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "assets");
-                var filePath = Path.Combine(directoryPath, fileName);
+                try{
+                    var blobPath = $"{_tenantId.ToString()}/{_oid}/{fileName}";
 
-    // Create the directory if it doesn't exist
-                Directory.CreateDirectory(directoryPath);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                {
-    // Print out the filename and the filepath
-                    Console.WriteLine($"{filePath}");
-
-                    await stream.CopyToAsync(fileStream);
-
-    // Check if the file has been saved by opening the file and checking if it contains any stream
-
-                    var savedFile = new FileInfo(filePath);
-
-    // Get full directory path of the savedfiLE
-                    var savedFilePath = Path.Combine(directoryPath, savedFile.Name);
-                    Console.WriteLine($"{savedFilePath}");
-
-    // Open the file into a new stream to check if it has been saved
-                    var savedFileStream = new FileStream(savedFilePath, FileMode.Open, FileAccess.Read);
-
-    // Check if the file has been saved
-                    if (savedFileStream.Length == 0)
-                    {
-                        Console.WriteLine("The file has not been saved.");
+                    var saved = await BlobStorageWebService.UploadImagesAsync(blobContainerName, stream, fileName, blobPath);
+                    if(saved.IsSuccess){
+                        Console.WriteLine(saved.Message);
                     }
                     else
                     {
-                        Console.WriteLine("The file path and name is: " + savedFileStream.Name);
-
-    // Read the contents of the file and print it out
-                        using (var reader = new StreamReader(savedFileStream))
-                        {
-                            var fileContents = await reader.ReadToEndAsync();
-                            Console.WriteLine(fileContents);
-                        }
+                        Console.WriteLine(saved.Message);
                     }
-    // Close the savedFileStream
-                    savedFileStream.Close();
-
-    // Close the filestream
-                    fileStream.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error writing file: {ex.Message}");
                 }
             }
         }
     }
-
-}
-
 }

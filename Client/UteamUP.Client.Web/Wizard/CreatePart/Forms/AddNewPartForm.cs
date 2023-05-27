@@ -8,6 +8,7 @@ public class AddNewPartForm
     public PartDetailsForm PartDetailsForm { get; set; }
     public PartUploadForm PartUploadForm { get; set; }
     public PartDescriptionForm PartDescriptionForm { get; set; }
+    public PartAdditionalInfoForm PartAdditionalInfoForm { get; set; }
 
     public AddNewPartForm()
     {
@@ -15,5 +16,6 @@ public class AddNewPartForm
         PartDetailsForm = new PartDetailsForm();
         PartUploadForm = new PartUploadForm();
         PartDescriptionForm = new PartDescriptionForm();
+        PartAdditionalInfoForm = new PartAdditionalInfoForm();
     }
 }

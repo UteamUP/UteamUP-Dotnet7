@@ -29,6 +29,7 @@ builder.Services.AddScoped<IVendorWebRepository, VendorWebRepository>();
 builder.Services.AddScoped<ICategoryWebRepository, CategoryWebRepository>();
 builder.Services.AddScoped<ITagWebRepository, TagWebRepository>();
 builder.Services.AddScoped<IDocumentWebRepository, DocumentWebRepository>();
+builder.Services.AddScoped<IPartWebRepository, PartWebRepository>();
 
 // Add Services
 builder.Services.AddScoped<IBlobStorageWebService, BlobStorageWebService>();

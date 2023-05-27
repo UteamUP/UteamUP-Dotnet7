@@ -8,50 +8,77 @@ public class BlobStorageWebService : IBlobStorageWebService
 {
     private readonly string storageConnectionString;
     private readonly ILogger<BlobStorageWebService> logger;
+    private readonly BlobServiceClient _blobServiceClient;
+    private readonly string _connectionString = "DefaultEndpointsProtocol=https;AccountName=uteamupimages;AccountKey=PdHI3TjGHrfNiTXyUTa8KywrYPjLAgwNy5HJ0r01wKyDHXe9NRBwV7VfMkpown9oBcE05JeRPwev+AStpcPOmg==;EndpointSuffix=core.windows.net";
     
     public BlobStorageWebService(
         IConfiguration configuration,
-        ILogger<BlobStorageWebService> logger
-        )
+        ILogger<BlobStorageWebService> logger)
     {
         this.logger = logger;
-        this.storageConnectionString = "DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=uteamupstorage;AccountKey=Qz3UWKK1nAqR+J3dOFjXIVUwiHHbITDNLyJLE8kV7nfHoKsWOxynGIzPcJQ0M/j5vtNx6OUmuSHUCTo4IiKKxQ==";
+        _blobServiceClient = new BlobServiceClient(_connectionString);
+        this.storageConnectionString = _connectionString;
     }
 
-    public async Task<FileUploadDto> UploadFile(IFormFile file, int tenantId, string oid, string type)
+    public async Task<UploadFileDto> UploadImagesAsync(string blobContainerName, Stream content, string fileName, string blobPath)
     {
-        FileUploadDto fileUploadResultDto = new();
-        try
-        {
-            BlobServiceClient clientStorageAccount = new(this.storageConnectionString);
-            BlobContainerClient blobContainer = clientStorageAccount.GetBlobContainerClient(type);
-            await blobContainer.CreateIfNotExistsAsync();
+        UploadFileDto fileUploadResultDto = new();
+
+            fileUploadResultDto.FileName = fileName;
             BlobClient blockBlob;
 
-            var fileName = file.FileName;
-            var blobPath = $"{tenantId.ToString()}/{oid}/{fileName}";
-
-            if(oid != null || oid != "all") { 
-                blockBlob = blobContainer.GetBlobClient(blobPath);
-            }
-            else {
-                blockBlob = blobContainer.GetBlobClient($"{fileName}");
-            }
-
-            var blobHttpHeaders = new BlobHttpHeaders()
+            var blobContainerClient = _blobServiceClient.GetBlobContainerClient(blobContainerName);
+            Console.WriteLine($"{nameof(UploadImagesAsync)}: 1. " + blobContainerClient.Name);
+            
+            blockBlob = blobContainerClient.GetBlobClient(blobPath);
+            fileUploadResultDto.FileUrl = blockBlob.Uri.ToString();
+            
+            // If folder does not exist then create it
+            
+            Console.WriteLine(blockBlob.BlobContainerName + " " + blockBlob.Name + " " + blockBlob.Uri);
+            if(await blockBlob.ExistsAsync())
             {
-                ContentType = file.ContentType
-            };
+                Console.WriteLine($"{nameof(UploadImagesAsync)}: 3. The file already exists in blob storage {blobContainerName}");
 
+                var blobProperties = await blockBlob.GetPropertiesAsync();
+                var blobLastModified = blobProperties.Value.LastModified;
+                
+                if(blobLastModified > DateTime.Now.AddMinutes(-1))
+                {
+                    Console.WriteLine($"{nameof(UploadImagesAsync)}: 4. The file is newer than the file in blob storage, uploading newer file {fileName} to blob storage {blobContainerName}");
 
-            await blockBlob.UploadAsync(file.OpenReadStream(), blobHttpHeaders);
+                    logger.Log(LogLevel.Information, $"{nameof(UploadImagesAsync)}: The file is newer than the file in blob storage, uploading newer file {fileName} to blob storage {blobContainerName}");
+                    await blockBlob.UploadAsync(content);
+                    fileUploadResultDto.IsSuccess = true;
+                    fileUploadResultDto.Message = "The file is newer than the file in blob storage";
+                    return fileUploadResultDto;
+                }
 
-            fileUploadResultDto.UploadedFileUrl = blockBlob.Uri.ToString();
-            return fileUploadResultDto;
-        }catch(Exception ex)
+                logger.Log(LogLevel.Information, $"{nameof(UploadImagesAsync)}: The file {fileName} already exists in blob storage {blobContainerName}");
+                fileUploadResultDto.Message = "The file already exists. No need to upload.";
+                fileUploadResultDto.IsSuccess = false;
+                
+                return fileUploadResultDto;
+            }
+            else
+            {
+                Console.WriteLine($"{nameof(UploadImagesAsync)}: 5. The file does not exist in blob storage {blobContainerName}");
+
+                logger.Log(LogLevel.Information, $"{nameof(UploadImagesAsync)}: Uploading file {fileName} to blob storage {blobContainerName}");
+                await blockBlob.UploadAsync(content);
+                fileUploadResultDto.IsSuccess = true;
+                fileUploadResultDto.Message = "The file is uploaded";
+
+                return fileUploadResultDto;
+            }
+        /*}
+        catch(Exception ex)
         {
-            fileUploadResultDto.Errors.Add(ex.Message);
-        }
+            logger.Log(LogLevel.Warning, $"{nameof(UploadImagesAsync)}: Error : {ex.Message}");
+        }*/
+        
+        fileUploadResultDto.IsSuccess = false;
+        fileUploadResultDto.Message = "Something went wrong";
 
         return fileUploadResultDto;
     }
