@@ -22,4 +22,70 @@
     text-align: center;
     margin-bottom: 30px;
   }
+
+  .custom-div-list {
+    list-style-type: none; /* Remove default bullet points */
+
+    .image-font,
+    .file-font,
+    .database-font {
+      &:before {
+        font-family: "Font Awesome 5 Pro";
+        margin-right: 5px;
+        display: inline-block;
+        width: 1.5em; /* Adjust as necessary */
+        height: 1.5em; /* Adjust as necessary */
+        vertical-align: middle;
+        text-align: center;
+      }
+
+      div {
+        display: inline; // or inline-block
+        font-style: italic;
+      }
+    }
+      
+    .image-font:before {
+      content: "\f03e";
+    }
+    
+    .file-font:before {
+      content: "\f15b";
+    }
+    
+    .database-font:before {
+      content: "\f0a0";
+    }
+
+    
+  }
+  
+  .custom-list {
+    list-style-type: none; /* Remove default bullet points */
+
+    li:before {
+      content: "\f093"; /* Unicode for "arrow up" */
+      color: yellowgreen;
+      font-family: "Font Awesome 5 Pro";
+      margin-right: 5px;
+      display: inline-block;
+      width: 1.5em; /* Adjust as necessary */
+      height: 1.5em; /* Adjust as necessary */
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    li span:after {
+      content: "\f1f8"; /* Unicode for second icon */
+      font-family: "Font Awesome 5 Pro";
+      margin-right: 5px; /* Adjust as necessary */
+      display: inline-block;
+      color: red;
+      width: 1.5em; /* Adjust as necessary */
+      height: 1.5em; /* Adjust as necessary */
+      vertical-align: middle;
+      text-align: center;
+      cursor: pointer; /* Add this line */
+    }
+  }
 }

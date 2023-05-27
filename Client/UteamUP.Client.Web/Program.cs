@@ -62,7 +62,14 @@ builder.Services.AddMemoryCache();
 
 builder.Services.AddHttpClient("UteamUP.ServerAPI",
         client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
-    .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
+    .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>()
+    .ConfigurePrimaryHttpMessageHandler(() =>
+    {
+        var handler = new HttpClientHandler();
+        handler.MaxRequestContentBufferSize = 50 * 1024 * 1024; // 50 MB
+        return handler;
+    });
+    
 
 builder.Services.AddScoped(sp => new HttpClient
 {
