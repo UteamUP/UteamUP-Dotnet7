@@ -30,7 +30,7 @@ public class TagController : ControllerBase
     }
     
     // Get Tag by name and tenant id
-    [HttpGet("{name}/{tenantId}")]
+    [HttpGet("{name}/tenant/{tenantId}")]
     public async Task<IActionResult> GetTagByNameAndTenantIdAsync(string name, int tenantId)
     {
         // Get the tag

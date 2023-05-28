@@ -106,7 +106,7 @@ public class TagWebRepository : ITagWebRepository
     public async Task<Tag> GetTagByNameAndTenantIdAsync(string tagName, int tenantId)
     {
         await GetHttpClientHeaderToken();
-        var result = await _httpClient.GetAsync($"{Url}/{tagName}/{tenantId}");
+        var result = await _httpClient.GetAsync($"{Url}/{tagName}/tenant/{tenantId}");
         
         if (result.IsSuccessStatusCode)
         {
