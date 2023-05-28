@@ -1,3 +1,7 @@
+using System.Text.Json.Serialization;
+using UteamUP.Client.Web.Repository.Implementations;
+using UteamUP.Client.Web.Repository.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,6 +17,7 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 builder.Services.AddScoped<IPartRepository, PartRepository>();
+builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 
 // Adding Global Services.
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
@@ -27,6 +32,7 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 // Add MediatR Service
 
 builder.Services.AddControllers();
+    //.AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddLogging();

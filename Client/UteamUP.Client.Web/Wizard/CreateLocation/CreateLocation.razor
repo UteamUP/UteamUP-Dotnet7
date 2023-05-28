@@ -4,6 +4,9 @@
 @using UteamUP.Client.Web.Repository.Interfaces
 
 @inject IUserWebRepository UserWebRepository
+@inject ITagWebRepository TagWebRepository
+@inject ILocationWebRepository LocationWebRepository
+@inject ITenantWebRepository TenantWebRepository
 
 <Form Steps="@_steps"
       BackUrl="/global"
@@ -42,6 +45,7 @@
     private List<string> _tagNames = new List<string>();
 
     AddNewLocationForm _model = new AddNewLocationForm();
+    int _tenantId = 0;
 
     protected int _activeStepIndex = 0;
 
@@ -60,22 +64,31 @@
         _model.Name = "Section One";
         _model.Description = "Section One Description";
         _tagNames.AddRange(new List<string>() { "TeamField 1", "TeamField 2", "TeamField 3" });
+        _tenantId = UserState.User.DefaultTenantId;
     }
 
     private async Task OnClickSubmitButtonAsync()
     {
         Console.WriteLine("Submit button clicked");
+        List<TagLocation> tagLocations = new List<TagLocation>();
         
-        // Add tags to _model.Tags
-        _model.Tags = _tagNames;
+        foreach (var tagName in _tagNames)
+        {
+            Tag tag = await TagWebRepository.GetOrCreateTagAsync(tagName, _tenantId);
+            Console.WriteLine("Trying to create tags.");
+            TagLocation tagLocation = new TagLocation();
+            tagLocation.Tag = tag;
+            tagLocations.Add(tagLocation);
+        }
 
-    // Save create the plan and redirect to global page
-        //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
-        //if (results == false)
-            // TODO: Should popup an error box in the client
-        //    throw new Exception("Could not activate the user");
-        //else
-        //    NavigationManager.NavigateTo("/global");
+
+        LocationDto newLocation = new LocationDto();
+        newLocation.Name = _model.Name;
+        newLocation.Description = _model.Description;
+        newLocation.TenantId = _tenantId;
+        newLocation.TagLocations = tagLocations;
+
+        var results = await LocationWebRepository.CreateLocationAsync(newLocation, _tenantId);
     }
 
     private async Task OnClickContinueButtonAsync()

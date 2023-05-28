@@ -4,6 +4,10 @@
 
 @inject IVendorWebRepository VendorWebRepository
 @inject ICategoryWebRepository CategoryWebRepository
+@inject IAssetWebRepository AssetWebRepository
+@inject ITagWebRepository TagWebRepository
+@inject ILocationWebRepository LocationWebRepository
+@inject IPartWebRepository PartWebRepository
 
 <Form Steps="@_steps"
       BackUrl="/global"
@@ -31,11 +35,6 @@
             </EditForm>
             break;
         case 2:
-            <div class="input-container">
-                <HorizonFileUpload />
-            </div>
-            break;
-        case 3:
             <EditForm Model="@_model.AssetDescriptionForm">
                 <div class="input-container">
                     <label class="form-label">Description</label>
@@ -47,7 +46,7 @@
                 </div>
             </EditForm>
             break;
-        case 4:
+        case 3:
             <EditForm Model="@_model.AssetNotesForm">
                 <div class="input-container">
                     <label class="form-label">Notes</label>
@@ -70,6 +69,8 @@
     List<Vendor> _vendors = new();
     List<Category> _categories = new();
     private List<string> _tagNames = new List<string>();
+    private List<Location> _locations = new List<Location>();
+    private List<Part> _parts = new List<Part>();
     
     AddNewAssetForm _model = new();
 
@@ -79,7 +80,6 @@
     {
         { "Basic Information", false },
         { "Model Information", false },
-        { "Documentations or images", false },
         { "Description", false },
         { "Notes", false }
     };
@@ -90,6 +90,16 @@
     };
     
     private IDictionary<string, string> _categoryList = new Dictionary<string, string>()
+    {
+        { "", "" }
+    };
+    
+    private IDictionary<string, string> _locationList = new Dictionary<string, string>()
+    {
+        { "", "" }
+    };
+    
+    private IDictionary<string, string> _partList = new Dictionary<string, string>()
     {
         { "", "" }
     };
@@ -112,6 +122,14 @@
         _categories = await CategoryWebRepository.GetAllCategoriesByTenantIdAsync(globalState.DefaultTenantId);
         if(_categories.Count != 0)
             _categoryList = _categories.ToDictionary(x => x.Name, x => x.Id.ToString());
+        
+        _locations = await LocationWebRepository.GetAllLocationsByTenantIdAsync(globalState.DefaultTenantId);
+        if(_locations != null)
+            _locationList = _locations.ToDictionary(x => x.Name, x => x.Id.ToString());
+        
+        _parts = await PartWebRepository.GetAllPartsByTenantIdAsync(globalState.DefaultTenantId);
+        if(_parts != null)
+            _partList = _parts.ToDictionary(x => x.Name, x => x.Id.ToString());
         
         // pRINT OUT the _tagNames
         foreach(var tag in _tagNames)
@@ -138,13 +156,54 @@
     {
         Console.WriteLine("Submit button clicked");
 
-    // Save create the plan and redirect to global page
-        //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
-        //if (results == false)
-    // TODO: Should popup an error box in the client
-        //    throw new Exception("Could not activate the user");
-        //else
-        //    NavigationManager.NavigateTo("/global");
+        // Create a list of tags and find the tags that are in the database based on the _tagNames and add them to the list
+        List<Tag> tags = new List<Tag>();
+        foreach(var tagName in _tagNames)
+        {
+            var tag = await TagWebRepository.GetTagByNameAsync(tagName);
+            if(tag != null)
+                tags.Add(tag);
+            
+            // if the tag does not exist create it
+            else
+            {
+                List<TagDto> TagList = new List<TagDto>();
+                TagDto newTag = new TagDto();
+                newTag.Name = tagName;
+                TagList.Add(newTag);
+                
+                await TagWebRepository.CreateManyAsync(TagList);
+                tag = await TagWebRepository.GetTagByNameAsync(tagName);
+                tags.Add(tag);
+            }
+        }
+        
+        AssetDto newAsset = new AssetDto();
+        newAsset.Name = _model.BasicAssetForm.Name;
+        newAsset.Category = _categories.Where(x => x.Name == _model.BasicAssetForm.Category).FirstOrDefault();
+        newAsset.Vendor = _vendors.Where(x => x.Name == _model.BasicAssetForm.VendorName).FirstOrDefault();
+        newAsset.SerialNumber = _model.AssetDetailsForm.SerialNumber;
+        newAsset.ReferenceNumber = _model.AssetDetailsForm.ReferenceNumber;
+        newAsset.ModelNumber = _model.AssetDetailsForm.ModelNumber;
+        newAsset.UpcNumber = _model.AssetDetailsForm.UPCNumber;
+        newAsset.Description = _model.AssetDescriptionForm.Description;
+        newAsset.Notes = _model.AssetNotesForm.Notes;
+        newAsset.CheckInProcedure = _model.AssetCheckForm.CheckInProcedure;
+        newAsset.CheckOutProcedure = _model.AssetCheckForm.CheckOutProcedure;
+        newAsset.IsActive = _model.BasicAssetForm.IsActive;
+
+        newAsset.Tags = tags;
+        
+        var results = await AssetWebRepository.CreateAssetAsync(newAsset);
+        if (!string.IsNullOrWhiteSpace(results.Name))
+        {
+            NavigationManager.NavigateTo("/global");
+        }
+        else
+        {
+            // TODO: Should popup an error box in the client
+            throw new Exception("Could not create the asset");
+        }
     }
 
     private async Task OnClickContinueButtonAsync()

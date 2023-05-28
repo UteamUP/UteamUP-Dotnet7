@@ -30,7 +30,7 @@
         }
 
     // Save create the plan and redirect to global page
-        var results = await TagWebRepository.CreateAsync(_tags);
+        var results = await TagWebRepository.CreateManyAsync(_tags);
     }
 
 }

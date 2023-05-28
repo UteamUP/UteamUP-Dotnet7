@@ -7,6 +7,7 @@ public class AddNewAssetForm
     public AssetUploadForm AssetUploadForm { get; set; }
     public AssetDescriptionForm AssetDescriptionForm { get; set; }
     public AssetNotesForm AssetNotesForm { get; set; }
+    public AssetCheckForm AssetCheckForm { get; set; }
 
     public AddNewAssetForm()
     {
@@ -15,5 +16,6 @@ public class AddNewAssetForm
         AssetUploadForm = new AssetUploadForm();
         AssetDescriptionForm = new AssetDescriptionForm();
         AssetNotesForm = new AssetNotesForm();
+        AssetCheckForm = new AssetCheckForm();
     }
 }

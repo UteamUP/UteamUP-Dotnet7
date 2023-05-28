@@ -30,6 +30,8 @@ builder.Services.AddScoped<ICategoryWebRepository, CategoryWebRepository>();
 builder.Services.AddScoped<ITagWebRepository, TagWebRepository>();
 builder.Services.AddScoped<IDocumentWebRepository, DocumentWebRepository>();
 builder.Services.AddScoped<IPartWebRepository, PartWebRepository>();
+builder.Services.AddScoped<IAssetWebRepository, AssetWebRepository>();
+builder.Services.AddScoped<ILocationWebRepository, LocationWebRepository>();
 
 // Add Services
 builder.Services.AddScoped<IBlobStorageWebService, BlobStorageWebService>();

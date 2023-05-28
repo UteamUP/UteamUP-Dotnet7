@@ -49,5 +49,18 @@ public class pgContext : DbContext
         
         modelBuilder.Entity<Tenant>().HasIndex(b => b.Name).IsUnique();
         modelBuilder.Entity<Vendor>().HasIndex(b => b.Name).IsUnique();
+        
+        modelBuilder.Entity<TagLocation>()
+            .HasKey(tl => new { tl.TagId, tl.LocationId }); // composite key
+
+        modelBuilder.Entity<TagLocation>()
+            .HasOne(tl => tl.Location)
+            .WithMany(l => l.TagLocations)
+            .HasForeignKey(tl => tl.LocationId);
+
+        modelBuilder.Entity<TagLocation>()
+            .HasOne(tl => tl.Tag)
+            .WithMany(t => t.TagLocations)
+            .HasForeignKey(tl => tl.TagId);
     }
 }

@@ -20,7 +20,7 @@ public class Stock : Base
     public string ShelveNumber { get; set; } = string.Empty;
     public string ShelveName { get; set; } = string.Empty;
 
-    public virtual List<Location>? Locations { get; set; }
+    public virtual List<Location> Locations { get; set; }
     public virtual List<Tag>? Tags { get; set; } = new();
 
     [ForeignKey("Tenant")] public int? TenantId { get; set; }

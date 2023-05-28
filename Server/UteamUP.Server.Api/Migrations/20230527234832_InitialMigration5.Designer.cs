@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UteamUP.Server.Database.Contexts;
@@ -11,9 +12,11 @@ using UteamUP.Server.Database.Contexts;
 namespace UteamUP.Server.Api.Migrations
 {
     [DbContext(typeof(pgContext))]
-    partial class pgContextModelSnapshot : ModelSnapshot
+    [Migration("20230527234832_InitialMigration5")]
+    partial class InitialMigration5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,6 +68,21 @@ namespace UteamUP.Server.Api.Migrations
                     b.HasIndex("StocksId");
 
                     b.ToTable("LocationStock");
+                });
+
+            modelBuilder.Entity("LocationTag", b =>
+                {
+                    b.Property<int>("LocationsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TagsId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("LocationsId", "TagsId");
+
+                    b.HasIndex("TagsId");
+
+                    b.ToTable("LocationTag");
                 });
 
             modelBuilder.Entity("MUserTag", b =>
@@ -1062,21 +1080,6 @@ namespace UteamUP.Server.Api.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.TagLocation", b =>
-                {
-                    b.Property<int>("TagId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("TagId", "LocationId");
-
-                    b.HasIndex("LocationId");
-
-                    b.ToTable("TagLocation");
-                });
-
             modelBuilder.Entity("UteamUP.Shared.Models.Tenant", b =>
                 {
                     b.Property<int>("Id")
@@ -1484,6 +1487,21 @@ namespace UteamUP.Server.Api.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("LocationTag", b =>
+                {
+                    b.HasOne("UteamUP.Shared.Models.Location", null)
+                        .WithMany()
+                        .HasForeignKey("LocationsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UteamUP.Shared.Models.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MUserTag", b =>
                 {
                     b.HasOne("UteamUP.Shared.Models.Tag", null)
@@ -1859,25 +1877,6 @@ namespace UteamUP.Server.Api.Migrations
                     b.Navigation("Tenant");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.TagLocation", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.Location", "Location")
-                        .WithMany("TagLocations")
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("UteamUP.Shared.Models.Tag", "Tag")
-                        .WithMany("TagLocations")
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Location");
-
-                    b.Navigation("Tag");
-                });
-
             modelBuilder.Entity("UteamUP.Shared.Models.Tool", b =>
                 {
                     b.HasOne("UteamUP.Shared.Models.Category", "Category")
@@ -1914,19 +1913,9 @@ namespace UteamUP.Server.Api.Migrations
                     b.Navigation("MUsers");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.Location", b =>
-                {
-                    b.Navigation("TagLocations");
-                });
-
             modelBuilder.Entity("UteamUP.Shared.Models.Report", b =>
                 {
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("UteamUP.Shared.Models.Tag", b =>
-                {
-                    b.Navigation("TagLocations");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Tenant", b =>
