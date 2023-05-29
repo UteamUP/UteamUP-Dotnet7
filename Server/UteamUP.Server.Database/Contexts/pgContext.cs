@@ -13,6 +13,7 @@ public class pgContext : DbContext
     public DbSet<License> Licenses { get; set; }
     public DbSet<LicenseUsers> LicenseUsers { get; set; }
     public DbSet<Location> Locations { get; set; }
+    public DbSet<LocationTag> LocationTags { get; set; }
     //public DbSet<LocationStock> LocationStocks { get; set; }
     public DbSet<Part?> Parts { get; set; }
     public DbSet<Plan> Plans { get; set; }

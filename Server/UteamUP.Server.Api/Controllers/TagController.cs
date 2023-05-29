@@ -43,12 +43,10 @@ public class TagController : ControllerBase
     
     // Create the tag
     [HttpPost]
-    public async Task<IActionResult> CreateTagAsync([FromBody] List<TagDto> tags)
+    public async Task<IActionResult> CreateTagAsync([FromBody] Tag tag)
     {
-        // Create the tag
-        var result = await _tag.CreateManyAsync(tags);
-        if(result == null) return BadRequest("Something went wrong while creating the tag, please review logs for more information");
-        
+        var result = await _tag.CreateAsync(tag);
+        if (string.IsNullOrWhiteSpace(result.Name)) return Ok(new Tag());
         return Ok(result);
     }
     

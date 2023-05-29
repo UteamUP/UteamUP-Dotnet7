@@ -11,7 +11,7 @@ public class Location : Base
     public string? Description { get; set; }
     [ForeignKey("Tenant")] public int? TenantId { get; set; }
     public virtual Tenant? Tenant { get; set; }
-    public HashSet<Tag> Tags { get; } = new();
+    public List<Tag> Tags { get; set; }
     
     //public virtual List<Asset>? Assets { get; set; }
     //public virtual List<Stock>? Stocks { get; set; }

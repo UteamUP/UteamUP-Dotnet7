@@ -50,14 +50,28 @@ public class LocationWebRepository : ILocationWebRepository
         }
     }
 
+    public async Task<Location> GetByLocationId(int locationId)
+    {
+        await GetHttpClientHeaderToken();
+        var result = await _httpClient.GetAsync($"{Url}/{locationId}");
+        
+        if (result.IsSuccessStatusCode)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(GetByLocationId)}: Location retrieved successfully");
+            return await result.Content.ReadFromJsonAsync<Location>();
+        }
+        else
+        {
+            _logger.Log(LogLevel.Error,
+                $"{nameof(GetByLocationId)}: Location retrieval failed, because of : " + result.StatusCode);
+            return null;
+        }
+    }
+
     public async Task<Location?> Create(Location location)
     {
-        Console.WriteLine("GETTING TOKEN");
         await GetHttpClientHeaderToken();
-        Console.WriteLine("SENDING TO POST");
         var result = await _httpClient.PostAsJsonAsync<Location>("api/location", location);
-        Console.WriteLine("JUST SENT TO POST");
-        
         if (result.IsSuccessStatusCode)
         {
             _logger.Log(LogLevel.Information, $"{nameof(Create)}: Location created successfully");
@@ -70,5 +84,23 @@ public class LocationWebRepository : ILocationWebRepository
             return null;
         }
         
+    }
+
+    public async Task<List<Tag>> GetTagsByLocationId(int locationId)
+    {
+        await GetHttpClientHeaderToken();
+        var result = await _httpClient.GetAsync($"{Url}/{locationId}/tags");
+        
+        if (result.IsSuccessStatusCode)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(GetTagsByLocationId)}: Tags retrieved successfully");
+            return await result.Content.ReadFromJsonAsync<List<Tag>>();
+        }
+        else
+        {
+            _logger.Log(LogLevel.Error,
+                $"{nameof(GetTagsByLocationId)}: Tags retrieval failed, because of : " + result.StatusCode);
+            return new List<Tag>();
+        }
     }
 }

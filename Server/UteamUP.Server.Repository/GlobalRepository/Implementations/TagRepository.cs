@@ -35,21 +35,19 @@ public class TagRepository : ITagRepository
         }
     }
 
-    public async Task<Tag> CreateAsync(TagDto tag)
+    public async Task<Tag> CreateAsync(Tag tag)
     {
         try
         {
-            var mytag = _mapper.Map<Tag>(tag);
-            
             // Check if the tag already exists if so then return it
-            var existingTag = await _context.Tags.FirstOrDefaultAsync(x => x.Name == mytag.Name);
+            var existingTag = await _context.Tags.FirstOrDefaultAsync(x => x.Name == tag.Name && x.TenantId == tag.TenantId);
             if(existingTag != null) return existingTag;
             
-            _context.Tags.Add(mytag);
+            _context.Tags.Add(tag);
             
             _context.SaveChanges();
             
-            return mytag;
+            return tag;
         }catch(Exception ex)
         {
             _logger.LogError(ex, $"{nameof(CreateAsync)}: Something went wrong while creating the tag");

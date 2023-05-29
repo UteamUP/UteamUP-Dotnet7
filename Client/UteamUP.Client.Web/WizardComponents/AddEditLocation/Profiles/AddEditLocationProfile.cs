@@ -11,6 +11,7 @@ public class AddEditLocationProfile : Profile
             .ForMember(dest => dest.Name, act => act.MapFrom(src => src.LocationBasicForm.Name))
             .ForMember(dest => dest.TenantId, act => act.MapFrom(src => src.LocationBasicForm.TenantId))
             .ForMember(dest => dest.Description, act => act.MapFrom(src => src.LocationDetailsForm.Description))
+            .ForMember(dest => dest.Tags, act => act.MapFrom(src => src.LocationAdditionalForm.Tags))
             .ReverseMap();
     }
 }

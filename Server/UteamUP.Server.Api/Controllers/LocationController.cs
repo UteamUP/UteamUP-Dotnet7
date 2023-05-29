@@ -13,7 +13,7 @@ public class LocationController : ControllerBase
     private readonly ILocationRepository _location;
     private readonly IMUserRepository _user;
     private readonly IRepository<Location> _locationRepository;
-    //private readonly IRepository<Tag> _tagRepository;
+    private readonly IRepository<Tag> _tagRepository;
     
     public LocationController(
         ILogger<LocationController> logger, 
@@ -26,8 +26,8 @@ public class LocationController : ControllerBase
         _logger = logger;
         _location = location;
         _user = user;
-        //_locationRepository = locationRepository;
-        //_tagRepository = tagRepository;
+        _locationRepository = locationRepository;
+        _tagRepository = tagRepository;
     }
     
     private async Task<IActionResult> ValidateUser()
@@ -54,17 +54,21 @@ public class LocationController : ControllerBase
         if (user.GetType() == typeof(UnauthorizedObjectResult))
             return user;
         
-        /*
-        Location newLocation = new Location();
-        _locationRepository.Add(newLocation);
-
-        newLocation = location;
-        _locationRepository.Update(newLocation);
-
-        return Ok(newLocation); // Return a success response
-        */
         
-        return Ok(); // Return a success response*/
+        var newLocation = await _location.CreateLocationAsync(location, (int)location.TenantId);
+        
+        Console.WriteLine("Trying to update tags");
+        // Update the tags
+        foreach (var t in location.Tags)
+        {
+            Console.WriteLine("Here are the names of the tag: " + t.Name);
+        }
+        Console.WriteLine("Out of foreach is done");
+
+        var tagUpdate = await _location.UpdateTagToLocationAsync(location.Tags, newLocation.Id);
+        if(tagUpdate == null) return NotFound("Tags not updated");
+        
+        return Ok(newLocation); // Return a success response
     }
     
     
@@ -86,9 +90,10 @@ public class LocationController : ControllerBase
         return Ok(result);
     }
     
+    
     // Create a location
     [HttpPost("tenant/{tenantId}")]
-    public async Task<IActionResult> CreateLocationAsync(LocationDto location, int tenantId)
+    public async Task<IActionResult> CreateLocationAsync(Location location, int tenantId)
     {
         // Validate the user
         var user = await ValidateUser();
@@ -101,6 +106,27 @@ public class LocationController : ControllerBase
         var result = await _location.CreateLocationAsync(location, tenantId);
         if(result == null) return NotFound("Location not created");
         
+        // Update the tags
+        foreach (var t in location.Tags)
+        {
+            Console.WriteLine(t.Name);
+        }
+        var tagUpdate = await _location.UpdateTagToLocationAsync(location.Tags, result.Id);
+        if(tagUpdate == null) return NotFound("Tags not updated");
+        
+        return Ok(result);
+    }
+
+    [HttpGet("{id}/tags")]
+    public async Task<IActionResult> GetTagsByLocationId(int id)
+    {
+        var user = await ValidateUser();
+        
+        // if unautorized return the error
+        if (user.GetType() == typeof(UnauthorizedObjectResult))
+            return user;
+        
+        var result = await _location.GetTagsByLocationId(id);
         return Ok(result);
     }
     
@@ -116,7 +142,9 @@ public class LocationController : ControllerBase
             return user;
         
         // Get the location
-        var result = await _locationRepository.Get(id);
+        //var result = await _locationRepository.Get(id);
+        var result = await _location.GetByLocationId(id);
+        
         if(result == null) return NotFound("Location not found");
         
         return Ok(result);

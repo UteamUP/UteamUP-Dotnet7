@@ -3,11 +3,14 @@
 @using UteamUP.Client.Web.WizardComponents.AddEditLocation.Modals
 @using UteamUP.Client.Web.WizardComponents.WizardBase
 @using UteamUP.Client.GlobalRepository.Interfaces
+@using UteamUP.Client.Web.Repository.Interfaces
 @using UteamUP.Client.Web.WizardComponents.AddEditLocation.Forms
 @inject IModalService ModalService
 @inject IWebRepository<Tag> TagWebRepository
 @inject IWebRepository<Location> LocationWebRepository
+@inject ILocationWebRepository MyLocationWebRepository
 @inherits WizardBase<AddEditLocationForm>
+
 
 <Form Steps="@_steps"
       BackUrl="/global"
@@ -65,12 +68,11 @@
         
         foreach (var tagName in _tagNames)
         {
-            //Console.WriteLine(tagName);
             try
             {
                 var tag = await TagWebRepository.GetByNameAndTenantId(tagName, "api/tag", _tenantId);
                 
-                if (tag != null)
+                if (!string.IsNullOrWhiteSpace(tag.Name))
                 {
                     tagList.Add(tag);
                 }
@@ -82,7 +84,7 @@
                     newTag.TenantId = _tenantId;
 
                     var newTagResult = await TagWebRepository.Add(newTag, "api/tag");
-                    if (newTagResult != null)
+                    if (!string.IsNullOrWhiteSpace(newTagResult.Name))
                     {
                         tagList.Add(newTagResult);
                     }
@@ -99,31 +101,87 @@
     private async Task OnClickSubmitButtonAsync()
     {
         var tags = await GetTags();
-        Console.WriteLine("Tags count: " + tags.Count);
-        Console.WriteLine("Submit button clicked");
+        
+        // create a map between _model and location so we can send the location as a parameter
+        location = Mapper.Map<Location>(_model);
+        location.Tags = tags;
+        
+        foreach(var t in location.Tags)
+        {
+            Console.WriteLine("This is my tag: " + t.Name);
+        }
+        
+        // Create the location
+        if (Id == null)
+        {
+            try
+            {
+                var result = await LocationWebRepository.Add(location, "api/location");
+                if (result.Id != 0)
+                {
+                    NavigationManager.NavigateTo("/global");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+            }
+        }
+        
+        // Update the location
+        else
+        {
+            try
+            {
+                var result = await LocationWebRepository.Update(location, "api/location");
+                if (result.Id != 0)
+                {
+                    NavigationManager.NavigateTo("/global");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+            }
+        }
+
     }
     
     protected override async Task OnInitializedAsync()
     {
         _model = new AddEditLocationForm();
 
-        if (Id != null)
+        if (Id.Value != null)
         {
-            _model = Mapper.Map<AddEditLocationForm>(location);
             
-    // Search for the location based on the id
-            location = await LocationWebRepository.Get(Id.Value, "api/location");
+            // Search for the location based on the id
+            location = await MyLocationWebRepository.GetByLocationId(Id.Value);
+            //location = await LocationWebRepository.Get(Id.Value, "api/location");
+
+            if (string.IsNullOrWhiteSpace(location.Name))
+            {
+                // Open modal and display error
+                OpenModal("Error", "Location not found");
+            }
+
+            // Get the tags for the location
+            var myTags = await MyLocationWebRepository.GetTagsByLocationId(Id.Value);
+            
+            // Push values to the model
+            _model = Mapper.Map<AddEditLocationForm>(location);
+            _model.LocationAdditionalForm.Tags = myTags;
+            _tagNames.AddRange(myTags.Select(t => t.Name));
         }
         
         _tenantId = UserState.User.DefaultTenantId;
-        GenerateLocation(_tenantId);
+        //GenerateLocation(_tenantId);
     }
     
     private void OpenModal(string ErrorTitle, string ErrorDetails)
     {
         var options = new ModalOptions()
         {
-            DisableBackgroundCancel = false,
+            DisableBackgroundCancel = true,
             HideCloseButton = false,
         };
         

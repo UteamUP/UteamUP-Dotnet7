@@ -1,7 +1,9 @@
 namespace UteamUP.Shared.Models;
 
-public class TagLocation
+public class LocationTag
 {
+    [Key] public int Id { get; set; }
+
     public int LocationId { get; set; }
     public Location Location { get; set; }
 
