@@ -23,6 +23,8 @@ public class LocationRepository : ILocationRepository
         if (locationExists)
             return _context.Locations.FirstOrDefault(x => x.Name == location.Name);
 
+        Console.WriteLine("Trying to create location");
+        
         // Map the location
         var mappedLocation = _mapper.Map<Location>(location);
         mappedLocation.CreatedAt = DateTime.Now.ToUniversalTime();

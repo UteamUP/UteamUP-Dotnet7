@@ -2,11 +2,6 @@ namespace UteamUP.Shared.Models;
 
 public class Workorder : Base
 {
-    public Workorder()
-    {
-        Tags = new List<Tag>();
-    }
-
     [Key] public int Id { get; set; }
 
     [MaxLength(512)]
@@ -23,7 +18,7 @@ public class Workorder : Base
     public DateTime StartDate { get; set; }
     public DateTime DueDate { get; set; }
 
-    public virtual List<Tag>? Tags { get; set; } = new();
+    //public virtual HashSet<Tag>? Tags { get; set; } = new();
 
     public string AssignedUserName { get; set; }
     public string Assignee { get; set; } = string.Empty;

@@ -1,0 +1,156 @@
+@page "/location-add"
+@page "/location-edit/{id:int?}"
+@using UteamUP.Client.Web.WizardComponents.AddEditLocation.Modals
+@using UteamUP.Client.Web.WizardComponents.WizardBase
+@using UteamUP.Client.GlobalRepository.Interfaces
+@using UteamUP.Client.Web.WizardComponents.AddEditLocation.Forms
+@inject IModalService ModalService
+@inject IWebRepository<Tag> TagWebRepository
+@inject IWebRepository<Location> LocationWebRepository
+@inherits WizardBase<AddEditLocationForm>
+
+<Form Steps="@_steps"
+      BackUrl="/global"
+      ActiveStepIndex="@_activeStepIndex"
+      Title="@(Id == null ? "Create Location" : "Edit Location")"
+      OnClickBackButton="OnClickBackButton"
+      OnClickContinueButton="OnClickContinueButtonAsync"
+      OnClickSubmitButton="OnClickSubmitButtonAsync">
+    @switch (_activeStepIndex)
+    {
+        case 0:
+            <EditForm Model="@_model.LocationBasicForm">
+                <FluentValidationValidator @ref="_fluentValidationValidator" />
+                <HorizonInput Label="Location Name" Placeholder="Type in the name of the location" @bind-Value="@_model.LocationBasicForm.Name"/>
+            </EditForm>
+            break;
+        case 1:
+            <EditForm Model="@_model.LocationAdditionalForm">
+                <HorizonChipTag Label="Tags" @bind-Value="@_tagNames" Placeholder="Type in the tags you want to add to the location"/>
+            </EditForm>
+            break;
+        case 2:
+            <EditForm Model="@_model.LocationDetailsForm">
+                <h2>Location Description</h2>
+                <div class="input-container">
+                    <label class="form-label">Description</label>
+                    <HorizonRichTextEditor Height="300px">
+                        <EditorContent>
+                            @((MarkupString)_model.LocationDetailsForm.Description)
+                        </EditorContent>
+                    </HorizonRichTextEditor>
+                </div>
+            </EditForm>
+            break;
+        default:
+            break;
+    }
+</Form>
+
+@code {
+    private List<string> _tagNames = new List<string>();
+    private Location location = new Location();
+    int _tenantId = 0;
+    
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Location Basic Information", false },
+        { "Tags", false },
+        { "Location Details", false },
+    };
+
+    private async Task<List<Tag>> GetTags()
+    {
+        List<Tag> tagList = new List<Tag>();
+        
+        foreach (var tagName in _tagNames)
+        {
+            //Console.WriteLine(tagName);
+            try
+            {
+                var tag = await TagWebRepository.GetByNameAndTenantId(tagName, "api/tag", _tenantId);
+                
+                if (tag != null)
+                {
+                    tagList.Add(tag);
+                }
+                else
+                {
+                    // Create the tag
+                    Tag newTag = new Tag();
+                    newTag.Name = tagName;
+                    newTag.TenantId = _tenantId;
+
+                    var newTagResult = await TagWebRepository.Add(newTag, "api/tag");
+                    if (newTagResult != null)
+                    {
+                        tagList.Add(newTagResult);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+            }
+        }
+        return tagList;
+    }
+
+    private async Task OnClickSubmitButtonAsync()
+    {
+        var tags = await GetTags();
+        Console.WriteLine("Tags count: " + tags.Count);
+        Console.WriteLine("Submit button clicked");
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _model = new AddEditLocationForm();
+
+        if (Id != null)
+        {
+            _model = Mapper.Map<AddEditLocationForm>(location);
+            
+    // Search for the location based on the id
+            location = await LocationWebRepository.Get(Id.Value, "api/location");
+        }
+        
+        _tenantId = UserState.User.DefaultTenantId;
+        GenerateLocation(_tenantId);
+    }
+    
+    private void OpenModal(string ErrorTitle, string ErrorDetails)
+    {
+        var options = new ModalOptions()
+        {
+            DisableBackgroundCancel = false,
+            HideCloseButton = false,
+        };
+        
+        var parameters = new ModalParameters();
+        parameters.Add(ErrorTitle, ErrorDetails);
+
+        ModalService.Show<ErrorModal>("Error", parameters, options);
+    }
+    
+    private void GenerateLocation(int tenantId)
+    {
+        _model.LocationBasicForm.Name = "Entrance1";
+        _model.LocationDetailsForm.Description = "Entrance1 is the entrance to the building, it is where Elvis Presley entered the building.";
+        _model.LocationBasicForm.TenantId = tenantId;
+        _tagNames.AddRange(new List<string>() { "TeamField 1", "TeamField 2", "TeamField 3" });
+    }
+    
+    private async Task OnClickContinueButtonAsync()
+    {
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+    }
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+    
+}
+

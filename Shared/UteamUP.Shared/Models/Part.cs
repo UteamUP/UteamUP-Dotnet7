@@ -2,11 +2,6 @@ namespace UteamUP.Shared.Models;
 
 public class Part : Base
 {
-    public Part()
-    {
-        Tags = new List<Tag>();
-    }
-
     [Key] public int Id { get; set; }
 
     [MaxLength(512)]
@@ -32,5 +27,5 @@ public class Part : Base
 
     [ForeignKey("Category")] public int? CategoryId { get; set; }
     public Category? Category { get; set; }
-    public virtual List<Tag>? Tags { get; set; } = new();
+    //public virtual HashSet<Tag>? Tags { get; set; } = new();
 }

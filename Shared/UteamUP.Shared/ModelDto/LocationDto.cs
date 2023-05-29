@@ -5,5 +5,4 @@ public class LocationDto
     public string Name { get; set; }
     public string? Description { get; set; }
     public int? TenantId { get; set; }
-    public virtual List<TagLocation>? TagLocations { get; set; }
 }

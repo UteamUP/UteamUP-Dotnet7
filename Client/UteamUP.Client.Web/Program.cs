@@ -2,6 +2,8 @@ using Blazor.SubtleCrypto;
 using Blazored.LocalStorage;
 using Blazored.Toast;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using UteamUP.Client.GlobalRepository.Implementations;
+using UteamUP.Client.GlobalRepository.Interfaces;
 using UteamUP.Client.Web.Repository.Implementations;
 using UteamUP.Client.Web.Repository.Interfaces;
 using UteamUP.Client.Web.Services;
@@ -18,6 +20,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped<UserState>();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 //builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<CustomAuthenticationStateProvider>());
+
+// Adding generic repository services.
+builder.Services.AddScoped(typeof(IWebRepository<>), typeof(WebRepository<>));
 
 // Add Repositories
 builder.Services.AddScoped<ITenantWebRepository, TenantWebRepository>();
@@ -44,6 +49,9 @@ builder.Services.AddBlazoredLocalStorage(config =>
 {
     config.JsonSerializerOptions.WriteIndented = true;
 });
+
+// Add Blazor Modal for Modals
+builder.Services.AddBlazoredModal();
 
 // Add Blazor Toast for Error Messages
 builder.Services.AddBlazoredToast();

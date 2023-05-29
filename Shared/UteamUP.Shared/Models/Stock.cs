@@ -2,12 +2,6 @@ namespace UteamUP.Shared.Models;
 
 public class Stock : Base
 {
-    public Stock()
-    {
-        Locations = new List<Location>();
-        Tags = new List<Tag>();
-    }
-
     [Key] public int Id { get; set; }
 
     [MaxLength(512)]
@@ -20,8 +14,8 @@ public class Stock : Base
     public string ShelveNumber { get; set; } = string.Empty;
     public string ShelveName { get; set; } = string.Empty;
 
-    public virtual List<Location> Locations { get; set; }
-    public virtual List<Tag>? Tags { get; set; } = new();
+    //public virtual HashSet<Location>? Locations { get; set; }
+    //public virtual HashSet<Tag>? Tags { get; set; } = new();
 
     [ForeignKey("Tenant")] public int? TenantId { get; set; }
     public Tenant? Tenant { get; set; }

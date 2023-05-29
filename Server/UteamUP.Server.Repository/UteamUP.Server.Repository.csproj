@@ -18,11 +18,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="GenericRepository\Implementations\" />
-        <Folder Include="GenericRepository\Interfaces\" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\..\Shared\UteamUP.Shared\UteamUP.Shared.csproj" />
         <ProjectReference Include="..\UteamUP.Server.Database\UteamUP.Server.Database.csproj" />
         <ProjectReference Include="..\UteamUP.Server.Services\UteamUP.Server.Services.csproj" />

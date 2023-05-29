@@ -4,12 +4,6 @@ namespace UteamUP.Shared.Models;
 
 public class MUser : Base
 {
-    public MUser()
-    {
-        Tags = new List<Tag>();
-        Tenants = new List<Tenant>();
-    }
-
     [Key] public int Id { get; set; }
 
     [MaxLength(255)]
@@ -40,7 +34,7 @@ public class MUser : Base
 
     public string ActivationCode { get; set; } = string.Empty;
     [MaxLength(50)] [MinLength(2)] public string DefaultLanguage { get; set; } = "en";
-    public virtual List<Tag>? Tags { get; set; } = new();
+    //public virtual HashSet<Tag>? Tags { get; set; } = new();
     
     // Address information
     public string? Country { get; set; } = string.Empty;

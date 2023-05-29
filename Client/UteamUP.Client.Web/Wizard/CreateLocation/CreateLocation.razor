@@ -1,12 +1,14 @@
 @page "/create-location"
 @using UteamUP.Client.Wizard.ActivateUser.Forms
-@using UteamUP.Client.Components.Enums
+@using UteamUP.Client.GlobalRepository.Interfaces
 @using UteamUP.Client.Web.Repository.Interfaces
 
-@inject IUserWebRepository UserWebRepository
-@inject ITagWebRepository TagWebRepository
-@inject ILocationWebRepository LocationWebRepository
-@inject ITenantWebRepository TenantWebRepository
+@inject ITagWebRepository MyTagWebRepository
+@inject ILocationWebRepository MyLocationWebRepository
+@inject IWebRepository<Location> LocationWebRepository
+@inject IWebRepository<Tenant> TenantWebRepository
+@inject IWebRepository<Tag> TagWebRepository
+@inject IMapper Mapper
 
 <Form Steps="@_steps"
       BackUrl="/global"
@@ -43,8 +45,9 @@
 
 @code {
     private List<string> _tagNames = new List<string>();
-
+    private Location location = new Location();
     AddNewLocationForm _model = new AddNewLocationForm();
+    private List<int> _tagIds = new List<int>();
     int _tenantId = 0;
 
     protected int _activeStepIndex = 0;
@@ -66,29 +69,50 @@
         _tagNames.AddRange(new List<string>() { "TeamField 1", "TeamField 2", "TeamField 3" });
         _tenantId = UserState.User.DefaultTenantId;
     }
-
+    
+    
     private async Task OnClickSubmitButtonAsync()
     {
-        Console.WriteLine("Submit button clicked");
-        List<TagLocation> tagLocations = new List<TagLocation>();
-        
         foreach (var tagName in _tagNames)
         {
-            Tag tag = await TagWebRepository.GetOrCreateTagAsync(tagName, _tenantId);
-            Console.WriteLine("Trying to create tags.");
-            TagLocation tagLocation = new TagLocation();
-            tagLocation.Tag = tag;
-            tagLocations.Add(tagLocation);
+            var tag = await TagWebRepository.GetByNameAndTenantId(tagName, "api/tag", _tenantId);
+            Console.WriteLine("The tag id is: " + tag.Id);
+
+            if (tag != null)
+            {
+                _tagIds.Add(tag.Id);
+            }
+            else
+            {
+                // Create the tag
+                Tag newTag = new Tag();
+                newTag.Name = tagName;
+                newTag.TenantId = _tenantId;
+                
+                var newTagResult = await TagWebRepository.Add(newTag, "api/tag");
+                if (newTagResult != null)
+                {
+                    _tagIds.Add(newTagResult.Id);
+                }
+            }
         }
-
-
-        LocationDto newLocation = new LocationDto();
-        newLocation.Name = _model.Name;
-        newLocation.Description = _model.Description;
-        newLocation.TenantId = _tenantId;
-        newLocation.TagLocations = tagLocations;
-
-        var results = await LocationWebRepository.CreateLocationAsync(newLocation, _tenantId);
+        
+        /*
+        location.Name = _model.Name;
+        location.Description = _model.Description;
+        location.TenantId = _tenantId;
+        location.CreatedAt = DateTime.Now.ToUniversalTime();
+        location.UpdatedAt = DateTime.Now.ToUniversalTime();
+        
+        var result = await LocationWebRepository.Add(location, "api/location");
+        if (result != null)
+        {
+            Console.WriteLine("Location created successfully.");
+        }
+        else
+        {
+            Console.WriteLine("Location creation failed.");
+        }*/
     }
 
     private async Task OnClickContinueButtonAsync()

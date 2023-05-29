@@ -1,4 +1,5 @@
 using UteamUP.Server.Controllers;
+using UteamUP.Server.Repository.GenericRepository.Interfaces;
 
 namespace UteamUP.Server.Api.Controllers;
 
@@ -10,23 +11,25 @@ public class TagController : ControllerBase
     private readonly ILogger<PlanController> _logger;
     private readonly ITagRepository _tag;
     private readonly IMUserRepository _user;
+    private readonly IRepository<Tag> _tagRepository;
+
     
-    public TagController(ILogger<PlanController> logger, ITagRepository tag, IMUserRepository user)
+    public TagController(ILogger<PlanController> logger, ITagRepository tag, IMUserRepository user, IRepository<Tag> tagRepository)
     {
         _logger = logger;
         _tag = tag;
         _user = user;
+        _tagRepository = tagRepository;
     }
     
     // Get Tag by name
-    [HttpGet("{name}")]
-    public async Task<IActionResult> GetTagByNameAsync(string name)
+    [HttpGet("name/{name}/tenant/{tenantId}")]
+    public async Task<IActionResult> GetTagByNameAsync(string name, int tenantId)
     {
+        Console.WriteLine("Trying to find tag by name: " + name + " and tenant id: " + tenantId);
         // Get the tag
-        var result = await _tag.GetTagByNameAsync(name);
-        if(result == null) return NotFound("Tag not found");
-        
-        return Ok(result);
+        //return Ok(_tagRepository.GetByNameAndTenantId(name, tenantId));
+        return Ok(await _tag.GetTagByNameAndTenantIdAsync(name, tenantId));
     }
     
     // Get Tag by name and tenant id
@@ -34,10 +37,7 @@ public class TagController : ControllerBase
     public async Task<IActionResult> GetTagByNameAndTenantIdAsync(string name, int tenantId)
     {
         // Get the tag
-        var result = await _tag.GetTagByNameAndTenantIdAsync(name, tenantId);
-        if(result == null) return NotFound("Tag not found");
-        
-        return Ok(result);
+        return Ok(await _tag.GetTagByNameAndTenantIdAsync(name, tenantId));
     }
     
     
@@ -46,7 +46,7 @@ public class TagController : ControllerBase
     public async Task<IActionResult> CreateTagAsync([FromBody] List<TagDto> tags)
     {
         // Create the tag
-        var result = await _tag.CreateAsync(tags);
+        var result = await _tag.CreateManyAsync(tags);
         if(result == null) return BadRequest("Something went wrong while creating the tag, please review logs for more information");
         
         return Ok(result);
@@ -57,9 +57,8 @@ public class TagController : ControllerBase
     public async Task<IActionResult> GetTagByNameAndLocationNameAsync(string name, string locationName)
     {
         // Get the tag
-        var result = await _tag.GetTagByNameAndLocationNameAsync(name, locationName);
-        if(result == null) return NotFound("Tag not found");
-        
-        return Ok(result);
+        return Ok(await _tag.GetTagByNameAndLocationNameAsync(name, locationName));
     }
+    
+    
 }

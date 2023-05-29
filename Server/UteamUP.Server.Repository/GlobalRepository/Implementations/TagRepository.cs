@@ -13,7 +13,7 @@ public class TagRepository : ITagRepository
         _logger = logger;
     }
     
-    public async Task<List<Tag>> CreateAsync(List<TagDto> tags)
+    public async Task<List<Tag>> CreateManyAsync(List<TagDto> tags)
     {
         // Create a range of tags
         var mytags = _mapper.Map<List<Tag>>(tags);
@@ -35,6 +35,28 @@ public class TagRepository : ITagRepository
         }
     }
 
+    public async Task<Tag> CreateAsync(TagDto tag)
+    {
+        try
+        {
+            var mytag = _mapper.Map<Tag>(tag);
+            
+            // Check if the tag already exists if so then return it
+            var existingTag = await _context.Tags.FirstOrDefaultAsync(x => x.Name == mytag.Name);
+            if(existingTag != null) return existingTag;
+            
+            _context.Tags.Add(mytag);
+            
+            _context.SaveChanges();
+            
+            return mytag;
+        }catch(Exception ex)
+        {
+            _logger.LogError(ex, $"{nameof(CreateAsync)}: Something went wrong while creating the tag");
+            return new Tag();
+        }
+    }
+
     public async Task<Tag> GetTagByNameAsync(string name)
     {
         return await _context.Tags.FirstOrDefaultAsync(x => x.Name == name);
@@ -43,12 +65,14 @@ public class TagRepository : ITagRepository
     public async Task<Tag> GetTagByNameAndLocationNameAsync(string name, string locationName)
     {
         // Find the tag by name and Location name which is a many to many field in tag and return it
-        return await _context.Tags.FirstOrDefaultAsync(x => x.Name == name && x.TagLocations.Where(y => y.Location.Name == locationName).Any());
+        return await _context.Tags.FirstOrDefaultAsync(x => x.Name == name);
     }
 
     public async Task<Tag> GetTagByNameAndTenantIdAsync(string tagName, int tenantId)
     {
         // Select from tag table where name is equal to the name of the tag, also select from TagLocation table where the location is equal to the tenant id
-        return await _context.Tags.FirstOrDefaultAsync(x => x.Name == tagName && x.TagLocations.Where(y => y.Location.TenantId == tenantId).Any());
+        var tag = await _context.Tags.FirstOrDefaultAsync(x => x.Name == tagName && x.TenantId == tenantId);
+        if (tag == null) return new Tag();
+        return tag;
     }
 }

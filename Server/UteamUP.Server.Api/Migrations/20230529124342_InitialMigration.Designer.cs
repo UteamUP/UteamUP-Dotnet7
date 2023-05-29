@@ -12,8 +12,8 @@ using UteamUP.Server.Database.Contexts;
 namespace UteamUP.Server.Api.Migrations
 {
     [DbContext(typeof(pgContext))]
-    [Migration("20230527234101_InitialMigration3")]
-    partial class InitialMigration3
+    [Migration("20230529124342_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,34 +25,19 @@ namespace UteamUP.Server.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("AssetTag", b =>
+            modelBuilder.Entity("LocationTag", b =>
                 {
-                    b.Property<int>("AssetsId")
+                    b.Property<int>("LocationsId")
                         .HasColumnType("integer");
 
                     b.Property<int>("TagsId")
                         .HasColumnType("integer");
 
-                    b.HasKey("AssetsId", "TagsId");
+                    b.HasKey("LocationsId", "TagsId");
 
                     b.HasIndex("TagsId");
 
-                    b.ToTable("AssetTag");
-                });
-
-            modelBuilder.Entity("MUserTag", b =>
-                {
-                    b.Property<int>("TagsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UsersId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("TagsId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("MUserTag");
+                    b.ToTable("LocationTag");
                 });
 
             modelBuilder.Entity("MUserTenant", b =>
@@ -68,81 +53,6 @@ namespace UteamUP.Server.Api.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("MUserTenant");
-                });
-
-            modelBuilder.Entity("PartTag", b =>
-                {
-                    b.Property<int>("PartsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TagsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("PartsId", "TagsId");
-
-                    b.HasIndex("TagsId");
-
-                    b.ToTable("PartTag");
-                });
-
-            modelBuilder.Entity("StockItemPartTag", b =>
-                {
-                    b.Property<int>("StockItemPartsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TagsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("StockItemPartsId", "TagsId");
-
-                    b.HasIndex("TagsId");
-
-                    b.ToTable("StockItemPartTag");
-                });
-
-            modelBuilder.Entity("StockTag", b =>
-                {
-                    b.Property<int>("StocksId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TagsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("StocksId", "TagsId");
-
-                    b.HasIndex("TagsId");
-
-                    b.ToTable("StockTag");
-                });
-
-            modelBuilder.Entity("TagTool", b =>
-                {
-                    b.Property<int>("TagsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ToolsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("TagsId", "ToolsId");
-
-                    b.HasIndex("ToolsId");
-
-                    b.ToTable("TagTool");
-                });
-
-            modelBuilder.Entity("TagWorkorder", b =>
-                {
-                    b.Property<int>("TagsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("WorkordersId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("TagsId", "WorkordersId");
-
-                    b.HasIndex("WorkordersId");
-
-                    b.ToTable("TagWorkorder");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Asset", b =>
@@ -326,49 +236,6 @@ namespace UteamUP.Server.Api.Migrations
                     b.ToTable("Documents");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.GPS", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<double?>("Accuracy")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("Altitude")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("AltitudeAccuracy")
-                        .HasColumnType("double precision");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<double?>("Heading")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("Latitude")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("Longitude")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("Speed")
-                        .HasColumnType("double precision");
-
-                    b.Property<DateTimeOffset?>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Gpses");
-                });
-
             modelBuilder.Entity("UteamUP.Shared.Models.InvitedUser", b =>
                 {
                     b.Property<int>("Id")
@@ -477,25 +344,16 @@ namespace UteamUP.Server.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AssetId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int?>("GPSId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
-
-                    b.Property<int?>("StockId")
-                        .HasColumnType("integer");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("integer");
@@ -505,44 +363,9 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AssetId");
-
-                    b.HasIndex("GPSId");
-
-                    b.HasIndex("StockId");
-
                     b.HasIndex("TenantId");
 
                     b.ToTable("Locations");
-                });
-
-            modelBuilder.Entity("UteamUP.Shared.Models.LocationStock", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("StockId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
-
-                    b.HasIndex("StockId");
-
-                    b.ToTable("LocationStocks");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Log", b =>
@@ -915,83 +738,6 @@ namespace UteamUP.Server.Api.Migrations
                     b.ToTable("Stocks");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.StockItemLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AmountRemoved")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("AssetId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("StockItemPartsId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssetId");
-
-                    b.HasIndex("StockItemPartsId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("StockItemLogs");
-                });
-
-            modelBuilder.Entity("UteamUP.Shared.Models.StockItemPart", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CurrentAmount")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MinimumAmount")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("PartId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("StockId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("PartId");
-
-                    b.HasIndex("StockId");
-
-                    b.ToTable("StockItemParts");
-                });
-
             modelBuilder.Entity("UteamUP.Shared.Models.Subscription", b =>
                 {
                     b.Property<int>("Id")
@@ -1035,17 +781,17 @@ namespace UteamUP.Server.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("LocationId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
 
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("LocationId");
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Tags");
                 });
@@ -1412,32 +1158,17 @@ namespace UteamUP.Server.Api.Migrations
                     b.ToTable("WorkorderTemplates");
                 });
 
-            modelBuilder.Entity("AssetTag", b =>
+            modelBuilder.Entity("LocationTag", b =>
                 {
-                    b.HasOne("UteamUP.Shared.Models.Asset", null)
+                    b.HasOne("UteamUP.Shared.Models.Location", null)
                         .WithMany()
-                        .HasForeignKey("AssetsId")
+                        .HasForeignKey("LocationsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("UteamUP.Shared.Models.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MUserTag", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("UteamUP.Shared.Models.MUser", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -1453,81 +1184,6 @@ namespace UteamUP.Server.Api.Migrations
                     b.HasOne("UteamUP.Shared.Models.MUser", null)
                         .WithMany()
                         .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PartTag", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.Part", null)
-                        .WithMany()
-                        .HasForeignKey("PartsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("UteamUP.Shared.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("StockItemPartTag", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.StockItemPart", null)
-                        .WithMany()
-                        .HasForeignKey("StockItemPartsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("UteamUP.Shared.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("StockTag", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.Stock", null)
-                        .WithMany()
-                        .HasForeignKey("StocksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("UteamUP.Shared.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TagTool", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("UteamUP.Shared.Models.Tool", null)
-                        .WithMany()
-                        .HasForeignKey("ToolsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TagWorkorder", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("UteamUP.Shared.Models.Workorder", null)
-                        .WithMany()
-                        .HasForeignKey("WorkordersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -1640,44 +1296,11 @@ namespace UteamUP.Server.Api.Migrations
 
             modelBuilder.Entity("UteamUP.Shared.Models.Location", b =>
                 {
-                    b.HasOne("UteamUP.Shared.Models.Asset", null)
-                        .WithMany("Locations")
-                        .HasForeignKey("AssetId");
-
-                    b.HasOne("UteamUP.Shared.Models.GPS", "GPS")
-                        .WithMany()
-                        .HasForeignKey("GPSId");
-
-                    b.HasOne("UteamUP.Shared.Models.Stock", null)
-                        .WithMany("Locations")
-                        .HasForeignKey("StockId");
-
                     b.HasOne("UteamUP.Shared.Models.Tenant", "Tenant")
                         .WithMany("Locations")
                         .HasForeignKey("TenantId");
 
-                    b.Navigation("GPS");
-
                     b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("UteamUP.Shared.Models.LocationStock", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("UteamUP.Shared.Models.Stock", "Stock")
-                        .WithMany()
-                        .HasForeignKey("StockId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Location");
-
-                    b.Navigation("Stock");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Log", b =>
@@ -1749,48 +1372,6 @@ namespace UteamUP.Server.Api.Migrations
                     b.Navigation("Tenant");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.StockItemLog", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.Asset", "Asset")
-                        .WithMany()
-                        .HasForeignKey("AssetId");
-
-                    b.HasOne("UteamUP.Shared.Models.StockItemPart", "StockItemParts")
-                        .WithMany()
-                        .HasForeignKey("StockItemPartsId");
-
-                    b.HasOne("UteamUP.Shared.Models.MUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Asset");
-
-                    b.Navigation("StockItemParts");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("UteamUP.Shared.Models.StockItemPart", b =>
-                {
-                    b.HasOne("UteamUP.Shared.Models.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId");
-
-                    b.HasOne("UteamUP.Shared.Models.Part", "Part")
-                        .WithMany()
-                        .HasForeignKey("PartId");
-
-                    b.HasOne("UteamUP.Shared.Models.Stock", "Stock")
-                        .WithMany()
-                        .HasForeignKey("StockId");
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Part");
-
-                    b.Navigation("Stock");
-                });
-
             modelBuilder.Entity("UteamUP.Shared.Models.Subscription", b =>
                 {
                     b.HasOne("UteamUP.Shared.Models.Plan", "Plan")
@@ -1812,9 +1393,13 @@ namespace UteamUP.Server.Api.Migrations
 
             modelBuilder.Entity("UteamUP.Shared.Models.Tag", b =>
                 {
-                    b.HasOne("UteamUP.Shared.Models.Location", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("LocationId");
+                    b.HasOne("UteamUP.Shared.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Tool", b =>
@@ -1845,8 +1430,6 @@ namespace UteamUP.Server.Api.Migrations
 
             modelBuilder.Entity("UteamUP.Shared.Models.Asset", b =>
                 {
-                    b.Navigation("Locations");
-
                     b.Navigation("Parts");
                 });
 
@@ -1855,19 +1438,9 @@ namespace UteamUP.Server.Api.Migrations
                     b.Navigation("MUsers");
                 });
 
-            modelBuilder.Entity("UteamUP.Shared.Models.Location", b =>
-                {
-                    b.Navigation("Tags");
-                });
-
             modelBuilder.Entity("UteamUP.Shared.Models.Report", b =>
                 {
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("UteamUP.Shared.Models.Stock", b =>
-                {
-                    b.Navigation("Locations");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Tenant", b =>

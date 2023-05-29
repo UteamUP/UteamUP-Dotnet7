@@ -2,12 +2,6 @@ namespace UteamUP.Shared.Models;
 
 public class Asset : Base
 {
-    public Asset()
-    {
-        Locations = new List<Location>();
-        Parts = new List<Part>();
-        Tags = new List<Tag>();
-    }
 
     [Key] public int Id { get; set; }
 
@@ -38,6 +32,6 @@ public class Asset : Base
     public Category? Category { get; set; }
 
     public virtual List<Part>? Parts { get; set; } = new();
-    public virtual List<Location>? Locations { get; set; } = new();
-    public virtual List<Tag>? Tags { get; set; } = new();
+    //public virtual List<Location>? Locations { get; set; } = new();
+    //public virtual HashSet<Tag>? Tags { get; set; } = new();
 }

@@ -1,12 +1,15 @@
 using System.Text.Json.Serialization;
 using UteamUP.Client.Web.Repository.Implementations;
 using UteamUP.Client.Web.Repository.Interfaces;
+using UteamUP.Server.Repository.GenericRepository.Implementations;
+using UteamUP.Server.Repository.GenericRepository.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 // Adding generic repository services.
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // Adding Global repository services.
 builder.Services.AddScoped<IMUserRepository, MUserRepository>();
@@ -31,8 +34,8 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 // Add MediatR Service
 
-builder.Services.AddControllers();
-    //.AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+builder.Services.AddControllers()
+    .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddLogging();

@@ -152,12 +152,6 @@
         
         Console.WriteLine("the planid is: "+ _model.PlanDetailsForm.Name + " and the amount is: " + _model.ExtraLicensesForm.Amount);
         var results = await TenantWebRepository.CreateTenantAsync(tenantDto, Convert.ToInt32(_model.PlanDetailsForm.Name), Convert.ToInt32(_model.ExtraLicensesForm.Amount));
-        if (!string.IsNullOrWhiteSpace(results.Name))
-            // TODO: Show error message
-            throw new Exception("Tenant has not been created");
-            //NavigationManager.NavigateTo("/create-tenant");
-        else
-            NavigationManager.NavigateTo("/global");
-       
+        NavigationManager.NavigateTo("/global");
     }
 }

@@ -50,21 +50,25 @@ public class LocationWebRepository : ILocationWebRepository
         }
     }
 
-    public async Task<Location?> CreateLocationAsync(LocationDto location, int tenantId)
+    public async Task<Location?> Create(Location location)
     {
+        Console.WriteLine("GETTING TOKEN");
         await GetHttpClientHeaderToken();
-        var result = await _httpClient.PostAsJsonAsync($"{Url}/{tenantId}", location);
+        Console.WriteLine("SENDING TO POST");
+        var result = await _httpClient.PostAsJsonAsync<Location>("api/location", location);
+        Console.WriteLine("JUST SENT TO POST");
         
         if (result.IsSuccessStatusCode)
         {
-            _logger.Log(LogLevel.Information, $"{nameof(CreateLocationAsync)}: Location created successfully");
+            _logger.Log(LogLevel.Information, $"{nameof(Create)}: Location created successfully");
             return await result.Content.ReadFromJsonAsync<Location>();
         }
         else
         {
             _logger.Log(LogLevel.Error,
-                $"{nameof(CreateLocationAsync)}: Location creation failed, because of : " + result.StatusCode);
-            return new Location();
+                $"{nameof(Create)}: Location creation failed, because of : " + result.StatusCode);
+            return null;
         }
+        
     }
 }
