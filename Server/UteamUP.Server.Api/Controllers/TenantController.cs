@@ -60,39 +60,15 @@ public class TenantController : ControllerBase
     }
 
     // Create tenant
-    [HttpPost("add/{planId}/{extraLicenses}")]
+    [HttpPost("add/plan/{planId}/extraLicenses/{extraLicenses}")]
     public async Task<IActionResult> CreateTenantAsync(TenantDto tenant, int planId, int extraLicenses)
     {
-        /*
-        if (tenant == null)
-        {
-            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: Tenant is null");
-            return BadRequest();
-        }
-        if (string.IsNullOrWhiteSpace(user.Oid))
-        {
-            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: User is null");
-            return BadRequest();
-        }
-        */
+
         var user = await ValidateUser();
 
         _logger.Log(LogLevel.Information, $"{nameof(CreateTenantAsync)}: Creating tenant");
         var createdTenant = await _tenant.CreateTenantAsync(tenant, user.Oid, planId, extraLicenses);
-        /*
-        if (string.IsNullOrWhiteSpace(createdTenant.Name))
-        {
-            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: Tenant could not be created");
-            return BadRequest();
-        }
-        // Create subscription for the tenant
-        var subscription = await _subscription.CreateAsync(createdTenant.Id, planId, extraLicenses);
-        if (subscription == null)
-        {
-            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: Subscription could not be created");
-            return BadRequest();
-        }
-        */
+        
         return Ok(createdTenant);
     }
     
@@ -177,5 +153,29 @@ public class TenantController : ControllerBase
         }
 
         return Ok(tenant);
+    }
+    
+    // Update Tenant by Id
+    [HttpPut("plan/{planId}/extraLicenses/{extraLicenses}")]
+    public async Task<IActionResult> UpdateTenantByIdAsync(Tenant tenant, int planId, int extraLicenses)
+    {
+        Console.WriteLine("I AM HERE");
+        /*
+        if (tenant.Id == 0 || string.IsNullOrWhiteSpace(tenant.Id.ToString()))
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(UpdateTenantByIdAsync)}: Id is null or empty");
+            return NotFound();
+        }
+
+        _logger.Log(LogLevel.Information, $"{nameof(UpdateTenantByIdAsync)}: Updating tenant by id {tenant.Id}");
+        var updatedTenant = await _tenant.UpdateTenantByIdAsync(tenant, planId, extraLicenses);
+        if (updatedTenant == null)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(UpdateTenantByIdAsync)}: No tenant found for id {tenant.Id}");
+            return NotFound();
+        }
+
+        return Ok(updatedTenant);*/
+        return Ok(new Tenant());
     }
 }

@@ -1,26 +1,12 @@
 namespace UteamUP.Shared.Models;
 
-public class Tag
+public class Tag : Base
 {
     [Key] public int Id { get; set; }
-
-    [MaxLength(512)]
-    [MinLength(2)]
-    [Required(ErrorMessage = "You must specify the name before you can save.")]
     public string Name { get; set; }
     
-    [ForeignKey("Tenant")] public int TenantId { get; set; }
-    public Tenant? Tenant { get; set; }
-
-    /*
-    public virtual List<Stock>? Stocks { get; set; }
-    public virtual List<StockItemPart>? StockItemParts { get; set; }
-    public virtual List<Asset>? Assets { get; set; }
-    public virtual List<Part>? Parts { get; set; }
-    public virtual List<Tool>? Tools { get; set; }
-    public virtual List<Workorder>? Workorders { get; set; }
-    public virtual List<MUser>? Users { get; set; }
-    */
+    [ForeignKey("Tenant")] public int? TenantId { get; set; }
+    public virtual Tenant? Tenant { get; set; }
     
-    public virtual HashSet<Location>? Locations { get; } = new();
+    public ICollection<LocationTag>? LocationTags { get; }
 }

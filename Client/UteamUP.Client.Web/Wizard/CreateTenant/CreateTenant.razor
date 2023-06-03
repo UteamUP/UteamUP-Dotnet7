@@ -134,7 +134,7 @@
     private async Task OnClickSubmitButtonAsync()
     {
         Console.WriteLine("Submit button clicked");
-        TenantDto tenantDto = new TenantDto();
+        Tenant tenantDto = new Tenant();
         tenantDto.Name = _model.BasicTenantDetailsForm.Name;
         tenantDto.Description = _model.BasicTenantDetailsForm.Description;
         tenantDto.ContactEmail = _model.BasicTenantDetailsForm.ContactEmail;

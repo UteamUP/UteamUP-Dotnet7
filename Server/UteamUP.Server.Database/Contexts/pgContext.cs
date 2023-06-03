@@ -14,13 +14,10 @@ public class pgContext : DbContext
     public DbSet<LicenseUsers> LicenseUsers { get; set; }
     public DbSet<Location> Locations { get; set; }
     public DbSet<LocationTag> LocationTags { get; set; }
-    //public DbSet<LocationStock> LocationStocks { get; set; }
     public DbSet<Part?> Parts { get; set; }
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Report> Reports { get; set; }
     public DbSet<Stock> Stocks { get; set; }
-    //public DbSet<StockItemPart> StockItemParts { get; set; }
-    //public DbSet<StockItemLog> StockItemLogs { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<Tenant> Tenants { get; set; }
@@ -34,7 +31,6 @@ public class pgContext : DbContext
     public DbSet<WorkorderStatusCategory> WorkorderStatusCategories { get; set; }
     public DbSet<WorkorderTemplate> WorkorderTemplates { get; set; }
     public DbSet<Log> Logs { get; set; }
-    //public DbSet<GPS> Gpses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,33 +43,29 @@ public class pgContext : DbContext
         modelBuilder.Entity<MUser>()
             .HasIndex(mUser => new { mUser.Email })
             .IsUnique();
+
+        modelBuilder.Entity<Location>()
+            .HasMany(l => l.LocationTags)
+            .WithOne(lt => lt.Location)
+            .HasForeignKey(lt => lt.LocationId);
+
+        modelBuilder.Entity<Tag>()
+            .HasMany(t => t.LocationTags)
+            .WithOne(lt => lt.Tag)
+            .HasForeignKey(lt => lt.TagId);
+
+        modelBuilder.Entity<LocationTag>()
+            .HasIndex(lt => new { lt.LocationId, lt.TagId })
+            .IsUnique();
+
+        
+        //modelBuilder.Entity<LocationTag>().ToTable("LocationTags");
+        //https://medium.com/@vahidalizadeh1990/outbox-pattern-in-net-4fcdf2b7295d
+        //https://jber595.medium.com/net-core-ef-many-to-many-6cc0f9379cd4
+        //https://medium.com/@ti.ka/many-to-many-relationship-done-right-in-the-entity-framework-multi-clients-users-130ac185f667
+        
         
         modelBuilder.Entity<Tenant>().HasIndex(b => b.Name).IsUnique();
         modelBuilder.Entity<Vendor>().HasIndex(b => b.Name).IsUnique();
-
-        /*
-        modelBuilder.Entity<Location>()
-            .HasMany(e => e.Tags)
-            .WithMany(e => e.Locations);
-        
-        modelBuilder.Entity<Tag>()
-            .HasMany(e => e.Locations)
-            .WithMany(e => e.Tags);
-        */
-        
-        /*
-        modelBuilder.Entity<TagLocation>()
-            .HasKey(tl => new { tl.TagId, tl.LocationId }); // composite key
-
-        modelBuilder.Entity<TagLocation>()
-            .HasOne(tl => tl.Location)
-            .WithMany(l => l.TagLocations)
-            .HasForeignKey(tl => tl.LocationId);
-
-        modelBuilder.Entity<TagLocation>()
-            .HasOne(tl => tl.Tag)
-            .WithMany(t => t.TagLocations)
-            .HasForeignKey(tl => tl.TagId);
-            */
     }
 }

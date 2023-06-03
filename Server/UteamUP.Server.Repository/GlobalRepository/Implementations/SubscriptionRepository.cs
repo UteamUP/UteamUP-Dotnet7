@@ -75,4 +75,28 @@ public class SubscriptionRepository : ISubscriptionRepository
             return new Subscription();
         }
     }
+
+    public async Task<Subscription> GetByTenantIdAsync(int tenantId)
+    {
+        if (tenantId == 0)
+        {
+            _logger.Log(LogLevel.Warning, $"{nameof(GetByTenantIdAsync)}: TenantId is not valid");
+            return new Subscription();
+        }
+        
+        try{
+            // Get the subscription
+            var subscription = await _context.Subscriptions
+                .Include(x => x.Tenant)
+                .Include(x => x.Plan)
+                .FirstOrDefaultAsync(x => x.TenantId == tenantId);
+            
+            // Return the subscription
+            return subscription;
+        }
+        catch(Exception e){
+            _logger.Log(LogLevel.Error, $"{nameof(GetByTenantIdAsync)}: {e.Message}");
+            return new Subscription();
+        }
+    }
 }

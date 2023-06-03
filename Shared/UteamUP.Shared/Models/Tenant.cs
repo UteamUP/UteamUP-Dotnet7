@@ -50,5 +50,7 @@ public class Tenant : Base
 
     public virtual ICollection<MUser>? Users { get; set; }
 
-    public virtual ICollection<Location>? Locations { get; set; }
+    //public virtual ICollection<Location>? Locations { get; set; }
+    
+    public Subscription? Subscriptions { get; set; }
 }

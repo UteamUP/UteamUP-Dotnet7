@@ -18,5 +18,8 @@ global using UteamUP.Client.Web;
 global using UteamUP.Shared.Models;
 global using UteamUP.Shared.ModelDto;
 global using UteamUP.Client;
-global using UteamUP.Client.Repository.Implementations;
 global using UteamUP.Client.Repository.Interfaces;
+
+global using UteamUP.Client.Web.WizardComponents.WizardBase;
+global using UteamUP.Client.GlobalRepository.Interfaces;
+global using UteamUP.Client.Web.Repository.Interfaces;

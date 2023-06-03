@@ -30,33 +30,13 @@ public class TenantRepository : ITenantRepository
 
     public async Task<Tenant?> CreateTenantAsync(TenantDto tenant, string oid, int planId, int extraLicenses)
     {
-        // Check if tenant is null
-        /*
-        if (string.IsNullOrWhiteSpace(tenant.Name))
-        {
-            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: Tenant is null");
-            return new Tenant();
-        }
         
-        // Check if user is null
-        if (string.IsNullOrWhiteSpace(oid))
-        {
-            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: Oid is null");
-            return new Tenant();
-        }
-        */
         // Get the plan by id
         var plan = await _context.Plans.FirstOrDefaultAsync(x => x.Id == planId);
         
         // Get user by oid
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Oid == oid);
-        /*
-        if (string.IsNullOrWhiteSpace(user?.Oid))
-        {
-            _logger.Log(LogLevel.Error, $"{nameof(CreateTenantAsync)}: User is null");
-            return new Tenant();
-        }
-        */
+        
         // Map tenantdto to tenant
         var mappedTenant = _mapper.Map<Tenant>(tenant);
 
@@ -224,6 +204,77 @@ public class TenantRepository : ITenantRepository
         var tenant = await _context.Tenants.FirstOrDefaultAsync(x => x.Id == int.Parse(tenantId));
         return tenant ?? new Tenant();
     }
+
+    public async Task<Tenant> UpdateTenantByIdAsync(Tenant tenant, int planId, int extraLicenses)
+    {
+        if(planId == 0 || planId == null || extraLicenses == 0 || extraLicenses == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(UpdateTenantByIdAsync)}: PlanId or extraLicenses is null");
+            return new Tenant();
+        }
+        
+        // Get the current tenant
+        var tenantFromDb = await _context.Tenants.FirstOrDefaultAsync(x => x.Id == tenant.Id);
+        
+        // Get the current plan by planId
+        var plan = await _context.Plans.FirstOrDefaultAsync(x => x.Id == planId);
+        
+        // Confirm that plan exists
+        if (plan == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(UpdateTenantByIdAsync)}: Plan is null");
+            return new Tenant();
+        }
+        
+        // Get the subscription that is assigned to the tenant
+        var subscription = await _context.Subscriptions.FirstOrDefaultAsync(x => x.TenantId == tenantFromDb.Id);
+        
+        // Assign the new plan to the subscription
+        subscription.PlanId = planId;
+        
+        // Assign the new extra licenses to the subscription
+        subscription.ExtraAmountOfLicenses = extraLicenses;
+        
+        // Update subscription datetime
+        subscription.UpdatedAt = DateTime.Now.ToUniversalTime();
+        
+        // Update the subscription
+        _context.Subscriptions.Update(subscription);
+        
+        // Get the licenses that is assigned to the subscription
+        var license = await _context.Licenses.FirstOrDefaultAsync(x => x.SubscriptionId == subscription.Id);
+        
+        // Calculate the total amount of licenses
+        var totalLicenses = plan.LicenseIncluded + extraLicenses;
+        
+        // Assign new subscription to the license
+        license.SubscriptionId = subscription.Id;
+        
+        // Update the license
+        license.UpdatedAt = DateTime.Now.ToUniversalTime();
+        
+        // Update max licenses in the license
+        license.MaxLicenses = totalLicenses;
+        
+        // Update the license
+        _context.Licenses.Update(license);
+
+        // Update the tenant UpdatedAt
+        tenant.UpdatedAt = DateTime.Now.ToUniversalTime();
+        
+        // Update the tenant based on the new tenant object
+        _context.Tenants.Update(tenant);
+        
+        // Save changes
+        await _context.SaveChangesAsync();
+        
+        // Get the tenant from the database and return it
+        var tenantFromDb2 = await _context.Tenants.FirstOrDefaultAsync(x => x.Id == tenant.Id);
+        
+        // Return the tenant
+        return tenantFromDb2 ?? new Tenant();
+    }
+
 
     private bool TenantExists(int id)
     {

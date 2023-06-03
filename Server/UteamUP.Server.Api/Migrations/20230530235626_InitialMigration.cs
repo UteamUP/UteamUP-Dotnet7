@@ -234,8 +234,10 @@ namespace UteamUP.Server.Api.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
-                    TenantId = table.Column<int>(type: "integer", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -244,8 +246,7 @@ namespace UteamUP.Server.Api.Migrations
                         name: "FK_Tags_Tenants_TenantId",
                         column: x => x.TenantId,
                         principalTable: "Tenants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -301,24 +302,26 @@ namespace UteamUP.Server.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LocationTag",
+                name: "LocationTags",
                 columns: table => new
                 {
-                    LocationsId = table.Column<int>(type: "integer", nullable: false),
-                    TagsId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    LocationId = table.Column<int>(type: "integer", nullable: false),
+                    TagId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LocationTag", x => new { x.LocationsId, x.TagsId });
+                    table.PrimaryKey("PK_LocationTags", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LocationTag_Locations_LocationsId",
-                        column: x => x.LocationsId,
+                        name: "FK_LocationTags_Locations_LocationId",
+                        column: x => x.LocationId,
                         principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_LocationTag_Tags_TagsId",
-                        column: x => x.TagsId,
+                        name: "FK_LocationTags_Tags_TagId",
+                        column: x => x.TagId,
                         principalTable: "Tags",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -770,9 +773,14 @@ namespace UteamUP.Server.Api.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocationTag_TagsId",
-                table: "LocationTag",
-                column: "TagsId");
+                name: "IX_LocationTags_LocationId",
+                table: "LocationTags",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LocationTags_TagId",
+                table: "LocationTags",
+                column: "TagId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Logs_CreatorId",
@@ -827,7 +835,14 @@ namespace UteamUP.Server.Api.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Subscriptions_TenantId",
                 table: "Subscriptions",
-                column: "TenantId");
+                column: "TenantId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tags_Name",
+                table: "Tags",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tags_TenantId",
@@ -900,7 +915,7 @@ namespace UteamUP.Server.Api.Migrations
                 name: "LicenseUsers");
 
             migrationBuilder.DropTable(
-                name: "LocationTag");
+                name: "LocationTags");
 
             migrationBuilder.DropTable(
                 name: "Logs");

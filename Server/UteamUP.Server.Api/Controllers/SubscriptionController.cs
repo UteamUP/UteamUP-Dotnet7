@@ -26,4 +26,17 @@ public class SubscriptionController : ControllerBase
         
         return Ok(result);
     }
+    
+    [HttpGet("tenant/{tenantId}")]
+    public async Task<IActionResult> GetByTenantIdAsync(int tenantId)
+    {
+        var result = await _subscription.GetByTenantIdAsync(tenantId);
+        if (result == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetByTenantIdAsync)}: Something went wrong while getting the subscription");
+            return BadRequest("Something went wrong while getting the subscription, please review logs for more information");
+        }
+        
+        return Ok(result);
+    }
 }

@@ -40,7 +40,7 @@ public class TagRepository : ITagRepository
         try
         {
             // Check if the tag already exists if so then return it
-            var existingTag = await _context.Tags.FirstOrDefaultAsync(x => x.Name == tag.Name && x.TenantId == tag.TenantId);
+            var existingTag = await _context.Tags.FirstOrDefaultAsync(x => x.Name == tag.Name);
             if(existingTag != null) return existingTag;
             
             _context.Tags.Add(tag);
@@ -69,7 +69,7 @@ public class TagRepository : ITagRepository
     public async Task<Tag> GetTagByNameAndTenantIdAsync(string tagName, int tenantId)
     {
         // Select from tag table where name is equal to the name of the tag, also select from TagLocation table where the location is equal to the tenant id
-        var tag = await _context.Tags.FirstOrDefaultAsync(x => x.Name == tagName && x.TenantId == tenantId);
+        var tag = await _context.Tags.FirstOrDefaultAsync(x => x.Name == tagName);
         if (tag == null) return new Tag();
         return tag;
     }

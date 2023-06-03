@@ -55,12 +55,17 @@
 @using UteamUP.Client.Components.Inputs
 @using UteamUP.Shared.States
 @using UteamUP.Client.Web.Services
+@using UteamUP.Client.Web.WizardComponents.WizardBase
+@using UteamUP.Client.GlobalRepository.Interfaces
+@using UteamUP.Client.Web.Repository.Interfaces
+
 
 @* UteamUP injections *@
 @inject NavigationManager NavigationManager
 @inject IMapper Mapper
 @inject UserState UserState
 @inject CustomAuthenticationStateProvider CustomAuthStateProvider
+@inject IModalService ModalService
 
 @using Microsoft.AspNetCore.Components.Authorization
 

@@ -32,6 +32,7 @@ public class LocationWebRepository : ILocationWebRepository
         _httpClient.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
     }
     
+    /*
     public async Task<List<Location>> GetAllLocationsByTenantIdAsync(int tenantId)
     {
         await GetHttpClientHeaderToken();
@@ -49,7 +50,8 @@ public class LocationWebRepository : ILocationWebRepository
             return new List<Location>();
         }
     }
-
+    */
+    /*
     public async Task<Location> GetByLocationId(int locationId)
     {
         await GetHttpClientHeaderToken();
@@ -67,11 +69,12 @@ public class LocationWebRepository : ILocationWebRepository
             return null;
         }
     }
-
-    public async Task<Location?> Create(Location location)
+    */
+    public async Task<Location?> Create(LocationDto location)
     {
         await GetHttpClientHeaderToken();
-        var result = await _httpClient.PostAsJsonAsync<Location>("api/location", location);
+        
+        var result = await _httpClient.PostAsJsonAsync<LocationDto>("api/location/add", location);
         if (result.IsSuccessStatusCode)
         {
             _logger.Log(LogLevel.Information, $"{nameof(Create)}: Location created successfully");
@@ -83,9 +86,28 @@ public class LocationWebRepository : ILocationWebRepository
                 $"{nameof(Create)}: Location creation failed, because of : " + result.StatusCode);
             return null;
         }
-        
     }
-
+    
+    /*
+    public async Task<Location?> Update(Location location)
+    {
+        await GetHttpClientHeaderToken();
+        var result = await _httpClient.PutAsJsonAsync<Location>("api/location", location);
+        
+        if (result.IsSuccessStatusCode)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(Update)}: Location updated successfully");
+            return await result.Content.ReadFromJsonAsync<Location>();
+        }
+        else
+        {
+            _logger.Log(LogLevel.Error,
+                $"{nameof(Update)}: Location update failed, because of : " + result.StatusCode);
+            return null;
+        }
+    }
+    */
+    /*
     public async Task<List<Tag>> GetTagsByLocationId(int locationId)
     {
         await GetHttpClientHeaderToken();
@@ -103,4 +125,24 @@ public class LocationWebRepository : ILocationWebRepository
             return new List<Tag>();
         }
     }
+    */
+    /*
+    public async Task<Location?> UpdateTagToLocationAsync(List<Tag> tags, int locationId)
+    {
+        await GetHttpClientHeaderToken();
+        var result = await _httpClient.PutAsJsonAsync<List<Tag>>($"{Url}/{locationId}/tags", tags);
+        
+        if (result.IsSuccessStatusCode)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(UpdateTagToLocationAsync)}: Tags updated successfully");
+            return await result.Content.ReadFromJsonAsync<Location>();
+        }
+        else
+        {
+            _logger.Log(LogLevel.Error,
+                $"{nameof(UpdateTagToLocationAsync)}: Tags update failed, because of : " + result.StatusCode);
+            return null;
+        }
+    }
+    */
 }

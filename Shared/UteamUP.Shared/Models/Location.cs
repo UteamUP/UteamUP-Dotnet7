@@ -11,10 +11,6 @@ public class Location : Base
     public string? Description { get; set; }
     [ForeignKey("Tenant")] public int? TenantId { get; set; }
     public virtual Tenant? Tenant { get; set; }
-    public List<Tag> Tags { get; set; }
+    public ICollection<LocationTag> LocationTags { get; set; }
     
-    //public virtual List<Asset>? Assets { get; set; }
-    //public virtual List<Stock>? Stocks { get; set; }
-    //public virtual GPS? GPS { get; set; }
-
 }

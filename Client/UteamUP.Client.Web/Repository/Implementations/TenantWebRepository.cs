@@ -1,8 +1,6 @@
 using System.Net.Http.Json;
-using UteamUP.Client.Web.Repository.Interfaces;
-using UteamUP.Shared.ModelDto;
 
-namespace UteamUP.Client.Repository.Implementations;
+namespace UteamUP.Client.Web.Repository.Implementations;
 
 public class TenantWebRepository : ITenantWebRepository
 {
@@ -31,10 +29,10 @@ public class TenantWebRepository : ITenantWebRepository
         _httpClient.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
     }
     
-    public async Task<Tenant?> CreateTenantAsync(TenantDto tenant, int planId, int extraLicenses)
+    public async Task<Tenant?> CreateTenantAsync(Tenant tenant, int planId, int extraLicenses)
     {
         await GetHttpClientHeaderToken();
-        var result = await _httpClient.PostAsJsonAsync($"{Url}/add/{planId}/{extraLicenses}", tenant);
+        var result = await _httpClient.PostAsJsonAsync($"{Url}/add/plan/{planId}/extraLicenses/{extraLicenses}", tenant);
         
         if (result.IsSuccessStatusCode)
         {
@@ -45,6 +43,24 @@ public class TenantWebRepository : ITenantWebRepository
         {
             _logger.Log(LogLevel.Error,
                 $"{nameof(CreateTenantAsync)}: Tenant creation failed, because of : " + result.StatusCode);
+            return new Tenant();
+        }
+    }
+
+    public async Task<Tenant?> UpdateTenantAsync(Tenant tenant, int planId, int extraLicenses)
+    {
+        await GetHttpClientHeaderToken();
+        var result = await _httpClient.PutAsJsonAsync($"{Url}/plan/{planId}/extraLicenses/{extraLicenses}", tenant);
+        
+        if (result.IsSuccessStatusCode)
+        {
+            _logger.Log(LogLevel.Information, $"{nameof(UpdateTenantAsync)}: Tenant updated successfully");
+            return await result.Content.ReadFromJsonAsync<Tenant>();
+        }
+        else
+        {
+            _logger.Log(LogLevel.Error,
+                $"{nameof(UpdateTenantAsync)}: Tenant update failed, because of : " + result.StatusCode);
             return new Tenant();
         }
     }
@@ -86,11 +102,10 @@ public class TenantWebRepository : ITenantWebRepository
         return result;
     }
 
-    public async Task<Tenant> GetTenantById(string tenantId)
+    public async Task<Tenant> GetTenantById(int tenantId)
     {
         await GetHttpClientHeaderToken();
-        Console.WriteLine($"{Url}/{tenantId}");
-        if(tenantId == "0" || tenantId == null)
+        if(tenantId == 0 || tenantId == null)
             return new Tenant();
         
         var result = await _httpClient.GetFromJsonAsync<Tenant>($"{Url}/{tenantId}");

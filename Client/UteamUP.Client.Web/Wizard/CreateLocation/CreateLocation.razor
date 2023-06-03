@@ -87,7 +87,7 @@
                 // Create the tag
                 Tag newTag = new Tag();
                 newTag.Name = tagName;
-                newTag.TenantId = _tenantId;
+                //newTag.TenantId = _tenantId;
                 
                 var newTagResult = await TagWebRepository.Add(newTag, "api/tag");
                 if (newTagResult != null)

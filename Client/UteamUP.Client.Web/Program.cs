@@ -37,6 +37,7 @@ builder.Services.AddScoped<IDocumentWebRepository, DocumentWebRepository>();
 builder.Services.AddScoped<IPartWebRepository, PartWebRepository>();
 builder.Services.AddScoped<IAssetWebRepository, AssetWebRepository>();
 builder.Services.AddScoped<ILocationWebRepository, LocationWebRepository>();
+builder.Services.AddScoped<ISubscriptionWebRepository, SubscriptionWebRepository>();
 
 // Add Services
 builder.Services.AddScoped<IBlobStorageWebService, BlobStorageWebService>();

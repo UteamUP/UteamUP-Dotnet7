@@ -157,7 +157,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
                 if (string.IsNullOrWhiteSpace(muser.Oid))
                 {
                     // Updating tenant information
-                    var defaultTenant = await GetDefaultTenantByIdAsync(muser.DefaultTenantId.ToString());
+                    var defaultTenant = await GetDefaultTenantByIdAsync(muser.DefaultTenantId);
                     var allMyTenants = await GetMyTenantsAsync(muser.Oid);
 
                     if (muser.DefaultTenantId != 0)
@@ -245,12 +245,12 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         await _localStorageService.SetItemAsync("globalState", globalState);
     }
     
-    public async Task<Tenant> GetDefaultTenantByIdAsync(string defaultTenantId)
+    public async Task<Tenant> GetDefaultTenantByIdAsync(int defaultTenantId)
     {
         var tenant = new Tenant();
 
         // This will get the default tenant from the database
-        if (defaultTenantId != null && defaultTenantId != "0")
+        if (defaultTenantId != null && defaultTenantId != 0)
         {
             _logger.Log(LogLevel.Information,
                 $"{nameof(GetDefaultTenantByIdAsync)}: Getting default tenant with the id: {defaultTenantId}");

@@ -10,4 +10,5 @@ public interface ITenantRepository
     // Get the users owned tenants
     Task<List<Tenant>> GetOwnedTenantsAsync(string oid);
     Task<Tenant> GetTenantById(string tenantId);
+    Task<Tenant> UpdateTenantByIdAsync(Tenant tenant, int planId, int extraLicenses);
 }

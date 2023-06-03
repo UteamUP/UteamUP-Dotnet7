@@ -1,0 +1,184 @@
+@page "/tenant-add"
+@page "/tenant-edit/{id:int?}"
+@using UteamUP.Client.Web.WizardComponents.AddEditTenant.AddEditTenant.Modals
+@using UteamUP.Client.Web.WizardComponents.AddEditTenant.AddEditTenant.Forms
+
+@inject IWebRepository<Tenant> TenantWebRepository
+@inject ITenantWebRepository MyTenantWebRepository
+@inject ISubscriptionWebRepository MySubscriptionWebRepository
+@inject IPlanWebRepository PlanWebRepository
+@inherits WizardBase<TenantForm>
+
+<Form Steps="@_steps"
+      BackUrl="/global"
+      ActiveStepIndex="@_activeStepIndex"
+      Title="@(Id == null ? "Create Tenant" : "Edit Tenant")"
+      OnClickBackButton="OnClickBackButton"
+      OnClickContinueButton="OnClickContinueButtonAsync"
+      OnClickSubmitButton="OnClickSubmitButtonAsync">
+    @switch (_activeStepIndex)
+    {
+        case 0:
+            <EditForm Model="@_model.TenantBasicForm">
+                <HorizonInput Label="Name" Placeholder="Company Name" @bind-Value="@_model.TenantBasicForm.Name"/>
+                <HorizonInput Label="Description" Placeholder="Description" @bind-Value="@_model.TenantBasicForm.Description"/>
+                <HorizonInput Label="Contact Email" Placeholder="Contact Email" @bind-Value="@_model.TenantBasicForm.ContactEmail"/>
+                <HorizonInput Label="Phone Number" Placeholder="Phone Number" @bind-Value="@_model.TenantBasicForm.PhoneNumber"/>
+                <HorizonInput Label="Website" Placeholder="Website" @bind-Value="@_model.TenantBasicForm.Website"/>
+            </EditForm>
+            break;
+        case 1:
+            <EditForm Model="@_model.TenantAddressForm">
+                <HorizonInput Label="Country" Placeholder="Country" @bind-Value="@_model.TenantAddressForm.Country"/>
+                <HorizonInput Label="City" Placeholder="City" @bind-Value="@_model.TenantAddressForm.City"/>
+                <HorizonInput Label="Address" Placeholder="Address" @bind-Value="@_model.TenantAddressForm.Address"/>
+                <HorizonInput Label="State" Placeholder="State" @bind-Value="@_model.TenantAddressForm.State"/>
+                <HorizonInput Label="Postal Code" Placeholder="Postal Code" @bind-Value="@_model.TenantAddressForm.PostalCode"/>
+            </EditForm>
+            break;
+        case 2:
+            <HorizonSelect Options="@_planSelector" Label="Plan Type" Placeholder="Type here" @bind-Value="_model.TenantPlanForm.Name"/>
+            break;
+        case 3:
+            <EditForm Model="@_model.TenantLicensesForm">
+                <HorizonInput Label="Extra Licenses Amount" Placeholder="Extra Licenses Amount" @bind-Value="@_model.TenantLicensesForm.Amount"/>
+            </EditForm>
+            break;
+        case 4:
+            <EditForm Model="@_model">
+                <HorizonRichTextEditor ReadOnly="true" Height="300px">
+                    <EditorContent>
+                        <h3>LICENSE AGREEMENT</h3>
+                        <br/>
+                        <p>This Software as a Service (SaaS) License Agreement (the "Agreement") is entered into as of [DATE] (the "Effective Date") by and between UteamUP, a company duly organized and existing under the laws of [JURISDICTION], having its principal place of business at [ADDRESS] ("Licensor") and [CUSTOMER NAME], a company duly organized and existing under the laws of [JURISDICTION], having its principal place of business at [ADDRESS] ("Licensee").</p>
+                        <br/>
+                        <p>WHEREAS, Licensor has developed and owns a software solution known as "Horizon" (the "Software"), which is provided as a SaaS solution;</p>
+                        <br/>
+                        <p>WHEREAS, Licensee desires to license and use the Software, and Licensor desires to grant Licensee a license to use the Software, subject to the terms and conditions set forth herein.</p>
+                        <br/>
+                        <p>NOW, THEREFORE, in consideration of the mutual covenants and promises contained herein and other good and valuable consideration, the receipt and sufficiency of which are hereby acknowledged, the parties hereto agree as follows:</p>
+                    </EditorContent>
+                </HorizonRichTextEditor>
+            </EditForm>
+            <br/>
+            break;
+        default:
+            break;
+    }
+</Form>
+
+@code {
+    private Tenant tenant = new Tenant();
+    private Subscription subscription = new Subscription();
+    private Plan? plan = new Plan();
+    
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Basic Tenant Information", false },
+        { "Address Tenant Information", false },
+        { "Plan Selection", false },
+        { "Add Extra Licenses", false },
+        { "License Agreement", false }
+    };
+    
+    List<Plan?>? _plans = new();
+    private IDictionary<string, string> _planSelector = new Dictionary<string, string>()
+    {
+        { "", "" },
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = new TenantForm();
+
+        TenantId = UserState.User.DefaultTenantId;
+        
+        tenant = await MyTenantWebRepository.GetTenantById(Id.Value);
+        subscription = await MySubscriptionWebRepository.GetSubscriptionByTenantId(Id.Value);
+        if(!string.IsNullOrWhiteSpace(subscription.Id.ToString()))
+            plan = subscription.Plan;
+
+        if (string.IsNullOrWhiteSpace(tenant.Name))
+        {
+            // Open modal and display error
+            OpenModal("ErrorDetails", "Tenant not found");
+        }
+        
+        Console.WriteLine("Tenant: " + tenant.Name);
+        _model = Mapper.Map<TenantForm>(tenant);
+
+        _plans = await PlanWebRepository.GetAllPlansAsync();
+        _planSelector = _plans.ToDictionary(x => x.Name, x => x.Id.ToString());
+        
+        // Select the correct plan in _planSelector based on the plan of the tenant
+        if (plan != null)
+            _model.TenantPlanForm.Name = plan.Name;
+        
+        // Set the amount of extra licenses
+        _model.TenantLicensesForm.Amount = subscription.ExtraAmountOfLicenses.ToString();
+    }
+    
+    private void OpenModal(string ErrorTitle, string ErrorDetails)
+    {
+        var options = new ModalOptions()
+        {
+            DisableBackgroundCancel = true,
+            HideCloseButton = false,
+        };
+        
+        var parameters = new ModalParameters();
+        parameters.Add(ErrorTitle, ErrorDetails);
+
+        ModalService.Show<ErrorTenantModal>("Error", parameters, options);
+    }
+
+    private async Task OnClickSubmitButtonAsync()
+    {
+        
+        tenant = Mapper.Map<Tenant>(_model);
+
+        // Begin with check if Id was sent if so then we are in edit mode and should update the tenant
+        if (Id.Value == null)
+        {
+            // Get the plan from selection
+            var result = await MyTenantWebRepository.CreateTenantAsync(tenant, Convert.ToInt32(_model.TenantPlanForm.Name), Convert.ToInt32(_model.TenantLicensesForm.Amount));
+            if (result.Id == 0)
+            {
+                OpenModal("ErrorDetails", "Something went wrong while trying to create tenant");
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/global");
+            }
+        }
+        else
+        {
+            // Get the plan from selection
+            Console.WriteLine("Trying to update tenant");
+            var result = await MyTenantWebRepository.UpdateTenantAsync(tenant, Convert.ToInt32(_model.TenantPlanForm.Name), Convert.ToInt32(_model.TenantLicensesForm.Amount));
+            if (result.Id == 0 || result.Id == null)
+            {
+                OpenModal("ErrorDetails", "Something went wrong while trying to update tenant");
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/global");
+            }
+        }
+        
+        Console.WriteLine("Button clicked");
+
+    }
+    
+    private async Task OnClickContinueButtonAsync()
+    {
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+    }
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+
+}
