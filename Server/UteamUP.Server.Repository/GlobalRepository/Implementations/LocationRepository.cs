@@ -88,32 +88,11 @@ public class LocationRepository : ILocationRepository
             .Where(x => x.TenantId == tenantId)
             .ToListAsync();
     }
-
-    /*
-    public async Task<List<Tag>> UpdateTagToLocationAsync(List<Tag> tags, int locationId)
-    {
-        // Select all tags that are in tags and locationId
-        var locationTags = await _context.LocationTags.Where(x => x.LocationId == locationId).ToListAsync();
-
-        // Remove all tags that are not in tags
-        _context.LocationTags.RemoveRange(locationTags.Where(x => !tags.Select(y => y.Id).Contains(x.TagId)));
-        
-        // Add all tags that are not in locationTags
-        _context.LocationTags.AddRange(tags.Where(x => !locationTags.Select(y => y.TagId).Contains(x.Id)).Select(x => new LocationTag
-        {
-            LocationId = locationId,
-            TagId = x.Id
-        }));
-
-        // Save the changes
-        _context.SaveChanges();
-        
-        return tags;
-    }*/
+    
 
     public async Task<LocationDto?> GetByLocationId(int locationId)
     {
-        var location = _context.Locations
+        var location = await _context.Locations
             .Include(a => a.LocationTags)
             .ThenInclude(lt => lt.Tag)
             .FirstOrDefaultAsync(x => x.Id == locationId);
@@ -123,16 +102,6 @@ public class LocationRepository : ILocationRepository
         return mappedLocation;
     }
 
-    /*
-    public Task<List<Tag>> GetTagsByLocationId(int locationId)
-    {
-        return _context.LocationTags
-            .Where(x => x.LocationId == locationId)
-            .Select(x => x.Tag)
-            .ToListAsync();
-    }
-    */
-    
     // Check if the location already exists by name and tenant
     private async Task<bool> LocationExistsByNameAndTenantAsync(string name, int tenantId)
     {
@@ -141,6 +110,15 @@ public class LocationRepository : ILocationRepository
     
     public async Task<Location> UpdateLocationWithTags(Location location, List<Tag> tags)
     {
+        _context.Update(location);
+        await _context.SaveChangesAsync();
+        
+        // Ensure the tags exist in the database, add them if they don't.
+        location = await UpdateTagOnLocation(location, tags);
+        
+        return location;
+        
+        /*
         var existingLocation = await _context.Locations.Include(l => l.LocationTags)
             .ThenInclude(lt => lt.Tag)
             .SingleOrDefaultAsync(l => l.Id == location.Id);
@@ -149,6 +127,9 @@ public class LocationRepository : ILocationRepository
 
         existingLocation.Name = location.Name;
         existingLocation.Description = location.Description;
+
+        _context.Update(existingLocation);
+        await _context.SaveChangesAsync();
 
         // Ensure the tags exist in the database, add them if they don't.
         location = await UpdateTagOnLocation(existingLocation, tags);
@@ -164,6 +145,7 @@ public class LocationRepository : ILocationRepository
         await _context.SaveChangesAsync();
 
         return existingLocation;
+        */
     }
 
     private async Task<Location> UpdateTagOnLocation(Location location, List<Tag> tags)

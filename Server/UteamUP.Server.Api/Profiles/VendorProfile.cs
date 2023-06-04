@@ -5,5 +5,6 @@ public class VendorProfile : Profile
     public VendorProfile()
     {
         CreateMap<Vendor, VendorDto>().ReverseMap();
+        CreateMap<VendorDto, Vendor>().ReverseMap();
     }
 }

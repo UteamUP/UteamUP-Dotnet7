@@ -2,6 +2,7 @@ using Blazor.SubtleCrypto;
 using Blazored.LocalStorage;
 using Blazored.Toast;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using MudBlazor.Services;
 using UteamUP.Client.GlobalRepository.Implementations;
 using UteamUP.Client.GlobalRepository.Interfaces;
 using UteamUP.Client.Web.Repository.Implementations;
@@ -53,6 +54,10 @@ builder.Services.AddBlazoredLocalStorage(config =>
 
 // Add Blazor Modal for Modals
 builder.Services.AddBlazoredModal();
+
+// Add MudBlazor Services
+builder.Services.AddMudServices();
+
 
 // Add Blazor Toast for Error Messages
 builder.Services.AddBlazoredToast();

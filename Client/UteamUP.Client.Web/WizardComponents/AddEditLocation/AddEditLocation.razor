@@ -2,6 +2,7 @@
 @page "/location-edit/{id:int?}"
 @using UteamUP.Client.Web.WizardComponents.AddEditLocation.Modals
 @using UteamUP.Client.Web.WizardComponents.AddEditLocation.Forms
+@using Newtonsoft.Json
 @inject IWebRepository<Tag> TagWebRepository
 @inject IWebRepository<Location> LocationWebRepository
 @inject ILocationWebRepository MyLocationWebRepository
@@ -34,13 +35,12 @@
             </EditForm>
             break;
         case 2:
-            <EditForm Model="@_model.LocationDetailsForm">
-                <h2>Location Description</h2>
+            <EditForm Model="@_description">
                 <div class="input-container">
                     <label class="form-label">Description</label>
-                    <HorizonRichTextEditor Height="300px">
+                    <HorizonRichTextEditor Height="300px" OnContentChange="@UpdateDescription">
                         <EditorContent>
-                            @((MarkupString)_model.LocationDetailsForm.Description)
+                            @((MarkupString)_description)
                         </EditorContent>
                     </HorizonRichTextEditor>
                 </div>
@@ -52,38 +52,60 @@
 </Form>
 
 @code {
-    private List<string> _tagNames = new List<string>();
-    private Location location = new Location();
+    private List<string> _tagNames = new();
+    private Location location = new();
+    private string? _description;
     int _tenantId;
+
+    void UpdateDescription(string newDescription)
+    {
+        _description = newDescription;
+    }
     
     protected override async Task OnInitializedAsync()
     {
         _model = new AddEditLocationForm();
         Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
 
-
         if (Id.HasValue)
         {
-            // Search for the location based on the id
-            var result = await Http.GetFromJsonAsync<LocationDto>($"api/location/{Id.Value}");
-
-            if (string.IsNullOrWhiteSpace(location.Name))
-            {
-                // Open modal and display error
-                OpenModal("Error", "Location not found");
-            }
-            else
-            {
-                // Map the location to the model
-                _model.LocationBasicForm.Name = result.Name;
-                _model.LocationDetailsForm.Description = result.Description;
+            try{
+                // Search for the location based on the id
+                var result = await Http.GetAsync($"api/location/{Id.Value}");
+                result.EnsureSuccessStatusCode();
+                if(result.IsSuccessStatusCode)
+                {
+                    var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var response = JsonConvert.DeserializeObject<LocationDto>(content);
+                    _model.LocationBasicForm.Name = response.Name;
+                    
+                    _description = response.Description;
+                    
+                    location = Mapper.Map<Location>(_model);
+                    
+                    if(UserState.User.DefaultTenantId != 0){
+                        location.TenantId = UserState.User.DefaultTenantId;
+                    }
+                    
+                    if(response.Tags != null)
+                    {
+                        _tagNames.AddRange(response.Tags.Select(t => t.Name));
+                    }
+                }
+                else
+                {
+                    OpenModal("ErrorDetails", "Unable to read the tenant information.");
+                }
                 
-                _tagNames.AddRange(result.Tags.Select(t => t.Name));
+            }
+            catch (Exception e)
+            {
+                OpenModal("ErrorDetails", "Cannot open location, please try again later. Error : " + e.Message);
             }
         }
         
         _tenantId = UserState.User.DefaultTenantId;
-        GenerateLocation(_tenantId);
+        //GenerateLocation(_tenantId);
     }
     
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
@@ -135,8 +157,11 @@
     {
         
         // create a map between _model and location so we can send the location as a parameter
-        location = Mapper.Map<Location>(_model);
-        location.Description = _model.LocationDetailsForm.Description;
+        //location = Mapper.Map<Location>(_model);
+        location.Name = _model.LocationBasicForm.Name;
+        location.Description = _description;
+        _model.LocationDetailsForm.Description = _description;
+        
         if(UserState.User.DefaultTenantId != 0){
             location.TenantId = UserState.User.DefaultTenantId;
         }
@@ -169,12 +194,24 @@
                 LocationDto locationDto = new LocationDto();
                 
                 locationDto.Name = location.Name;
-                locationDto.Description = location.Description;
+                locationDto.Description = _description;
                 locationDto.TenantId = (int)location.TenantId;
                 
                 // Add the tags to the locationDto
                 List<Tag> tags = await GetTags(locationDto.TenantId);
-                var tagDto = Mapper.Map<List<TagDto>>(tags);
+                List<TagDto> tagDto = new();
+                foreach (var tag in tags)
+                {
+                    // Map the tag to the tagDto
+                    TagDto tagDtoItem = new()
+                    {
+                        Name = tag.Name,
+                        TenantId = tag.TenantId,
+                    };
+                    
+                    tagDto.Add(tagDtoItem);
+                }
+                
                 locationDto.Tags = tagDto;
 
                 var result = await Http.PostAsJsonAsync<LocationDto>("api/location", locationDto);
@@ -191,7 +228,7 @@
             }
             catch (Exception e)
             {
-                OpenModal("ErrorDetails", "Error: " + e.Message + "\n" + e.InnerException!.Message);
+                OpenModal("ErrorDetails", "Error: " + e.Message);
             }
         }
         
@@ -199,22 +236,36 @@
         // Update the location
         else
         {
-            LocationDto locationDto = new LocationDto();
-            
-            locationDto.Name = location.Name;
-            locationDto.Description = location.Description;
-            locationDto.TenantId = (int)location.TenantId;
-
-            // Add the tags to the locationDto
-            List<Tag> tags = await GetTags(locationDto.TenantId);
-            var tagDto = Mapper.Map<List<TagDto>>(tags);
-            locationDto.Tags = tagDto;
-
             try
             {
-                //var result = await LocationWebRepository.Update(location);
+                LocationDto locationDto = new LocationDto();
+
+                // Add the tags to the locationDto
+                List<Tag> tags = await GetTags(locationDto.TenantId);
+                List<TagDto> tagDto = new();
+                foreach (var tag in tags)
+                {
+                    // Map the tag to the tagDto
+                    TagDto tagDtoItem = new()
+                    {
+                        Name = tag.Name,
+                        TenantId = tag.TenantId,
+                    };
+                    
+                    tagDto.Add(tagDtoItem);
+                }
+                locationDto.Tags = tagDto;
+
+
+                locationDto.Name = _model.LocationBasicForm.Name;
+                locationDto.Description = _model.LocationDetailsForm.Description;
+                locationDto.TenantId = (int)location.TenantId;
+                
+                OpenModal("ErrorDetails", "Updating location with: " + locationDto.Name + " and description: " + locationDto.Description + " and tenantId: " + locationDto.TenantId);
+
                 var result = await Http.PutAsJsonAsync<LocationDto>("api/location", locationDto);
 
+                /*
                 if (result != null)
                 {
                     NavigationManager.NavigateTo("/global");
@@ -222,7 +273,7 @@
                 else
                 {
                     OpenModal("ErrorDetails", "Location was not updated, please try again.");
-                }
+                }*/
             }
             catch (Exception e)
             {

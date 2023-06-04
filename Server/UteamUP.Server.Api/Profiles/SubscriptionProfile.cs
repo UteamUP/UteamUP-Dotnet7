@@ -5,5 +5,6 @@ public class SubscriptionProfile : Profile
     public SubscriptionProfile()
     {
         CreateMap<Subscription, SubscriptionDto>().ReverseMap();
+        CreateMap<SubscriptionDto, Subscription>().ReverseMap();
     }
 }

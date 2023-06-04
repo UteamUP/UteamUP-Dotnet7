@@ -6,11 +6,11 @@ public class TagProfile : Profile
     {
         CreateMap<Tag, TagDto>()
             .ForMember(src => src.Name, dst => dst.MapFrom(e => e.Name))
-            .ForMember(src => src.TenantId, dst => dst.MapFrom(e => e.TenantId))
-            .ReverseMap();
+            .ForMember(src => src.TenantId, dst => dst.MapFrom(e => e.TenantId));
+
         CreateMap<TagDto, Tag>()
-            .ForMember(src => src.Name, dst => dst.MapFrom(e => e.Name))
-            .ForMember(src => src.TenantId, dst => dst.MapFrom(e => e.TenantId))
-            .ReverseMap();
+            .ForMember(dst => dst.Name, src => src.MapFrom(e => e.Name))
+            .ForMember(dst => dst.TenantId, src => src.MapFrom(e => e.TenantId));
+
     }
 }

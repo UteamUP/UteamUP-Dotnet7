@@ -5,7 +5,7 @@
 
 <div class="rich-text-editor-container">
         <div class="quill-container" style="height: @Height">
-            <BlazoredTextEditor @ref="TextEditor" ReadOnly="ReadOnly">
+            <BlazoredTextEditor @ref="TextEditor" ReadOnly="ReadOnly" OnTextChange="@HandleTextChange">
                 <ToolbarContent>
                     @if (!ReadOnly)
                     {
@@ -58,6 +58,9 @@
     public string Height { get; set; } = "auto";
     
     [Parameter]
+    public EventCallback<string> OnContentChange { get; set; }
+    
+    [Parameter]
     public EventCallback<IReadOnlyList<IBrowserFile>?> OnFileChange { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -75,5 +78,10 @@
         _uploadedFiles = e.FileCount == 0 ? null : e.GetMultipleFiles(e.FileCount);
 
         OnFileChange.InvokeAsync(_uploadedFiles);
+    }
+    
+    private async Task HandleTextChange(ChangeEventArgs e)
+    {
+        await OnContentChange.InvokeAsync(e.Value.ToString());
     }
 }

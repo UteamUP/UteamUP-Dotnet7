@@ -5,5 +5,6 @@ public class PartProfile : Profile
     public PartProfile()
     {
         CreateMap<Part, PartDto>().ReverseMap();
+        CreateMap<PartDto, Part>().ReverseMap();
     }
 }

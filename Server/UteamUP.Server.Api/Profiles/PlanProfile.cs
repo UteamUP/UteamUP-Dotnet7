@@ -5,5 +5,6 @@ public class PlanProfile : Profile
     public PlanProfile()
     {
         CreateMap<Plan, PlanDto>().ReverseMap();
+        CreateMap<PlanDto, Plan>().ReverseMap();
     }
 }

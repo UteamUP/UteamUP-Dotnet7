@@ -5,5 +5,7 @@ public class TenantProfile : Profile
     public TenantProfile()
     {
         CreateMap<Tenant, TenantDto>().ReverseMap();
+        CreateMap<TenantDto, Tenant>().ReverseMap();
+
     }
 }

@@ -86,89 +86,11 @@ public class LocationController : ControllerBase
         var result = await _location.CreateLocationWithTags(location, tags);
         if(result == null) return NotFound("Location not updated");
 
+        Console.WriteLine("The amount of tags: " + tags.Count);
         return Ok(result); // Return a success response
     }
-    
-    /*
-    // Get all locations by tenant id
-    [HttpGet("tenant/{tenantId}")]
-    public async Task<IActionResult> GetLocationsByTenantIdAsync(int tenantId)
-    {
-        // Validate the user
-        var user = await ValidateUser();
-        
-        // if unautorized return the error
-        if (user.GetType() == typeof(UnauthorizedObjectResult))
-            return user;
-        
-        // Get the locations
-        var result = await _location.GetAllLocationsByTenantIdAsync(tenantId);
-        if(result == null) return NotFound("Locations not found");
-        
-        return Ok(result);
-    }
-    */
-    
-    // Create a location
-    /*[HttpPost("tenant/{tenantId}")]
-    public async Task<IActionResult> CreateLocationAsync(Location location, int tenantId)
-    {
-        // Validate the user
-        var user = await ValidateUser();
-        
-        // if unautorized return the error
-        if (user.GetType() == typeof(UnauthorizedObjectResult))
-            return user;
-        
-        // Create the location
-        var result = await _location.CreateLocationAsync(location, tenantId);
-        if(result == null) return NotFound("Location not created");
-        
-        //((var tagUpdate = await _location.UpdateTagToLocationAsync(location.Tags, result.Id);
-        //if(tagUpdate == null) return NotFound("Tags not updated");
-        
-        return Ok(result);
-    }*/
 
-    /*
-    // Assign tags to location
-    [HttpPost("{id}/tags")]
-    public async Task<IActionResult> AssignTagsToLocationAsync([FromBody] List<Tag> tags, int id)
-    {
-        // Validate the user
-        var user = await ValidateUser();
-        
-        // if unautorized return the error
-        if (user.GetType() == typeof(UnauthorizedObjectResult))
-            return user;
-        
-        // Update the tags
-        var tagUpdate = await _location.UpdateTagToLocationAsync(id, tags);
-        if(tagUpdate == null) return NotFound("Tags not updated");
-        
-        return Ok(tagUpdate);
-    }
-    */
-    
-    /*[HttpGet("{id}/tags")]
-    public async Task<IActionResult> GetTagsByLocationId(int id)
-    {
-        var user = await ValidateUser();
-        
-        // if unautorized return the error
-        if (user.GetType() == typeof(UnauthorizedObjectResult))
-            return user;
-        
-        var result = await _location.GetByLocationId(id);
-        if(result == null) return NotFound("Location not found");
-        
-        var tags = result.LocationTags.Select(lt => lt.Tag).ToList();
-        if(tags == null) return NotFound("Tags not found");
-        
-        return Ok(tags);
-    }*/
-    
-    
+
     // Get location by id
     [HttpGet("{id}")]
     public async Task<IActionResult> GetLocationByIdAsync(int id)
@@ -178,10 +100,9 @@ public class LocationController : ControllerBase
         
         // if unautorized return the error
         if (user.GetType() == typeof(UnauthorizedObjectResult))
-            return user;
+            return new UnauthorizedResult();
         
         // Get the location
-        //var result = await _locationRepository.Get(id);
         var result = await _location.GetByLocationId(id);
         
         if(result == null) return NotFound("Location not found");

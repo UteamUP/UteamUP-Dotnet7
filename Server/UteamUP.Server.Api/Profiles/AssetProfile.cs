@@ -5,5 +5,6 @@ public class AssetProfile : Profile
     public AssetProfile()
     {
         CreateMap<Asset, AssetDto>().ReverseMap();
+        CreateMap<AssetDto, Asset>().ReverseMap();
     }
 }
