@@ -1,10 +1,9 @@
-namespace UteamUP.Server.Profiles;
+namespace UteamUP.Server.Api.Profiles;
 
 public class LocationProfile : Profile
 {
     public LocationProfile()
     {
-        CreateMap<Location, LocationDto>();
-        CreateMap<LocationDto, Location>();
+        CreateMap<Location, LocationDto>().ReverseMap();
     }
 }

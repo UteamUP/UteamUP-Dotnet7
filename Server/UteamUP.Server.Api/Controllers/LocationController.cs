@@ -12,22 +12,17 @@ public class LocationController : ControllerBase
     private readonly ILogger<LocationController> _logger;
     private readonly ILocationRepository _location;
     private readonly IMUserRepository _user;
-    private readonly IRepository<Location> _locationRepository;
-    private readonly IRepository<Tag> _tagRepository;
+    private readonly IMapper _mapper;
     
     public LocationController(
         ILogger<LocationController> logger, 
         ILocationRepository location, 
-        IMUserRepository user, 
-        IRepository<Location> locationRepository, 
-        IRepository<Tag> tagRepository
-        )
+        IMUserRepository user, IMapper mapper)
     {
         _logger = logger;
         _location = location;
         _user = user;
-        _locationRepository = locationRepository;
-        _tagRepository = tagRepository;
+        _mapper = mapper;
     }
     
     private async Task<IActionResult> ValidateUser()
@@ -43,19 +38,33 @@ public class LocationController : ControllerBase
         return Ok(true);
     }
 
-    [HttpPost("add")]
-    public async Task<IActionResult> Create([FromBody] LocationDto location)
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody]LocationDto locationDto)
     {
         var user = await ValidateUser();
         if (user.GetType() == typeof(UnauthorizedObjectResult))
             return user;
 
-        return Ok(new Location()); 
+        Location? location = new Location();
+        List<Tag> tags = new List<Tag>();
+        
+        // Map LocationDto.Location to location using Mapper
+        location = _mapper.Map<Location>(locationDto);
+        
+        // Map LocationDto.Tags to tags using Mapper
+        tags = _mapper.Map<List<Tag>>(locationDto.Tags);
+        
+        // Create the location
+        var result = await _location.CreateLocationWithTags(location, tags);
+
+        if(result == null) return NotFound("Location not created");
+
+        return Ok(result);
     }
     
     // Update
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] Location location)
+    public async Task<IActionResult> Update([FromBody] LocationDto? locationDto)
     {
         // Validate the user
         var user = await ValidateUser();
@@ -64,14 +73,19 @@ public class LocationController : ControllerBase
         if (user.GetType() == typeof(UnauthorizedObjectResult))
             return user;
         
+        Location? location = new Location();
+        List<Tag> tags = new List<Tag>();
+        
+        // Map LocationDto.Location to location using Mapper
+        location = _mapper.Map<Location>(locationDto);
+        
+        // Map LocationDto.Tags to tags using Mapper
+        tags = _mapper.Map<List<Tag>>(locationDto.Tags);
+        
         // Update the location
-        var result = await _location.UpdateLocationAsync(location);
+        var result = await _location.CreateLocationWithTags(location, tags);
         if(result == null) return NotFound("Location not updated");
-        
-        // Update the tags
-        //var tagUpdate = await _location.UpdateTagToLocationAsync(location.Tags, location.Id);
-        //if(tagUpdate == null) return NotFound("Tags not updated");
-        
+
         return Ok(result); // Return a success response
     }
     
@@ -156,7 +170,7 @@ public class LocationController : ControllerBase
     
     
     // Get location by id
-    /*[HttpGet("{id}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetLocationByIdAsync(int id)
     {
         // Validate the user
@@ -173,6 +187,5 @@ public class LocationController : ControllerBase
         if(result == null) return NotFound("Location not found");
         
         return Ok(result);
-    }*/
-    
+    }
 }

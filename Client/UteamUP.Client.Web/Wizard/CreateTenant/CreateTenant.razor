@@ -94,8 +94,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
+        _model = new AddNewTenantForm();
 
+        await base.OnInitializedAsync();
+        
         _oid = UserState.User.Oid;
         _name = UserState.User.Name;
         _email = UserState.User.Email;

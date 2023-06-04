@@ -1,4 +1,4 @@
-namespace UteamUP.Server.Profiles;
+namespace UteamUP.Server.Api.Profiles;
 
 public class MUserProfile : Profile
 {

@@ -1,10 +1,9 @@
-namespace UteamUP.Server.Profiles;
+namespace UteamUP.Server.Api.Profiles;
 
 public class PlanProfile : Profile
 {
     public PlanProfile()
     {
-        CreateMap<Plan, PlanDto>();
-        CreateMap<PlanDto, Plan>();
+        CreateMap<Plan, PlanDto>().ReverseMap();
     }
 }

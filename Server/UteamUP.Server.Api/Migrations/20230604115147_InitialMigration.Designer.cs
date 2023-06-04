@@ -12,7 +12,7 @@ using UteamUP.Server.Database.Contexts;
 namespace UteamUP.Server.Api.Migrations
 {
     [DbContext(typeof(pgContext))]
-    [Migration("20230530235626_InitialMigration")]
+    [Migration("20230604115147_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -340,7 +340,7 @@ namespace UteamUP.Server.Api.Migrations
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
 
-                    b.Property<int?>("TenantId")
+                    b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -369,9 +369,10 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LocationId");
-
                     b.HasIndex("TagId");
+
+                    b.HasIndex("LocationId", "TagId")
+                        .IsUnique();
 
                     b.ToTable("LocationTags");
                 });
@@ -804,9 +805,6 @@ namespace UteamUP.Server.Api.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.HasIndex("TenantId");
 
@@ -1300,7 +1298,9 @@ namespace UteamUP.Server.Api.Migrations
                 {
                     b.HasOne("UteamUP.Shared.Models.Tenant", "Tenant")
                         .WithMany()
-                        .HasForeignKey("TenantId");
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Tenant");
                 });

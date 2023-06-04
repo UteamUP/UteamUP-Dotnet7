@@ -1,10 +1,9 @@
-namespace UteamUP.Server.Profiles;
+namespace UteamUP.Server.Api.Profiles;
 
 public class SubscriptionProfile : Profile
 {
     public SubscriptionProfile()
     {
-        CreateMap<Subscription, SubscriptionDto>();
-        CreateMap<SubscriptionDto, Subscription>();
+        CreateMap<Subscription, SubscriptionDto>().ReverseMap();
     }
 }

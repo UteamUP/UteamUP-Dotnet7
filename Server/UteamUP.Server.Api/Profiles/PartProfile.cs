@@ -1,10 +1,9 @@
-namespace UteamUP.Server.Profiles;
+namespace UteamUP.Server.Api.Profiles;
 
 public class PartProfile : Profile
 {
     public PartProfile()
     {
-        CreateMap<Part, PartDto>();
-        CreateMap<PartDto, Part>();
+        CreateMap<Part, PartDto>().ReverseMap();
     }
 }

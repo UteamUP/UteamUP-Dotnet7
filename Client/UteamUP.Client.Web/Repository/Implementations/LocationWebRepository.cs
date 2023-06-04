@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 using UteamUP.Client.Web.Repository.Interfaces;
 
@@ -70,12 +71,13 @@ public class LocationWebRepository : ILocationWebRepository
         }
     }
     */
-    public async Task<Location?> Create(LocationDto location)
+    public async Task<Location?> Create(LocationTagDto location)
     {
         await GetHttpClientHeaderToken();
         
-        var result = await _httpClient.PostAsJsonAsync<LocationDto>("api/location/add", location);
-        if (result.IsSuccessStatusCode)
+        var result = await _httpClient.PostAsJsonAsync<LocationTagDto>("api/location/add", location);
+        return await result.Content.ReadFromJsonAsync<Location>();
+        /*if (result.IsSuccessStatusCode)
         {
             _logger.Log(LogLevel.Information, $"{nameof(Create)}: Location created successfully");
             return await result.Content.ReadFromJsonAsync<Location>();
@@ -83,9 +85,9 @@ public class LocationWebRepository : ILocationWebRepository
         else
         {
             _logger.Log(LogLevel.Error,
-                $"{nameof(Create)}: Location creation failed, because of : " + result.StatusCode);
-            return null;
-        }
+                $"{nameof(Create)}: Location creation failed, because of : " + result.StatusCode + "\n" + result.ReasonPhrase + "\n" + result.Content.ReadAsStringAsync().Result);
+            return result.StatusCode == HttpStatusCode.BadRequest ? null : new Location();
+        }*/
     }
     
     /*

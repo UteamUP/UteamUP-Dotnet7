@@ -3,8 +3,15 @@
 @using UteamUP.Client.Web.WizardComponents.AddEditLocation.Modals
 @using UteamUP.Client.Web.WizardComponents.AddEditLocation.Forms
 @inject IWebRepository<Tag> TagWebRepository
-@inject ILocationWebRepository LocationWebRepository
+@inject IWebRepository<Location> LocationWebRepository
+@inject ILocationWebRepository MyLocationWebRepository
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IHeaderRepository _headerRepository
+@inject IMapper Mapper
+
 @inherits WizardBase<AddEditLocationForm>
+
 
 <Form Steps="@_steps"
       BackUrl="/global"
@@ -52,29 +59,28 @@
     protected override async Task OnInitializedAsync()
     {
         _model = new AddEditLocationForm();
+        Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
 
-        /*
+
         if (Id.HasValue)
         {
-    // Search for the location based on the id
-            location = await LocationWebRepository.GetByLocationId(Id.Value);
-    //location = await LocationWebRepository.Get(Id.Value, "api/location");
+            // Search for the location based on the id
+            var result = await Http.GetFromJsonAsync<LocationDto>($"api/location/{Id.Value}");
 
             if (string.IsNullOrWhiteSpace(location.Name))
             {
-    // Open modal and display error
+                // Open modal and display error
                 OpenModal("Error", "Location not found");
             }
-
-    // Get the tags for the location
-            var myTags = await LocationWebRepository.GetTagsByLocationId(Id.Value);
-            
-    // Push values to the model
-            _model = Mapper.Map<AddEditLocationForm>(location);
-            _model.LocationAdditionalForm.Tags = myTags;
-            _tagNames.AddRange(myTags.Select(t => t.Name));
+            else
+            {
+                // Map the location to the model
+                _model.LocationBasicForm.Name = result.Name;
+                _model.LocationDetailsForm.Description = result.Description;
+                
+                _tagNames.AddRange(result.Tags.Select(t => t.Name));
+            }
         }
-        */
         
         _tenantId = UserState.User.DefaultTenantId;
         GenerateLocation(_tenantId);
@@ -160,13 +166,21 @@
             try
             {
                 // map location to locationDto
-                var locationDto = Mapper.Map<LocationDto>(location);
+                LocationDto locationDto = new LocationDto();
                 
-                var result = await LocationWebRepository.Create(locationDto);
+                locationDto.Name = location.Name;
+                locationDto.Description = location.Description;
+                locationDto.TenantId = (int)location.TenantId;
+                
+                // Add the tags to the locationDto
+                List<Tag> tags = await GetTags(locationDto.TenantId);
+                var tagDto = Mapper.Map<List<TagDto>>(tags);
+                locationDto.Tags = tagDto;
+
+                var result = await Http.PostAsJsonAsync<LocationDto>("api/location", locationDto);
+                
                 if (result != null)
                 {
-                    //var tags = await GetTags((int)location.TenantId);
-                    //await MyLocationWebRepository.UpdateTagToLocationAsync(tags, result.Id);
                     NavigationManager.NavigateTo("/global");
                 }
                 else
@@ -177,23 +191,32 @@
             }
             catch (Exception e)
             {
-                OpenModal("ErrorDetails", "Error: " + e.Message);
+                OpenModal("ErrorDetails", "Error: " + e.Message + "\n" + e.InnerException!.Message);
             }
         }
         
-        /*
+        
         // Update the location
         else
         {
-            Console.WriteLine("Id: " + Id.Value);
+            LocationDto locationDto = new LocationDto();
+            
+            locationDto.Name = location.Name;
+            locationDto.Description = location.Description;
+            locationDto.TenantId = (int)location.TenantId;
+
+            // Add the tags to the locationDto
+            List<Tag> tags = await GetTags(locationDto.TenantId);
+            var tagDto = Mapper.Map<List<TagDto>>(tags);
+            locationDto.Tags = tagDto;
 
             try
             {
-                var result = await LocationWebRepository.Update(location);
-                if (result.Id != 0)
+                //var result = await LocationWebRepository.Update(location);
+                var result = await Http.PutAsJsonAsync<LocationDto>("api/location", locationDto);
+
+                if (result != null)
                 {
-                    //var tags = await GetTags((int)location.TenantId);
-                    //await MyLocationWebRepository.UpdateTagToLocationAsync(tags, result.Id);
                     NavigationManager.NavigateTo("/global");
                 }
                 else
@@ -206,7 +229,7 @@
                 OpenModal("ErrorDetails", "Error: " + e.Message);
             }
         }
-        */
+        
 
     }
 

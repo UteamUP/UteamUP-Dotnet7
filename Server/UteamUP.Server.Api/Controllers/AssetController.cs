@@ -14,9 +14,9 @@ public class AssetController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Get()
+    [HttpPost("{text}")]
+    public async Task<IActionResult> Create(string text)
     {
-        return Ok();
+        return Ok(text);
     }
 }

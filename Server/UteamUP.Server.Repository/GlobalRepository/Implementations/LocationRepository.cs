@@ -17,7 +17,7 @@ public class LocationRepository : ILocationRepository
         _logger = logger;
     }
 
-    public async Task<Location?> CreateLocationAsync(Location location, int tenantId)
+    public async Task<Location?> CreateLocationAsync(Location? location, int tenantId)
     {
         var locationExists = await LocationExistsByNameAndTenantAsync(location.Name, tenantId);
         if (locationExists)
@@ -42,7 +42,7 @@ public class LocationRepository : ILocationRepository
         
     }
 
-    public async Task<Location?> UpdateLocationAsync(Location location)
+    public async Task<Location?> UpdateLocationAsync(Location? location)
     {
         location.UpdatedAt = DateTime.Now.ToUniversalTime();
         _context.Locations.Update(location);
@@ -111,12 +111,16 @@ public class LocationRepository : ILocationRepository
         return tags;
     }*/
 
-    public Task<Location?> GetByLocationId(int locationId)
+    public async Task<LocationDto?> GetByLocationId(int locationId)
     {
-        return _context.Locations
+        var location = _context.Locations
             .Include(a => a.LocationTags)
             .ThenInclude(lt => lt.Tag)
             .FirstOrDefaultAsync(x => x.Id == locationId);
+        
+        // Map location to locationDto
+        var mappedLocation = _mapper.Map<LocationDto>(location);
+        return mappedLocation;
     }
 
     /*
@@ -135,27 +139,99 @@ public class LocationRepository : ILocationRepository
         return await _context.Locations.AnyAsync(x => x.Name == name && x.TenantId == tenantId);
     }
     
-    public async Task<Location> UpdateLocationWithTags(int locationId, List<Tag> newTags)
+    public async Task<Location> UpdateLocationWithTags(Location location, List<Tag> tags)
     {
-        var location = await _context.Locations.Include(l => l.LocationTags).ThenInclude(lt => lt.Tag).FirstOrDefaultAsync(l => l.Id == locationId);
-        location.LocationTags.Clear(); // This will remove all associations, but won't delete the tags
-        foreach (var tag in newTags)
-        {
-            location.LocationTags.Add(new LocationTag { TagId = tag.Id });
-        }
+        var existingLocation = await _context.Locations.Include(l => l.LocationTags)
+            .ThenInclude(lt => lt.Tag)
+            .SingleOrDefaultAsync(l => l.Id == location.Id);
+
+        if (existingLocation == null) throw new Exception("Location not found.");
+
+        existingLocation.Name = location.Name;
+        existingLocation.Description = location.Description;
+
+        // Ensure the tags exist in the database, add them if they don't.
+        location = await UpdateTagOnLocation(existingLocation, tags);
+
+        // Get the list of tag IDs from the new list of tags
+        var newTagIds = tags.Select(t => t.Id).ToList();
+
+        // Remove the tags that are no longer linked with the location
+        var tagsToRemove = existingLocation.LocationTags.Where(lt => !newTagIds.Contains(lt.TagId)).ToList();
+        
+        _context.LocationTags.RemoveRange(tagsToRemove);
+
         await _context.SaveChangesAsync();
-        return location;
+
+        return existingLocation;
+    }
+
+    private async Task<Location> UpdateTagOnLocation(Location location, List<Tag> tags)
+    {
+        try{
+            foreach (var tag in tags)
+            { 
+                tag.TenantId = location.TenantId;
+                
+                var existingTag = await _context.Tags.SingleOrDefaultAsync(t => t.Name == tag.Name);
+                if (existingTag == null)
+                {
+                    tag.CreatedAt = DateTime.Now.ToUniversalTime();
+                    tag.UpdatedAt = DateTime.Now.ToUniversalTime();
+                    _context.Tags.Add(tag);
+                }
+                else
+                {
+                    tag.Id = existingTag.Id;
+                }
+
+                LocationTag locationTag = new LocationTag
+                {
+                    Location = location,
+                    Tag = tag
+                };
+                
+                location.LocationTags.Add(locationTag);
+            }
+
+            await _context.SaveChangesAsync();
+            return location;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
     
-    public async Task<Location> CreateLocationWithTags(Location location, List<Tag> tags)
+    public async Task<Location?> CreateLocationWithTags(Location? location, List<Tag> tags)
     {
-        // Assuming _context is your DbContext
-        foreach (var tag in tags)
-        {
-            location.LocationTags.Add(new LocationTag { Tag = tag });
-        }
+        // Check if the location already exists
+        var locationExists = await LocationExistsByNameAndTenantAsync(location.Name, location.TenantId);
+        if (locationExists)
+            return _context
+                .Locations
+                .Include(a => a.LocationTags)
+                .ThenInclude(lt => lt.Tag)
+                .FirstOrDefault(x => x.Name == location.Name && x.TenantId == location.TenantId);
+
+        // set the created at and updated at on location
+        location.CreatedAt = DateTime.Now.ToUniversalTime();
+        location.UpdatedAt = DateTime.Now.ToUniversalTime();
         _context.Locations.Add(location);
+        
         await _context.SaveChangesAsync();
+        
+        // Get the location
+        location = await _context
+            .Locations
+            .FirstOrDefaultAsync(x => x.Name == location.Name && x.TenantId == location.TenantId);
+
+        // Update the tags on the location
+        location = await UpdateTagOnLocation(location, tags);
+        if(location == null)
+            return null;
+        
+        // Return the location
         return location;
     }
     

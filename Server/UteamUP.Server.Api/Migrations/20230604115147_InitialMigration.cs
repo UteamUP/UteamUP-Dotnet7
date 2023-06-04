@@ -184,7 +184,7 @@ namespace UteamUP.Server.Api.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    TenantId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -195,7 +195,8 @@ namespace UteamUP.Server.Api.Migrations
                         name: "FK_Locations_Tenants_TenantId",
                         column: x => x.TenantId,
                         principalTable: "Tenants",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -773,9 +774,10 @@ namespace UteamUP.Server.Api.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LocationTags_LocationId",
+                name: "IX_LocationTags_LocationId_TagId",
                 table: "LocationTags",
-                column: "LocationId");
+                columns: new[] { "LocationId", "TagId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_LocationTags_TagId",
@@ -836,12 +838,6 @@ namespace UteamUP.Server.Api.Migrations
                 name: "IX_Subscriptions_TenantId",
                 table: "Subscriptions",
                 column: "TenantId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tags_Name",
-                table: "Tags",
-                column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(

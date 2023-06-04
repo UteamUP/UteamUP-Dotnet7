@@ -1,10 +1,9 @@
-namespace UteamUP.Server.Profiles;
+namespace UteamUP.Server.Api.Profiles;
 
 public class VendorProfile : Profile
 {
     public VendorProfile()
     {
-        CreateMap<Vendor, VendorDto>();
-        CreateMap<VendorDto, Vendor>();
+        CreateMap<Vendor, VendorDto>().ReverseMap();
     }
 }

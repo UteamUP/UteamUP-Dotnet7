@@ -126,7 +126,7 @@ public class TagWebRepository : ITagWebRepository
         TagDto tagDto = new TagDto()
         {
             Name = name,
-            TenantId = tenantId
+            //TenantId = tenantId
         };
         
         var tag = await GetTagByNameAndTenantIdAsync(name, tenantId);

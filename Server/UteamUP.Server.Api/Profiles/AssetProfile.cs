@@ -1,10 +1,9 @@
-namespace UteamUP.Server.Profiles;
+namespace UteamUP.Server.Api.Profiles;
 
 public class AssetProfile : Profile
 {
     public AssetProfile()
     {
-        CreateMap<Asset, AssetDto>();
-        CreateMap<AssetDto, Asset>();
+        CreateMap<Asset, AssetDto>().ReverseMap();
     }
 }

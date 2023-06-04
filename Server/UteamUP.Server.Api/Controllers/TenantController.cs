@@ -37,7 +37,7 @@ public class TenantController : ControllerBase
         return mUser;
     }
 
-    [HttpGet("oid/{oid}")]
+    [HttpGet("oid/{oid}"),AllowAnonymous]
     public async Task<IActionResult> GetByOidAsync(string oid)
     {
         List<Tenant> tenantList = new();
@@ -50,6 +50,7 @@ public class TenantController : ControllerBase
 
         _logger.Log(LogLevel.Information, $"Getting user by oid {oid}");
         var tenants = await _tenant.GetAllTenantsByOidAsync(oid);
+        Console.WriteLine("Total Amount of Tenants: " + tenants.Count);
         if (tenants.Count == 0)
         {
             _logger.Log(LogLevel.Information, $"No tenants found for user with oid {oid}");

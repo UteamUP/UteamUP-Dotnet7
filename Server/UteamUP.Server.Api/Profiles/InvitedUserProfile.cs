@@ -1,10 +1,9 @@
-namespace UteamUP.Server.Profiles;
+namespace UteamUP.Server.Api.Profiles;
 
 public class InvitedUserProfile : Profile
 {
     public InvitedUserProfile()
     {
-        CreateMap<InvitedUser, InvitedUserDto>();
-        CreateMap<InvitedUserDto, InvitedUser>();
+        CreateMap<InvitedUser, InvitedUserDto>().ReverseMap();
     }
 }

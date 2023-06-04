@@ -8,11 +8,21 @@
     }
 
     <BSInput InputType="InputType.Select" @bind-Value="CurrentValue">
-        <option disabled selected value="">Select</option>
+        @if (string.IsNullOrWhiteSpace(SelectetValue))
+        {
+            <option disabled selected value="">Select</option>
+        }
 
         @foreach (var option in Options)
         {
-            <option value="@option.Value">@option.Key</option>
+            if(option.Key == SelectetValue)
+            {
+                <option selected value="@option.Value">@option.Key</option>
+            }
+            else
+            {
+                <option value="@option.Value">@option.Key</option>
+            }
         }
     </BSInput>
 
@@ -33,6 +43,9 @@
 
     [Parameter]
     public string Label { get; set; }
+    
+    [Parameter]
+    public string SelectetValue { get; set; }
 
     protected override bool TryParseValueFromString(string value, [MaybeNullWhen(false)] out string result, [NotNullWhen(false)] out string validationErrorMessage)
     {

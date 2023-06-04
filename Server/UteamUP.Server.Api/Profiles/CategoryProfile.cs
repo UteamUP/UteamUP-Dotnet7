@@ -1,4 +1,4 @@
-namespace UteamUP.Server.Profiles;
+namespace UteamUP.Server.Api.Profiles;
 
 public class CategoryProfile : Profile
 {
@@ -6,6 +6,6 @@ public class CategoryProfile : Profile
     {
         CreateMap<Category, CategoryDto>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
-        CreateMap<CategoryDto, Category>();
+        CreateMap<CategoryDto, Category>().ReverseMap();
     }
 }

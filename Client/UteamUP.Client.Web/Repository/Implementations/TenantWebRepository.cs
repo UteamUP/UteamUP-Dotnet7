@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using Newtonsoft.Json;
 
 namespace UteamUP.Client.Web.Repository.Implementations;
 
@@ -68,27 +69,15 @@ public class TenantWebRepository : ITenantWebRepository
     public async Task<List<Tenant>> GetOwnedTenantsAsync(string oid)
     {
         await GetHttpClientHeaderToken();
-        try{
-            var result = await _httpClient.GetAsync($"{Url}/owned/{oid}");
-            
-            if (result.IsSuccessStatusCode)
-            {
-                _logger.Log(LogLevel.Information, $"{nameof(GetOwnedTenantsAsync)}: Showing all owned tenants");
-                return await result.Content.ReadFromJsonAsync<List<Tenant>>();
-            }
-            else
-            {
-                _logger.Log(LogLevel.Information,
-                    $"{nameof(GetOwnedTenantsAsync)}: User did not have any owned tenants");
-                return new List<Tenant>();
-            }
-        }
-        catch(Exception e)
-        {
-            _logger.Log(LogLevel.Information, $"{nameof(GetOwnedTenantsAsync)}: {e.Message}");
-            return new List<Tenant>();
-        }
 
+        var result = await _httpClient.GetAsync($"{Url}/owned/{oid}").ConfigureAwait(false);
+
+        result.EnsureSuccessStatusCode();
+
+        var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var output = JsonConvert.DeserializeObject<List<Tenant>>(content);
+        
+        return output;
     }
 
     public async Task<List<Tenant>> GetAllTenantsByOidAsync(string oid)
@@ -98,41 +87,43 @@ public class TenantWebRepository : ITenantWebRepository
         if (oid == null || oid == "0")
             return new List<Tenant>();
 
-        var result = await _httpClient.GetFromJsonAsync<List<Tenant>>($"{Url}/oid/{oid}");
-        return result;
+        var result = await _httpClient.GetAsync($"{Url}/oid/{oid}").ConfigureAwait(false);
+        
+        result.EnsureSuccessStatusCode();
+
+        var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var output = JsonConvert.DeserializeObject<List<Tenant>>(content);
+        
+        return output;
     }
 
     public async Task<Tenant> GetTenantById(int tenantId)
     {
         await GetHttpClientHeaderToken();
-        if(tenantId == 0 || tenantId == null)
-            return new Tenant();
+
+        var result = await _httpClient.GetAsync($"{Url}/{tenantId}").ConfigureAwait(false);
+
+        result.EnsureSuccessStatusCode();
+
+        var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var output = JsonConvert.DeserializeObject<Tenant>(content);
         
-        var result = await _httpClient.GetFromJsonAsync<Tenant>($"{Url}/{tenantId}");
-        return result;
+        return output;
     }
 
     public async Task<List<Tenant>> GetInvitesAsync(string oid)
     {
-        try{
-            await GetHttpClientHeaderToken();
-            var result = await _httpClient.GetAsync($"{Url}/invites/{oid}");
-            if (result.IsSuccessStatusCode)
-            {
-                _logger.Log(LogLevel.Information, $"{nameof(GetInvitesAsync)}: Showing all tenant invites");
-                return await result.Content.ReadFromJsonAsync<List<Tenant>>();
-            }
-            else
-            {
-                _logger.Log(LogLevel.Information,
-                    $"{nameof(CreateTenantAsync)}: User did not have any invites");
-                return new List<Tenant>();
-            }
-        }
-        catch(Exception e)
-        {
-            _logger.Log(LogLevel.Information, $"{nameof(GetInvitesAsync)}: {e.Message}");
-            return new List<Tenant>();
-        }
+        await GetHttpClientHeaderToken();
+
+        var result = await _httpClient.GetAsync($"{Url}/invites/{oid}").ConfigureAwait(false);
+
+        result.EnsureSuccessStatusCode();
+
+        var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var output = JsonConvert.DeserializeObject<List<Tenant>>(content);
+        
+        return output;
     }
+    
+
 }

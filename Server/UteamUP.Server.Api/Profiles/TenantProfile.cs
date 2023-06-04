@@ -1,10 +1,9 @@
-namespace UteamUP.Server.Profiles;
+namespace UteamUP.Server.Api.Profiles;
 
 public class TenantProfile : Profile
 {
     public TenantProfile()
     {
-        CreateMap<Tenant, TenantDto>();
-        CreateMap<TenantDto, Tenant>();
+        CreateMap<Tenant, TenantDto>().ReverseMap();
     }
 }

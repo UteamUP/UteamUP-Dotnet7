@@ -48,6 +48,7 @@ public class PlanController : ControllerBase
         return Ok(result);
     }
     
+    
     // Create the plan
     [HttpPost]
     public async Task<IActionResult> CreatePlanAsync([FromBody] PlanDto plan)

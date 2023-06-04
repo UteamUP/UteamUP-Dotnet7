@@ -34,7 +34,9 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 // Add MediatR Service
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x =>
+    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve
+);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddLogging();
