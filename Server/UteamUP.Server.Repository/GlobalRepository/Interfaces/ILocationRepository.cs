@@ -2,20 +2,9 @@ namespace UteamUP.Server.Repository.GlobalRepository.Interfaces;
 
 public interface ILocationRepository
 {
-    Task<Location?> CreateLocationAsync(Location? location, int tenantId);
-    Task<Location?> UpdateLocationAsync(Location? location);
-    Task<Location?> UpdateTagToLocationAsync(int locationId, List<Tag> tags);
-    Task<List<Location>> GetAllLocationsByTenantIdAsync(int tenantId);
-    //Task<List<Tag>> UpdateTagToLocationAsync(List<Tag> tags, int locationId);
-    Task<LocationDto?> GetByLocationId(int locationId);
+    Task<LocationTagDto?> GetByLocationId(int locationId);
 
-    //Task<List<Tag>> GetTagsByLocationId(int locationId);
+    Task<Location> UpdateLocationWithTags(Location location, List<string> tags, int id);
 
-    Task<Location> UpdateLocationWithTags(Location location, List<Tag> tags);
-
-    Task<Location?> CreateLocationWithTags(Location? location, List<Tag> tags);
-
-    Task DeleteLocation(int locationId);
-
-    Task<Location> GetLocationWithTags(int locationId);
+    Task<Location?> CreateLocationWithTags(Location? location, List<string> tags);
 }

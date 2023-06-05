@@ -1,4 +1,5 @@
 using Microsoft.Graph;
+using Newtonsoft.Json;
 using UteamUP.Server.Repository.GenericRepository.Interfaces;
 using Location = UteamUP.Shared.Models.Location;
 
@@ -46,16 +47,12 @@ public class LocationController : ControllerBase
             return user;
 
         Location? location = new Location();
-        List<Tag> tags = new List<Tag>();
         
         // Map LocationDto.Location to location using Mapper
         location = _mapper.Map<Location>(locationDto);
         
-        // Map LocationDto.Tags to tags using Mapper
-        tags = _mapper.Map<List<Tag>>(locationDto.Tags);
-        
         // Create the location
-        var result = await _location.CreateLocationWithTags(location, tags);
+        var result = await _location.CreateLocationWithTags(location, locationDto.Tags);
 
         if(result == null) return NotFound("Location not created");
 
@@ -63,8 +60,8 @@ public class LocationController : ControllerBase
     }
     
     // Update
-    [HttpPut]
-    public async Task<IActionResult> Update([FromBody] LocationDto? locationDto)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update([FromBody] LocationDto? locationDto, int id)
     {
         // Validate the user
         var user = await ValidateUser();
@@ -73,20 +70,17 @@ public class LocationController : ControllerBase
         if (user.GetType() == typeof(UnauthorizedObjectResult))
             return user;
         
+        Console.WriteLine("LocationDto.Tags: " + JsonConvert.SerializeObject(locationDto.Tags));
+
         Location? location = new Location();
-        List<Tag> tags = new List<Tag>();
         
         // Map LocationDto.Location to location using Mapper
         location = _mapper.Map<Location>(locationDto);
         
-        // Map LocationDto.Tags to tags using Mapper
-        tags = _mapper.Map<List<Tag>>(locationDto.Tags);
-        
         // Update the location
-        var result = await _location.CreateLocationWithTags(location, tags);
+        var result = await _location.UpdateLocationWithTags(location, locationDto.Tags, id);
         if(result == null) return NotFound("Location not updated");
 
-        Console.WriteLine("The amount of tags: " + tags.Count);
         return Ok(result); // Return a success response
     }
 
@@ -103,7 +97,7 @@ public class LocationController : ControllerBase
             return new UnauthorizedResult();
         
         // Get the location
-        var result = await _location.GetByLocationId(id);
+        LocationTagDto? result = await _location.GetByLocationId(id);
         
         if(result == null) return NotFound("Location not found");
         

@@ -3,6 +3,7 @@
 @using UteamUP.Client.Web.WizardComponents.AddEditLocation.Modals
 @using UteamUP.Client.Web.WizardComponents.AddEditLocation.Forms
 @using Newtonsoft.Json
+@using UteamUP.Client.Components.Enums
 @inject IWebRepository<Tag> TagWebRepository
 @inject IWebRepository<Location> LocationWebRepository
 @inject ILocationWebRepository MyLocationWebRepository
@@ -25,7 +26,7 @@
     {
         case 0:
             <EditForm Model="@_model.LocationBasicForm">
-                <FluentValidationValidator @ref="_fluentValidationValidator" />
+                <FluentValidationValidator @ref="_fluentValidationValidator"/>
                 <HorizonInput Label="Location Name" Placeholder="Type in the name of the location" @bind-Value="@_model.LocationBasicForm.Name"/>
             </EditForm>
             break;
@@ -35,16 +36,47 @@
             </EditForm>
             break;
         case 2:
-            <EditForm Model="@_description">
+            <EditForm Model="@_model.LocationDetailsForm">
                 <div class="input-container">
-                    <label class="form-label">Description</label>
-                    <HorizonRichTextEditor Height="300px" OnContentChange="@UpdateDescription">
-                        <EditorContent>
-                            @((MarkupString)_description)
-                        </EditorContent>
-                    </HorizonRichTextEditor>
+                    <div class="rich-text-editor-container">
+                        <div class="quill-container" style="height: 300px">
+                            <BlazoredTextEditor @ref="@QuillHtml">
+                                <ToolbarContent>
+                                    <span class="ql-formats">
+                                        <button class="ql-bold"></button>
+                                        <button class="ql-italic"></button>
+                                        <button class="ql-underline"></button>
+                                        <button class="ql-strike"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-image"></button>
+                                        <button @onclick="OnClickBrowseAsync"><HorizonIcon Icon="@Icons.Attachment" Width="14" Height="14"/></button>
+                                    </span>
+                                </ToolbarContent>
+                                <EditorContent>
+                                    @((MarkupString)_description)
+                                </EditorContent>
+                            </BlazoredTextEditor>
+                        </div>
+                        <div class="buttons-container">
+                            <br />
+                            <InputFile multiple id="@_fileInputid" OnChange="@HandleOnChange"/>
+                        </div>
+                        @if (_uploadedFiles != null)
+                            {
+                                <ul>
+                                    @foreach (var file in _uploadedFiles)
+                                    {
+                                        <li>
+                                            <span>@file.Name - @file.Size bytes</span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                    </div>
                 </div>
             </EditForm>
+
             break;
         default:
             break;
@@ -52,14 +84,29 @@
 </Form>
 
 @code {
-    private List<string> _tagNames = new();
+    private List<string?> _tagNames = new();
     private Location location = new();
     private string? _description;
     int _tenantId;
 
-    void UpdateDescription(string newDescription)
+    BlazoredTextEditor QuillHtml;
+    private string _fileInputid = Guid.NewGuid().ToString();
+    private IReadOnlyList<IBrowserFile>? _uploadedFiles;
+    public EventCallback<string> OnContentChange { get; set; }
+    public EventCallback<IReadOnlyList<IBrowserFile>?> OnFileChange { get; set; }
+    private IJSObjectReference _module;
+    private async Task OnClickBrowseAsync() => await _module.InvokeVoidAsync("openFileDialog", _fileInputid);
+    
+    private void HandleOnChange(InputFileChangeEventArgs e)
     {
-        _description = newDescription;
+        _uploadedFiles = e.FileCount == 0 ? null : e.GetMultipleFiles(e.FileCount);
+
+        OnFileChange.InvokeAsync(_uploadedFiles);
+    }
+    
+    private async Task HandleTextChange(ChangeEventArgs e)
+    {
+        await OnContentChange.InvokeAsync(e.Value.ToString());
     }
     
     protected override async Task OnInitializedAsync()
@@ -69,25 +116,27 @@
 
         if (Id.HasValue)
         {
-            try{
-                // Search for the location based on the id
+            try
+            {
+    // Search for the location based on the id
                 var result = await Http.GetAsync($"api/location/{Id.Value}");
                 result.EnsureSuccessStatusCode();
-                if(result.IsSuccessStatusCode)
+                if (result.IsSuccessStatusCode)
                 {
                     var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var response = JsonConvert.DeserializeObject<LocationDto>(content);
+                    var response = JsonConvert.DeserializeObject<LocationTagDto>(content);
                     _model.LocationBasicForm.Name = response.Name;
-                    
+
                     _description = response.Description;
-                    
+
                     location = Mapper.Map<Location>(_model);
-                    
-                    if(UserState.User.DefaultTenantId != 0){
+
+                    if (UserState.User.DefaultTenantId != 0)
+                    {
                         location.TenantId = UserState.User.DefaultTenantId;
                     }
-                    
-                    if(response.Tags != null)
+
+                    if (response.Tags != null)
                     {
                         _tagNames.AddRange(response.Tags.Select(t => t.Name));
                     }
@@ -96,73 +145,36 @@
                 {
                     OpenModal("ErrorDetails", "Unable to read the tenant information.");
                 }
-                
             }
             catch (Exception e)
             {
                 OpenModal("ErrorDetails", "Cannot open location, please try again later. Error : " + e.Message);
             }
         }
-        
+
         _tenantId = UserState.User.DefaultTenantId;
-        //GenerateLocation(_tenantId);
+    //GenerateLocation(_tenantId);
     }
-    
+
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
         { "Location Basic Information", false },
         { "Tags", false },
-        { "Location Details", false },
+        { "Location Details", false }
     };
-
-    private async Task<List<Tag>> GetTags(int tenantId)
-    {
-        List<Tag> tagList = new List<Tag>();
-        
-        foreach (var tagName in _tagNames)
-        {
-            try
-            {
-                var tag = await TagWebRepository.GetByNameAndTenantId(tagName, "api/tag", _tenantId);
-                
-                if (!string.IsNullOrWhiteSpace(tag.Name))
-                {
-                    tagList.Add(tag);
-                }
-                else
-                {
-                    // Create the tag
-                    Tag newTag = new Tag();
-                    newTag.Name = tagName;
-                    newTag.TenantId = tenantId;
-                    newTag.CreatedAt = DateTime.Now.ToUniversalTime();
-                    newTag.UpdatedAt = DateTime.Now.ToUniversalTime();
-
-                    var newTagResult = await TagWebRepository.Add(newTag, "api/tag");
-                    if (!string.IsNullOrWhiteSpace(newTagResult.Name))
-                    {
-                        tagList.Add(newTagResult);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error: " + e.Message);
-            }
-        }
-        return tagList;
-    }
 
     private async Task OnClickSubmitButtonAsync()
     {
-        
+        _description = await QuillHtml.GetHTML();
+        StateHasChanged();
+
         // create a map between _model and location so we can send the location as a parameter
-        //location = Mapper.Map<Location>(_model);
         location.Name = _model.LocationBasicForm.Name;
         location.Description = _description;
         _model.LocationDetailsForm.Description = _description;
-        
-        if(UserState.User.DefaultTenantId != 0){
+
+        if (UserState.User.DefaultTenantId != 0)
+        {
             location.TenantId = UserState.User.DefaultTenantId;
         }
         else
@@ -179,50 +191,35 @@
             NavigationManager.NavigateTo("/location-add");
         }
 
-    // Get the tags for the location
+        // Get the tags for the location
         Console.WriteLine("Location tenant Id: " + location.TenantId);
         Console.WriteLine("Location name: " + location.Name);
         Console.WriteLine("Location description: " + location.Description);
 
-    // Create the location
+        // Create the location
         if (Id == null)
         {
             Console.WriteLine("Creating a new location");
             try
             {
                 // map location to locationDto
-                LocationDto locationDto = new LocationDto();
-                
+                var locationDto = new LocationDto();
+
                 locationDto.Name = location.Name;
                 locationDto.Description = _description;
                 locationDto.TenantId = (int)location.TenantId;
                 
-                // Add the tags to the locationDto
-                List<Tag> tags = await GetTags(locationDto.TenantId);
-                List<TagDto> tagDto = new();
-                foreach (var tag in tags)
-                {
-                    // Map the tag to the tagDto
-                    TagDto tagDtoItem = new()
-                    {
-                        Name = tag.Name,
-                        TenantId = tag.TenantId,
-                    };
-                    
-                    tagDto.Add(tagDtoItem);
-                }
-                
-                locationDto.Tags = tagDto;
 
-                var result = await Http.PostAsJsonAsync<LocationDto>("api/location", locationDto);
-                
+                locationDto.Tags = _tagNames;
+                var result = await Http.PostAsJsonAsync<LocationDto>($"api/location", locationDto);
+
                 if (result != null)
                 {
                     NavigationManager.NavigateTo("/global");
                 }
                 else
                 {
-                    // Open modal and display error
+    // Open modal and display error
                     OpenModal("ErrorDetails", "Location was not created. Please try again.");
                 }
             }
@@ -231,41 +228,26 @@
                 OpenModal("ErrorDetails", "Error: " + e.Message);
             }
         }
-        
-        
+
+
         // Update the location
         else
         {
             try
             {
-                LocationDto locationDto = new LocationDto();
-
-                // Add the tags to the locationDto
-                List<Tag> tags = await GetTags(locationDto.TenantId);
-                List<TagDto> tagDto = new();
-                foreach (var tag in tags)
-                {
-                    // Map the tag to the tagDto
-                    TagDto tagDtoItem = new()
-                    {
-                        Name = tag.Name,
-                        TenantId = tag.TenantId,
-                    };
-                    
-                    tagDto.Add(tagDtoItem);
-                }
-                locationDto.Tags = tagDto;
-
+                var locationDto = new LocationDto();
+                
+                locationDto.Tags = _tagNames;
 
                 locationDto.Name = _model.LocationBasicForm.Name;
                 locationDto.Description = _model.LocationDetailsForm.Description;
                 locationDto.TenantId = (int)location.TenantId;
                 
-                OpenModal("ErrorDetails", "Updating location with: " + locationDto.Name + " and description: " + locationDto.Description + " and tenantId: " + locationDto.TenantId);
-
-                var result = await Http.PutAsJsonAsync<LocationDto>("api/location", locationDto);
-
-                /*
+                // Print out the locationDto.Tags in json format
+                Console.WriteLine("LocationDto.Tags: " + JsonConvert.SerializeObject(locationDto.Tags));
+                
+                var result = await Http.PutAsJsonAsync<LocationDto>($"api/location/{Id.Value}", locationDto);
+    
                 if (result != null)
                 {
                     NavigationManager.NavigateTo("/global");
@@ -273,15 +255,13 @@
                 else
                 {
                     OpenModal("ErrorDetails", "Location was not updated, please try again.");
-                }*/
+                }
             }
             catch (Exception e)
             {
                 OpenModal("ErrorDetails", "Error: " + e.Message);
             }
         }
-        
-
     }
 
     private void OpenModal(string ErrorTitle, string ErrorDetails)
@@ -289,15 +269,15 @@
         var options = new ModalOptions()
         {
             DisableBackgroundCancel = true,
-            HideCloseButton = false,
+            HideCloseButton = false
         };
-        
+
         var parameters = new ModalParameters();
         parameters.Add(ErrorTitle, ErrorDetails);
 
         ModalService.Show<ErrorModal>("Error", parameters, options);
     }
-    
+
     private void GenerateLocation(int tenantId)
     {
         _model.LocationBasicForm.Name = "Entrance1";
@@ -305,7 +285,7 @@
         _model.LocationBasicForm.TenantId = tenantId;
         _tagNames.AddRange(new List<string>() { "TeamField 1", "TeamField 2", "TeamField 3" });
     }
-    
+
     private async Task OnClickContinueButtonAsync()
     {
         _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
@@ -316,5 +296,5 @@
     {
         _activeStepIndex = _activeStepIndex - 1;
     }
-}
 
+}
