@@ -3,7 +3,9 @@ namespace UteamUP.Server.Repository.GlobalRepository.Interfaces;
 public interface IVendorRepository
 {
     Task<Vendor?> CreateAsync(VendorDto vendor, string oid);
+    Task<Vendor?> UpdateAsync(int id, VendorDto vendor, string oid);
     Task<List<Vendor>> GetAllAsync();
+    Task<VendorDto> GetByIdAsync(int id);
 
     //Task<Vendor> GetVendorAsync(int id);
     //Task<IEnumerable<Vendor>> GetVendorsAsync();

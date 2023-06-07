@@ -1,0 +1,131 @@
+@page "/category-add"
+@page "/category-edit/{id:int?}"
+@using UteamUP.Client.Web.WizardComponents.AddEditCategory.Forms
+@using UteamUP.Client.Web.WizardComponents.AddEditVendor.Modals
+@using Newtonsoft.Json
+
+@inject IHeaderRepository HeaderRepository
+@inject HttpClient Http
+
+@inherits WizardBase<CategoryForm>
+
+<Form Steps="@_steps"
+      BackUrl="/global"
+      ActiveStepIndex="@_activeStepIndex"
+      Title="@(Id == null ? "Create Category" : "Edit Category")"
+      OnClickBackButton="OnClickBackButton"
+      OnClickContinueButton="OnClickContinueButtonAsync"
+      OnClickSubmitButton="OnClickSubmitButtonAsync">
+    @switch (_activeStepIndex)
+    {
+        case 0:
+            <HorizonInput Label="Category Name" Placeholder="Type in the name of the category" @bind-Value="@_model.CategoryBasicForm.Name"/>
+            break;
+        default:
+            break;
+    }
+</Form>
+
+@code {
+    private int _tenantId;
+    private string _oid;
+    private new readonly CategoryForm _model = new();
+    MUser? _mUser = new();
+
+    private readonly IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Category Names", false },
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        Http.DefaultRequestHeaders.Authorization = await HeaderRepository.GetHeaderAsync();
+        _tenantId = UserState.User.DefaultTenantId;
+        
+        //_mUser = await Http.GetFromJsonAsync<MUser>($"api/user/{UserState.User.Id}");
+        
+        if (Id.HasValue)
+        {
+            var result = await Http.GetAsync($"api/category/{Id.Value}/tenant/{_tenantId}");
+            result.EnsureSuccessStatusCode();
+            if (result.IsSuccessStatusCode)
+            {
+                var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var response = JsonConvert.DeserializeObject<Category>(content);
+                
+                _model.CategoryBasicForm.Name = response.Name;
+            }
+        }
+        
+        _tenantId = UserState.User.DefaultTenantId;
+        _oid = UserState.User.Oid;
+    }
+    
+    private void OpenModal(string errorTitle, string errorDetails)
+    {
+        var options = new ModalOptions()
+        {
+            DisableBackgroundCancel = true,
+            HideCloseButton = false,
+        };
+        
+        var parameters = new ModalParameters { { errorTitle, errorDetails } };
+
+        ModalService.Show<ErrorVendorModal>("ErrorDetails", parameters, options);
+    }
+
+    private async Task OnClickSubmitButtonAsync()
+    {
+        var category = new CategoryDto()
+        {
+            Name = _model.CategoryBasicForm.Name,
+            TenantId = _tenantId,
+            CreatorId = _mUser?.Id,
+        };
+        
+        Console.WriteLine("Category: '" + category.Name + "' TenantId: " + category.TenantId);
+        if (Id == null)
+        {
+            var result = await Http.PostAsJsonAsync<CategoryDto>($"api/category/tenant/{_tenantId}/oid/{_oid}", category);
+            result.EnsureSuccessStatusCode();
+            if (result.IsSuccessStatusCode)
+            {
+                var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var response = JsonConvert.DeserializeObject<Category>(content);
+                NavigationManager.NavigateTo("/global");
+            }
+            else
+            {
+                OpenModal("ErrorDetails", "Could not create category.");
+            }
+        }
+        else
+        {
+            var result = await Http.PutAsJsonAsync<CategoryDto>($"api/category/{Id.Value}/tenant/{_tenantId}/oid/{_oid}", category);
+            result.EnsureSuccessStatusCode();
+            if (result.IsSuccessStatusCode)
+            {
+                var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var response = JsonConvert.DeserializeObject<Category>(content);
+                NavigationManager.NavigateTo("/global");
+            }
+            else
+            {
+                OpenModal("ErrorDetails", "Could not update category.");
+            }
+        }
+    }
+    
+    private Task OnClickContinueButtonAsync()
+    {
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+        return Task.CompletedTask;
+    }
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+
+}

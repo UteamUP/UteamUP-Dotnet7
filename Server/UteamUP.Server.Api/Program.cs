@@ -1,8 +1,10 @@
 using System.Text.Json.Serialization;
-using UteamUP.Client.Web.Repository.Implementations;
-using UteamUP.Client.Web.Repository.Interfaces;
+using UteamUP.Client.Web.WizardComponents.AddEditTenant.AddEditTenant.Profiles;
+using UteamUP.Server.Api.Profiles;
 using UteamUP.Server.Repository.GenericRepository.Implementations;
 using UteamUP.Server.Repository.GenericRepository.Interfaces;
+//using EFCoreSecondLevelCacheInterceptor;
+using UteamUP.Client.Web.WizardComponents.AddEditVendor.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,20 +27,40 @@ builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 // Adding Global Services.
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
+// Add Database Cache Service
+builder.Services.AddMemoryCache();
+/*
+builder.Services.AddEFSecondLevelCache(
+    options => options.UseMemoryCacheProvider()
+        .DisableLogging(false)
+        .UseCacheKeyPrefix("EF_"));
+*/
+
 // Add Database Service
-builder.Services.AddDbContext<pgContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("UteamupDB"),
-    b => b.MigrationsAssembly("UteamUP.Server.Api")));
+builder.Services.AddDbContext<pgContext>(
+    opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("UteamupDB"),
+    b => b.MigrationsAssembly("UteamUP.Server.Api"))
+        //.AddInterceptors(builder.Services.BuildServiceProvider().GetRequiredService<SecondLevelCacheInterceptor>())
+    );
 
 // Add AutoMapper Service
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+builder.Services.AddAutoMapper(
+    typeof(TenantProfile).Assembly, 
+    typeof(TenantFormProfile).Assembly,
+    typeof(VendorFormProfile).Assembly
+    );
 
-// Add MediatR Service
-
+// Configure the Controllers
 builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve
 );
 builder.Services.AddControllersWithViews();
+
+// Add the Razor Pages
 builder.Services.AddRazorPages();
+
+// Add Logging Service
 builder.Services.AddLogging();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -56,6 +78,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add Authorization Service
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
+// Configure Swagger for API documentation
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -63,7 +86,7 @@ builder.Services.AddSwaggerGen(c =>
         Title = "UteamUP Server API",
         Version = "v1",
         Description = "API documentation",
-        TermsOfService = new Uri("http://www.uteamup.com"),
+        TermsOfService = new Uri("https://www.uteamup.com"),
         Contact = new OpenApiContact
         {
             Name = "Gisli Gudmundsson",
@@ -72,7 +95,7 @@ builder.Services.AddSwaggerGen(c =>
         License = new OpenApiLicense
         {
             Name = "In progress",
-            Url = new Uri("http://www.uteamup.com")
+            Url = new Uri("https://www.uteamup.com")
         }
     });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -100,13 +123,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-
+// Add CORS Service
 builder.Services.AddCors();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("AllowAll", corsPolicyBuilder =>
     {
-        builder
+        corsPolicyBuilder
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()

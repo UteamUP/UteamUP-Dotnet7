@@ -3,7 +3,6 @@
 @using UteamUP.Client.Web.WizardComponents.AddEditLocation.Modals
 @using UteamUP.Client.Web.WizardComponents.AddEditLocation.Forms
 @using Newtonsoft.Json
-@using UteamUP.Client.Components.Enums
 @inject IWebRepository<Tag> TagWebRepository
 @inject IWebRepository<Location> LocationWebRepository
 @inject ILocationWebRepository MyLocationWebRepository
@@ -59,20 +58,20 @@
                             </BlazoredTextEditor>
                         </div>
                         <div class="buttons-container">
-                            <br />
+                            <br/>
                             <InputFile multiple id="@_fileInputid" OnChange="@HandleOnChange"/>
                         </div>
                         @if (_uploadedFiles != null)
-                            {
-                                <ul>
-                                    @foreach (var file in _uploadedFiles)
-                                    {
-                                        <li>
-                                            <span>@file.Name - @file.Size bytes</span>
-                                        </li>
-                                    }
-                                </ul>
-                            }
+                        {
+                            <ul>
+                                @foreach (var file in _uploadedFiles)
+                                {
+                                    <li>
+                                        <span>@file.Name - @file.Size bytes</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
                     </div>
                 </div>
             </EditForm>
@@ -87,27 +86,19 @@
     private List<string?> _tagNames = new();
     private Location location = new();
     private string? _description;
-    int _tenantId;
 
     BlazoredTextEditor QuillHtml;
     private string _fileInputid = Guid.NewGuid().ToString();
     private IReadOnlyList<IBrowserFile>? _uploadedFiles;
-    public EventCallback<string> OnContentChange { get; set; }
     public EventCallback<IReadOnlyList<IBrowserFile>?> OnFileChange { get; set; }
     private IJSObjectReference _module;
-    private async Task OnClickBrowseAsync() => await _module.InvokeVoidAsync("openFileDialog", _fileInputid);
     
-    private void HandleOnChange(InputFileChangeEventArgs e)
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
-        _uploadedFiles = e.FileCount == 0 ? null : e.GetMultipleFiles(e.FileCount);
-
-        OnFileChange.InvokeAsync(_uploadedFiles);
-    }
-    
-    private async Task HandleTextChange(ChangeEventArgs e)
-    {
-        await OnContentChange.InvokeAsync(e.Value.ToString());
-    }
+        { "Location Basic Information", false },
+        { "Tags", false },
+        { "Location Details", false }
+    };
     
     protected override async Task OnInitializedAsync()
     {
@@ -118,7 +109,7 @@
         {
             try
             {
-    // Search for the location based on the id
+                // Search for the location based on the id
                 var result = await Http.GetAsync($"api/location/{Id.Value}");
                 result.EnsureSuccessStatusCode();
                 if (result.IsSuccessStatusCode)
@@ -151,17 +142,7 @@
                 OpenModal("ErrorDetails", "Cannot open location, please try again later. Error : " + e.Message);
             }
         }
-
-        _tenantId = UserState.User.DefaultTenantId;
-    //GenerateLocation(_tenantId);
     }
-
-    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
-    {
-        { "Location Basic Information", false },
-        { "Tags", false },
-        { "Location Details", false }
-    };
 
     private async Task OnClickSubmitButtonAsync()
     {
@@ -191,11 +172,6 @@
             NavigationManager.NavigateTo("/location-add");
         }
 
-        // Get the tags for the location
-        Console.WriteLine("Location tenant Id: " + location.TenantId);
-        Console.WriteLine("Location name: " + location.Name);
-        Console.WriteLine("Location description: " + location.Description);
-
         // Create the location
         if (Id == null)
         {
@@ -208,7 +184,6 @@
                 locationDto.Name = location.Name;
                 locationDto.Description = _description;
                 locationDto.TenantId = (int)location.TenantId;
-                
 
                 locationDto.Tags = _tagNames;
                 var result = await Http.PostAsJsonAsync<LocationDto>($"api/location", locationDto);
@@ -219,7 +194,7 @@
                 }
                 else
                 {
-    // Open modal and display error
+                    // Open modal and display error
                     OpenModal("ErrorDetails", "Location was not created. Please try again.");
                 }
             }
@@ -228,8 +203,6 @@
                 OpenModal("ErrorDetails", "Error: " + e.Message);
             }
         }
-
-
         // Update the location
         else
         {
@@ -244,7 +217,6 @@
                 locationDto.TenantId = (int)location.TenantId;
                 
                 // Print out the locationDto.Tags in json format
-                Console.WriteLine("LocationDto.Tags: " + JsonConvert.SerializeObject(locationDto.Tags));
                 
                 var result = await Http.PutAsJsonAsync<LocationDto>($"api/location/{Id.Value}", locationDto);
     
@@ -277,14 +249,15 @@
 
         ModalService.Show<ErrorModal>("Error", parameters, options);
     }
-
-    private void GenerateLocation(int tenantId)
+    
+    private void HandleOnChange(InputFileChangeEventArgs e)
     {
-        _model.LocationBasicForm.Name = "Entrance1";
-        _model.LocationDetailsForm.Description = "Entrance1 is the entrance to the building, it is where Elvis Presley entered the building.";
-        _model.LocationBasicForm.TenantId = tenantId;
-        _tagNames.AddRange(new List<string>() { "TeamField 1", "TeamField 2", "TeamField 3" });
+        _uploadedFiles = e.FileCount == 0 ? null : e.GetMultipleFiles(e.FileCount);
+
+        OnFileChange.InvokeAsync(_uploadedFiles);
     }
+    
+    private async Task OnClickBrowseAsync() => await _module.InvokeVoidAsync("openFileDialog", _fileInputid);
 
     private async Task OnClickContinueButtonAsync()
     {

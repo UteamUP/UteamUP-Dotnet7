@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UteamUP.Server.Database.Contexts;
@@ -11,9 +12,11 @@ using UteamUP.Server.Database.Contexts;
 namespace UteamUP.Server.Api.Migrations
 {
     [DbContext(typeof(pgContext))]
-    partial class pgContextModelSnapshot : ModelSnapshot
+    [Migration("20230607180213_VendorDescriptionOptional")]
+    partial class VendorDescriptionOptional
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1036,7 +1039,7 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("UpdatedById")
+                    b.Property<int>("UpdatedById")
                         .HasColumnType("integer");
 
                     b.Property<string>("WebSite")
@@ -1448,7 +1451,9 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.HasOne("UteamUP.Shared.Models.MUser", "UpdatedBy")
                         .WithMany()
-                        .HasForeignKey("UpdatedById");
+                        .HasForeignKey("UpdatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Creator");
 

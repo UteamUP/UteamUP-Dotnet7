@@ -157,26 +157,23 @@ public class TenantController : ControllerBase
     }
     
     // Update Tenant by Id
-    [HttpPut("plan/{planId}/extraLicenses/{extraLicenses}")]
-    public async Task<IActionResult> UpdateTenantByIdAsync(Tenant tenant, int planId, int extraLicenses)
+    [HttpPut("{tenantId}/plan/{planId}/extraLicenses/{extraLicenses}")]
+    public async Task<IActionResult> UpdateTenantByIdAsync(TenantDto tenant, int planId, int extraLicenses, int tenantId)
     {
-        Console.WriteLine("I AM HERE");
-        /*
-        if (tenant.Id == 0 || string.IsNullOrWhiteSpace(tenant.Id.ToString()))
+        if (tenantId == null || tenantId <= 0)
         {
             _logger.Log(LogLevel.Error, $"{nameof(UpdateTenantByIdAsync)}: Id is null or empty");
             return NotFound();
         }
 
-        _logger.Log(LogLevel.Information, $"{nameof(UpdateTenantByIdAsync)}: Updating tenant by id {tenant.Id}");
-        var updatedTenant = await _tenant.UpdateTenantByIdAsync(tenant, planId, extraLicenses);
+        _logger.Log(LogLevel.Information, $"{nameof(UpdateTenantByIdAsync)}: Updating tenant by id {tenantId}");
+        var updatedTenant = await _tenant.UpdateTenantByIdAsync(tenant, planId, extraLicenses, tenantId);
         if (updatedTenant == null)
         {
-            _logger.Log(LogLevel.Information, $"{nameof(UpdateTenantByIdAsync)}: No tenant found for id {tenant.Id}");
+            _logger.Log(LogLevel.Information, $"{nameof(UpdateTenantByIdAsync)}: No tenant found for id {tenantId}");
             return NotFound();
         }
 
-        return Ok(updatedTenant);*/
-        return Ok(new Tenant());
+        return Ok(updatedTenant);
     }
 }

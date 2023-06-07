@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UteamUP.Server.Database.Contexts;
@@ -11,9 +12,11 @@ using UteamUP.Server.Database.Contexts;
 namespace UteamUP.Server.Api.Migrations
 {
     [DbContext(typeof(pgContext))]
-    partial class pgContextModelSnapshot : ModelSnapshot
+    [Migration("20230605230206_TenantSubscriptionId")]
+    partial class TenantSubscriptionId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -160,7 +163,7 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("CreatorId")
+                    b.Property<int>("CreatorId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -1015,6 +1018,7 @@ namespace UteamUP.Server.Api.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
@@ -1036,9 +1040,6 @@ namespace UteamUP.Server.Api.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("integer");
-
                     b.Property<string>("WebSite")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1049,8 +1050,6 @@ namespace UteamUP.Server.Api.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique();
-
-                    b.HasIndex("UpdatedById");
 
                     b.ToTable("Vendor");
                 });
@@ -1244,7 +1243,9 @@ namespace UteamUP.Server.Api.Migrations
                 {
                     b.HasOne("UteamUP.Shared.Models.MUser", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatorId");
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("UteamUP.Shared.Models.Tenant", "Tenant")
                         .WithMany()
@@ -1446,13 +1447,7 @@ namespace UteamUP.Server.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UteamUP.Shared.Models.MUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
                     b.Navigation("Creator");
-
-                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("UteamUP.Shared.Models.Asset", b =>

@@ -1,6 +1,5 @@
 using FluentValidation;
 using UteamUP.Client.Web.WizardComponents.AddEditTenant.AddEditTenant.Forms;
-using UteamUP.Client.Web.WizardComponents.Template.AddEditTenant.Forms;
 
 namespace UteamUP.Client.Web.WizardComponents.AddEditTenant.AddEditTenant.Validators;
 

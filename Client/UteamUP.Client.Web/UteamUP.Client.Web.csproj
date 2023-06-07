@@ -35,6 +35,7 @@
         <PackageReference Include="Microsoft.Extensions.Localization" Version="7.0.5" />
         <PackageReference Include="MudBlazor" Version="6.3.1" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.29.0" />
+        <PackageReference Include="System.Runtime.Caching" Version="7.0.0" />
     </ItemGroup>
 
 
@@ -70,6 +71,7 @@
     <ItemGroup>
         <Folder Include="Repository\" />
         <Folder Include="Resources\" />
+        <Folder Include="WizardComponents\AddEditCategory\Profiles\" />
         <Folder Include="Wizard\AcceptInvite\Forms\" />
         <Folder Include="Wizard\AcceptInvite\Modals\" />
         <Folder Include="Wizard\AcceptInvite\Profiles\" />

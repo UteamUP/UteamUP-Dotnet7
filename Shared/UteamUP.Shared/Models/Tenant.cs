@@ -49,8 +49,7 @@ public class Tenant : Base
     [ForeignKey("MUser")] public int OwnerId { get; set; }
 
     public virtual ICollection<MUser>? Users { get; set; }
+    [ForeignKey("Subscription")] public int SubscriptionId { get; set; }
 
-    //public virtual ICollection<Location>? Locations { get; set; }
-    
     public Subscription? Subscriptions { get; set; }
 }

@@ -205,8 +205,83 @@ public class TenantRepository : ITenantRepository
         return tenant ?? new Tenant();
     }
 
-    public async Task<Tenant> UpdateTenantByIdAsync(Tenant tenant, int planId, int extraLicenses)
+    public async Task<Tenant> UpdateTenantByIdAsync(TenantDto tenant, int planId, int extraLicenses, int tenantId)
     {
+        // Check if variables are null, if they are return empty tenant
+        if(string.IsNullOrWhiteSpace(tenant.Name) || planId <= 0 || planId == null || tenantId <= 0 || tenantId == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(UpdateTenantByIdAsync)}: Tenant name, planId, extraLicenses or tenantId is null");
+            return new Tenant();
+        }
+        
+        // Get the tenant from database
+        var existingTenant = await _context.Tenants.FirstOrDefaultAsync(x => x.Id == tenantId);
+        
+        // Check if tenant exists and if not return empty tenant
+        if (existingTenant == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(UpdateTenantByIdAsync)}: Tenant is null");
+            return new Tenant();
+        }
+        
+        // Map details in tenant to existingTenant and save the updated values in existingTenant to the database
+        existingTenant.Name = tenant.Name;
+        existingTenant.Address = tenant.Address;
+        existingTenant.City = tenant.City;
+        existingTenant.Country = tenant.Country;
+        existingTenant.Website = tenant.Website;
+        existingTenant.PhoneNumber = tenant.PhoneNumber;
+        existingTenant.Description = tenant.Description;
+        existingTenant.ContactEmail = tenant.ContactEmail;
+        existingTenant.PostalCode = tenant.PostalCode;
+        existingTenant.IsActive = tenant.IsActive;
+        existingTenant.UpdatedAt = DateTime.Now.ToUniversalTime();
+
+        _context.Tenants.Update(existingTenant);
+        await _context.SaveChangesAsync();
+        
+        // Get the plan from database
+        var plan = await _context.Plans.FirstOrDefaultAsync(x => x.Id == planId);
+        
+        // Get the subscription from database
+        var subscription = await _context.Subscriptions.FirstOrDefaultAsync(x => x.TenantId == tenantId);
+        
+        // Update the subscription with the new plan and extra licenses
+        subscription.PlanId = planId;
+        subscription.ExtraAmountOfLicenses = extraLicenses;
+        subscription.UpdatedAt = DateTime.Now.ToUniversalTime();
+        
+        // Update the subscription in the database
+        _context.Subscriptions.Update(subscription);
+        await _context.SaveChangesAsync();
+        
+        // Get the licenses that is assigned to the subscription
+        var license = await _context.Licenses.FirstOrDefaultAsync(x => x.SubscriptionId == subscription.Id);
+        // Calculate the total amount of licenses
+        var totalLicenses = plan.LicenseIncluded + extraLicenses;
+        
+        // Assign new subscription to the license
+        license.SubscriptionId = subscription.Id;
+        
+        // Update the license
+        license.UpdatedAt = DateTime.Now.ToUniversalTime();
+        
+        // Update max licenses in the license
+        license.MaxLicenses = totalLicenses;
+        
+        // Update the license
+        _context.Licenses.Update(license);
+        
+        // Save the changes to the database
+        await _context.SaveChangesAsync();
+        
+        // Return the updated tenant
+        return await _context.Tenants
+            .Include(a => a.Subscriptions)
+            .ThenInclude(b => b.Plan)
+            .FirstOrDefaultAsync();
+        
+        /*
         if(planId == 0 || planId == null || extraLicenses == 0 || extraLicenses == null)
         {
             _logger.Log(LogLevel.Error, $"{nameof(UpdateTenantByIdAsync)}: PlanId or extraLicenses is null");
@@ -214,7 +289,7 @@ public class TenantRepository : ITenantRepository
         }
         
         // Get the current tenant
-        var tenantFromDb = await _context.Tenants.FirstOrDefaultAsync(x => x.Id == tenant.Id);
+        var tenantFromDb = await _context.Tenants.FirstOrDefaultAsync(x => x.Id == tenantId);
         
         // Get the current plan by planId
         var plan = await _context.Plans.FirstOrDefaultAsync(x => x.Id == planId);
@@ -227,7 +302,7 @@ public class TenantRepository : ITenantRepository
         }
         
         // Get the subscription that is assigned to the tenant
-        var subscription = await _context.Subscriptions.FirstOrDefaultAsync(x => x.TenantId == tenantFromDb.Id);
+        var subscription = await _context.Subscriptions.FirstOrDefaultAsync(x => x.TenantId == tenantId);
         
         // Assign the new plan to the subscription
         subscription.PlanId = planId;
@@ -269,10 +344,13 @@ public class TenantRepository : ITenantRepository
         await _context.SaveChangesAsync();
         
         // Get the tenant from the database and return it
-        var tenantFromDb2 = await _context.Tenants.FirstOrDefaultAsync(x => x.Id == tenant.Id);
+        var tenantFromDb2 = await _context.Tenants.FirstOrDefaultAsync(x => x.Id == tenantId);
         
         // Return the tenant
         return tenantFromDb2 ?? new Tenant();
+        */
+
+        return _context.Tenants.FirstOrDefault(x => x.Id == tenantId);
     }
 
 

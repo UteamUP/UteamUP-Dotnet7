@@ -8,7 +8,7 @@ public class Vendor : Base
     [MinLength(2)]
     [Required(ErrorMessage = "You must specify the name before you can save.")]
     public string Name { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; } = string.Empty;
     [EmailAddress] 
     public string Email { get; set; } = string.Empty;
     public string WebSite { get; set; } = string.Empty;
@@ -16,4 +16,5 @@ public class Vendor : Base
     public bool IsActive { get; set; } = true;
     public bool Approved { get; set; } = false;
     public MUser Creator { get; set; } = null!;
+    public MUser? UpdatedBy { get; set; } = null!;
 }

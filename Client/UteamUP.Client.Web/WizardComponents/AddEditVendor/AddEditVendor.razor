@@ -1,0 +1,193 @@
+@page "/vendor-add"
+@page "/vendor-edit/{id:int?}"
+@using UteamUP.Client.Web.WizardComponents.AddEditTenant.AddEditTenant.Modals
+@using UteamUP.Client.Web.WizardComponents.AddEditVendor.Forms
+@using Newtonsoft.Json
+@inject HttpClient Http
+@inject IHeaderRepository _headerRepository
+@inject IMapper Mapper
+
+@inherits WizardBase<VendorForm>
+
+<Form Steps="@_steps"
+      BackUrl="/global"
+      ActiveStepIndex="@_activeStepIndex"
+      Title="@(Id == null ? "Create Vendor" : "Edit Vendor")"
+      OnClickBackButton="OnClickBackButton"
+      OnClickContinueButton="OnClickContinueButtonAsync"
+      OnClickSubmitButton="OnClickSubmitButtonAsync">
+    @switch (_activeStepIndex)
+    {
+        case 0:
+            <EditForm Model="@_model.VendorBasicForm">
+                <HorizonInput Label="Vendor Name" Placeholder="Type in the Vendor name" @bind-Value="@_model.VendorBasicForm.Name"/>
+                <HorizonInput Label="Email" Placeholder="Type in the email for the vendor" @bind-Value="@_model.VendorBasicForm.Email"/>
+                <HorizonInput Label="Phone Number" Placeholder="Type in the phone number" @bind-Value="@_model.VendorBasicForm.PhoneNumber"/>
+                <HorizonInput Label="Website" Placeholder="Type in the website" @bind-Value="@_model.VendorBasicForm.WebSite"/>
+            </EditForm>
+            break;
+        case 1:
+        <EditForm Model="@_model.VendorBasicForm">
+                <div class="input-container">
+                    <div class="rich-text-editor-container">
+                        <div class="quill-container" style="height: 300px">
+                            <BlazoredTextEditor @ref="@QuillHtml">
+                                <ToolbarContent>
+                                    <span class="ql-formats">
+                                        <button class="ql-bold"></button>
+                                        <button class="ql-italic"></button>
+                                        <button class="ql-underline"></button>
+                                        <button class="ql-strike"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-image"></button>
+                                        <button @onclick="OnClickBrowseAsync"><HorizonIcon Icon="@Icons.Attachment" Width="14" Height="14"/></button>
+                                    </span>
+                                </ToolbarContent>
+                                <EditorContent>
+                                    @((MarkupString)_description)
+                                </EditorContent>
+                            </BlazoredTextEditor>
+                        </div>
+                        <div class="buttons-container">
+                            <br/>
+                            <InputFile multiple id="@_fileInputid" OnChange="@HandleOnChange"/>
+                        </div>
+                        @if (_uploadedFiles != null)
+                        {
+                            <ul>
+                                @foreach (var file in _uploadedFiles)
+                                {
+                                    <li>
+                                        <span>@file.Name - @file.Size bytes</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </EditForm>
+            break;
+        default:
+            break;
+    }
+</Form>
+
+@code {
+    private string? _description;
+    private VendorDto? _vendor = new();
+    
+    BlazoredTextEditor QuillHtml;
+    private string _fileInputid = Guid.NewGuid().ToString();
+    private IReadOnlyList<IBrowserFile>? _uploadedFiles;
+    public EventCallback<IReadOnlyList<IBrowserFile>?> OnFileChange { get; set; }
+    private IJSObjectReference _module;
+    
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Vendor Information", false },
+        { "Vendor Description", false },
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = new VendorForm();
+        Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
+
+        // If the user is editing, get the vendor
+        if (Id != null)
+        {
+            var result = await Http.GetAsync($"api/vendor/{Id}");
+            result.EnsureSuccessStatusCode();
+            if (result.IsSuccessStatusCode)
+            {
+                var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+                _vendor = JsonConvert.DeserializeObject<VendorDto>(content);
+                
+                _model.VendorBasicForm = Mapper.Map<VendorBasicForm>(_vendor);
+                _model.VendorBasicForm.Description = _vendor.Description;
+                _description = _vendor.Description;
+            }
+            else
+            {
+                OpenModal("ErrorDetails", "Vendor was not found. Please try again.");
+            }
+        }
+    }
+    
+    private void OpenModal(string ErrorTitle, string ErrorDetails)
+    {
+        var options = new ModalOptions()
+        {
+            DisableBackgroundCancel = true,
+            HideCloseButton = false,
+        };
+        
+        var parameters = new ModalParameters();
+        parameters.Add(ErrorTitle, ErrorDetails);
+
+        ModalService.Show<ErrorTenantModal>("Error", parameters, options);
+    }
+
+    private async Task OnClickSubmitButtonAsync()
+    {
+        
+        _description = await QuillHtml.GetHTML();
+        StateHasChanged();
+        
+        // Map the model to VendorDto
+        _vendor = Mapper.Map<VendorDto>(_model.VendorBasicForm);
+        
+        _vendor.Description = _description;
+        _model.VendorBasicForm.Description = _description;
+        
+        Console.WriteLine("The description from vendor is : " + _vendor.Description);
+        
+        // Check if the user is editing or creating
+        if (Id == null)
+        {
+            var result = await Http.PostAsJsonAsync<VendorDto>($"api/vendor", _vendor);
+            if (result.IsSuccessStatusCode)
+            {
+                NavigationManager.NavigateTo("/global");
+            }
+            else
+            {
+                OpenModal("ErrorDetails", "Vendor was not created. Please try again.");
+            }
+        }
+        else
+        {
+            var result = await Http.PutAsJsonAsync<VendorDto>($"api/vendor/{Id}", _vendor);
+            if (result.IsSuccessStatusCode)
+            {
+                NavigationManager.NavigateTo("/global");
+            }
+            else
+            {
+                OpenModal("ErrorDetails", "Vendor was not updated. Please try again.");
+            }
+        }
+    }
+    
+    private void HandleOnChange(InputFileChangeEventArgs e)
+    {
+        _uploadedFiles = e.FileCount == 0 ? null : e.GetMultipleFiles(e.FileCount);
+
+        OnFileChange.InvokeAsync(_uploadedFiles);
+    }
+    
+    private async Task OnClickBrowseAsync() => await _module.InvokeVoidAsync("openFileDialog", _fileInputid);
+    
+    private async Task OnClickContinueButtonAsync()
+    {
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+    }
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+
+}

@@ -1,5 +1,3 @@
-using UteamUP.Client.Web.WizardComponents.Template.AddEditTenant.Forms;
-
 namespace UteamUP.Client.Web.WizardComponents.AddEditTenant.AddEditTenant.Forms;
 
 public class TenantForm

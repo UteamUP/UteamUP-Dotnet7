@@ -11,6 +11,8 @@
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IHeaderRepository _headerRepository
+@inject IMapper Mapper
+
 @inherits WizardBase<TenantForm>
 
 @if (_plans != null)
@@ -52,24 +54,6 @@
                     <HorizonInput Label="Extra Licenses Amount" Placeholder="Extra Licenses Amount" @bind-Value="@_model.TenantLicensesForm.Amount"/>
                 </EditForm>
                 break;
-            case 4:
-                <EditForm Model="@_model">
-                    <HorizonRichTextEditor ReadOnly="true" Height="300px">
-                        <EditorContent>
-                            <h3>LICENSE AGREEMENT</h3>
-                            <br/>
-                            <p>This Software as a Service (SaaS) License Agreement (the "Agreement") is entered into as of [DATE] (the "Effective Date") by and between UteamUP, a company duly organized and existing under the laws of [JURISDICTION], having its principal place of business at [ADDRESS] ("Licensor") and [CUSTOMER NAME], a company duly organized and existing under the laws of [JURISDICTION], having its principal place of business at [ADDRESS] ("Licensee").</p>
-                            <br/>
-                            <p>WHEREAS, Licensor has developed and owns a software solution known as "Horizon" (the "Software"), which is provided as a SaaS solution;</p>
-                            <br/>
-                            <p>WHEREAS, Licensee desires to license and use the Software, and Licensor desires to grant Licensee a license to use the Software, subject to the terms and conditions set forth herein.</p>
-                            <br/>
-                            <p>NOW, THEREFORE, in consideration of the mutual covenants and promises contained herein and other good and valuable consideration, the receipt and sufficiency of which are hereby acknowledged, the parties hereto agree as follows:</p>
-                        </EditorContent>
-                    </HorizonRichTextEditor>
-                </EditForm>
-                <br/>
-                break;
             default:
                 break;
         }
@@ -79,8 +63,8 @@
 }
 
 @code {
-    private Tenant tenant = new();
-    private Subscription subscription = new();
+    private Tenant? tenant = new();
+    private Subscription? subscription = new();
     private Plan? plan = new();
     private TenantForm _model = new();
     private string _planSelected;
@@ -92,10 +76,9 @@
         { "Address Tenant Information", false },
         { "Plan Selection", false },
         { "Add Extra Licenses", false },
-        { "License Agreement", false }
     };
     
-    List<Plan?> _plans = new();
+    List<Plan>? _plans = new();
     private IDictionary<string, string> _planSelector = new Dictionary<string, string>()
     {
         { "", "" },
@@ -105,7 +88,7 @@
     {
         base.OnInitializedAsync();
         Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
-        
+
         // Get all the plans using Http
         try
         {
@@ -114,6 +97,14 @@
 
             var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             _plans = JsonConvert.DeserializeObject<List<Plan>>(content);
+            
+            foreach (var plan in _plans)
+            {
+                _planSelector.Add(plan.Name, plan.Id.ToString());
+            }
+            
+            // Remove all empty options from _planSelector
+            _planSelector = _planSelector.Where(x => !string.IsNullOrWhiteSpace(x.Key)).ToDictionary(x => x.Key, x => x.Value);
         }
         catch (HttpRequestException e)
         {
@@ -129,53 +120,107 @@
         
         if (Id.HasValue)
         {
-            //TenantId = UserState.User.DefaultTenantId;
-            tenant = await MyTenantWebRepository.GetTenantById(Id.Value);
-            subscription = await MySubscriptionWebRepository.GetSubscriptionByTenantId(Id.Value);
-            if (!string.IsNullOrWhiteSpace(subscription.Id.ToString()))
-                plan = subscription.Plan;
+            var resultTenant = await Http.GetAsync($"api/tenant/{Id.Value}");
+            resultTenant.EnsureSuccessStatusCode();
+            if (resultTenant.IsSuccessStatusCode)
+            {
+                var contentTenant = await resultTenant.Content.ReadAsStringAsync().ConfigureAwait(false);
+                tenant = JsonConvert.DeserializeObject<Tenant>(contentTenant);
+            }
 
-            if (string.IsNullOrWhiteSpace(tenant.Name))
+            var resultSubscription = await Http.GetAsync($"api/subscription/tenant/{Id.Value}");
+            resultSubscription.EnsureSuccessStatusCode();
+            if (resultSubscription.IsSuccessStatusCode)
+            {
+                var contentSubscription = await resultSubscription.Content.ReadAsStringAsync().ConfigureAwait(false);
+                subscription = JsonConvert.DeserializeObject<Subscription>(contentSubscription);
+            }
+
+            if (string.IsNullOrWhiteSpace(tenant?.Name))
             {
                 // Open modal and display error
                 OpenModal("ErrorDetails", "Tenant not found");
             }
 
-            Console.WriteLine("Tenant: " + tenant.Name);
             _model = Mapper.Map<TenantForm>(tenant);
-
-            _plans = await PlanWebRepository.GetAllPlansAsync();
-            _planSelector = _plans.ToDictionary(x => x.Name, x => x.Id.ToString());
+            
+            Console.WriteLine("The id of the subscription is: " + subscription?.Id.ToString() + " and contains extra amount of licenses: " + subscription.ExtraAmountOfLicenses);
+            if (!string.IsNullOrWhiteSpace(subscription?.Id.ToString()))
+            {
+                plan = subscription.Plan;
+                _model.TenantPlanForm.Name = plan?.Id.ToString() ?? "1";
+                _model.TenantLicensesForm.Amount = subscription.ExtraAmountOfLicenses.ToString();
+            }
 
             // Select the correct plan in _planSelector based on the plan of the tenant
             if (plan != null)
                 _model.TenantPlanForm.Name = plan.Name;
         }
+    }
+
+    private void GenerateTenant()
+    {
+        _model.TenantLicensesForm.Amount = subscription.ExtraAmountOfLicenses.ToString();
+            
+        // Remove all empty plans from the _plans list
+        _plans.RemoveAll(x => string.IsNullOrWhiteSpace(x.Name));
+        _planSelector = _plans.ToDictionary(x => x.Name, x => x.Id.ToString());
+            
+        _model.TenantBasicForm.Name = "UteamUP Inc.";
+        _model.TenantBasicForm.Description = "UteamUP Inc. is a company that provides a platform for managing projects and teams.";
+        _model.TenantBasicForm.ContactEmail = "gisli@uteamup.com";
+        _model.TenantBasicForm.PhoneNumber = "1234567";
+        _model.TenantBasicForm.Website = "www.uteamup.com";
+
+        _model.TenantAddressForm.Country = "Iceland";
+        _model.TenantAddressForm.City = "Reykjavik";
+        _model.TenantAddressForm.Address = "Skolavordustigur 12";
+        _model.TenantAddressForm.State = "Capital Region";
+        _model.TenantAddressForm.PostalCode = "101";
+
+        _model.TenantPlanForm.Name = "My Premium Plan";
+        _model.TenantPlanForm.Id = 1;
+        _model.TenantLicensesForm.Amount = "10";
+    }
+    
+    private async Task OnClickSubmitButtonAsync()
+    {
+        
+        tenant = Mapper.Map<Tenant>(_model);
+        _planSelected = _model.TenantPlanForm.Name;
+
+        // Begin with check if Id was sent if so then we are in edit mode and should update the tenant
+        if (Id.HasValue == false)
+        {
+            // Get the selected plan from the _planSelector
+            var result = await Http.PostAsJsonAsync<Tenant>($"api/tenant/add/plan/{_planSelected}/extraLicenses/{_model.TenantLicensesForm.Amount}", tenant);
+
+            if (result != null)
+            {
+                NavigationManager.NavigateTo("/global");
+            }
+            else
+            {
+                // Open modal and display error
+                OpenModal("ErrorDetails", "Location was not created. Please try again.");
+            }
+        }
         else
         {
-           
-    // Set the amount of extra licenses
-            _model.TenantLicensesForm.Amount = subscription.ExtraAmountOfLicenses.ToString();
+            // Get the plan from selection
+            var tenantDto = Mapper.Map<TenantDto>(_model);
             
-            // Remove all empty plans from the _plans list
-            _plans.RemoveAll(x => string.IsNullOrWhiteSpace(x.Name));
-            _planSelector = _plans.ToDictionary(x => x.Name, x => x.Id.ToString());
-            
-            _model.TenantBasicForm.Name = "UteamUP Inc.";
-            _model.TenantBasicForm.Description = "UteamUP Inc. is a company that provides a platform for managing projects and teams.";
-            _model.TenantBasicForm.ContactEmail = "gisli@uteamup.com";
-            _model.TenantBasicForm.PhoneNumber = "1234567";
-            _model.TenantBasicForm.Website = "www.uteamup.com";
+            var url = $"api/tenant/{Id.Value}/plan/{_planSelected}/extraLicenses/{_model.TenantLicensesForm.Amount}";
+            var resultTenant = await Http.PutAsJsonAsync<TenantDto>(url, tenantDto);
 
-            _model.TenantAddressForm.Country = "Iceland";
-            _model.TenantAddressForm.City = "Reykjavik";
-            _model.TenantAddressForm.Address = "Skolavordustigur 12";
-            _model.TenantAddressForm.State = "Capital Region";
-            _model.TenantAddressForm.PostalCode = "101";
-
-            _model.TenantPlanForm.Name = "My Premium Plan";
-            _model.TenantPlanForm.Id = 1;
-            _model.TenantLicensesForm.Amount = "10";
+            if (resultTenant.IsSuccessStatusCode == false)
+            {
+                OpenModal("ErrorDetails", "Something went wrong while trying to update tenant");
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/global");
+            }
         }
     }
     
@@ -191,64 +236,6 @@
         parameters.Add(ErrorTitle, ErrorDetails);
 
         ModalService.Show<ErrorTenantModal>("Error", parameters, options);
-    }
-
-    private async Task OnClickSubmitButtonAsync()
-    {
-        
-        tenant = Mapper.Map<Tenant>(_model);
-
-        // Begin with check if Id was sent if so then we are in edit mode and should update the tenant
-        if (Id.HasValue == false)
-        {
-    // Get the selected plan from the _planSelector
-            _planSelected = _model.TenantPlanForm.Name;
-            Console.WriteLine("Model selected plan is " + _model.TenantPlanForm.Name);
-            Console.WriteLine("The selected plan is " + _planSelected);
-
-            var result = await Http.PostAsJsonAsync<Tenant>($"api/tenant/add/plan/{_planSelected}/extraLicenses/{_model.TenantLicensesForm.Amount}", tenant);
-
-            if (result != null)
-            {
-                NavigationManager.NavigateTo("/global");
-            }
-            else
-            {
-    // Open modal and display error
-                OpenModal("ErrorDetails", "Location was not created. Please try again.");
-            }
-        }
-
-    /*
-            //var result = await MyTenantWebRepository.CreateTenantAsync(tenant, Convert.ToInt32(_model.TenantPlanForm.Name), Convert.ToInt32(_model.TenantLicensesForm.Amount));
-            if (result.Id == 0)
-            {
-                OpenModal("ErrorDetails", "Something went wrong while trying to create tenant");
-            }
-            else
-            {
-                NavigationManager.NavigateTo("/global");
-            }*/
-            /*
-        }
-        else
-        {
-            // Get the plan from selection
-            Console.WriteLine("Trying to update tenant");
-            var result = await MyTenantWebRepository.UpdateTenantAsync(tenant, Convert.ToInt32(_model.TenantPlanForm.Name), Convert.ToInt32(_model.TenantLicensesForm.Amount));
-            if (result.Id == 0 || result.Id == null)
-            {
-                OpenModal("ErrorDetails", "Something went wrong while trying to update tenant");
-            }
-            else
-            {
-                NavigationManager.NavigateTo("/global");
-            }
-        }
-        */
-        
-        Console.WriteLine("Button clicked");
-
     }
     
     private async Task OnClickContinueButtonAsync()

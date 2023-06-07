@@ -5,8 +5,8 @@ public class TemplateFormProfile : Profile
     public TemplateFormProfile()
     {
         /*CreateMap<TenantForm, Template>()
-            .ForMember(dest => dest.Id, act => act.MapFrom(src => src.TemplateBasicForm.Id))
-            .ForMember(dest => dest.Name, act => act.MapFrom(src => src.TemplateBasicForm.Name))
+            .ForMember(dest => dest.Id, act => act.MapFrom(src => src.CategoryBasicForm.Id))
+            .ForMember(dest => dest.Name, act => act.MapFrom(src => src.CategoryBasicForm.Name))
             .ReverseMap();*/
     }
 }

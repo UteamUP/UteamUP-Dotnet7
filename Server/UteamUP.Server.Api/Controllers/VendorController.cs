@@ -33,7 +33,7 @@ public class VendorController : ControllerBase
     }
     
     // Get all vendors
-    [HttpGet]
+    [HttpGet("all"), AllowAnonymous]
     public async Task<IActionResult> GetAllAsync()
     {
         MUserDto mUser = await ValidateUser();
@@ -52,6 +52,28 @@ public class VendorController : ControllerBase
         }
 
         return Ok(vendors);
+    }
+    
+    // Get a vendor by id
+    [HttpGet("{id}"), AllowAnonymous]
+    public async Task<IActionResult> GetByIdAsync(int id)
+    {
+        /*
+        MUserDto mUser = await ValidateUser();
+        if (string.IsNullOrWhiteSpace(mUser.Email) || string.IsNullOrWhiteSpace(mUser.Oid))
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetByIdAsync)}: User is not valid");
+            return BadRequest();
+        }
+        */
+        var vendor = await _vendor.GetByIdAsync(id);
+        if (vendor == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetByIdAsync)}: Vendor was not found");
+            return NotFound();
+        }
+
+        return Ok(vendor);
     }
 
     // Create a vendor
@@ -80,6 +102,34 @@ public class VendorController : ControllerBase
         }
 
         return Ok(createdVendor);
+    }
+    
+    // Update a vendor
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateAsync(int id, [FromBody] VendorDto vendor)
+    {
+        if (vendor == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(UpdateAsync)}: Vendor is null");
+            return BadRequest();
+        }
+
+        MUserDto mUser = await ValidateUser();
+        if (string.IsNullOrWhiteSpace(mUser.Email) || string.IsNullOrWhiteSpace(mUser.Oid))
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(UpdateAsync)}: User is not valid");
+            return BadRequest();
+        }
+
+        _logger.Log(LogLevel.Information, $"{nameof(UpdateAsync)}: Updating vendor with id {id} for user with oid {mUser.Oid}");
+        var updatedVendor = await _vendor.UpdateAsync(id, vendor, mUser.Oid);
+        if (updatedVendor == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(UpdateAsync)}: Vendor was not updated");
+            return BadRequest();
+        }
+
+        return Ok(updatedVendor);
     }
     
 }

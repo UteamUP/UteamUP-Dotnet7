@@ -1,4 +1,4 @@
-namespace UteamUP.Client.Web.WizardComponents.Template.AddEditTenant.Forms;
+namespace UteamUP.Client.Web.WizardComponents.Template.AddEditTemplate.Forms;
 
 public class TemplateBasicForm
 {

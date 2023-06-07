@@ -54,6 +54,66 @@
                     <a href="/tenant-edit/1" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Edit Tenant</a>
                 </div>
             </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/vendor-add" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Add Vendor</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/vendor-edit/1" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Edit Vendor</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/category-add" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Add Category</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/category-edit/1" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Edit Category</a>
+                </div>
+
+            </div>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/tool-add" type="button" class="btn btn-secondary" style="width: 150px; margin: auto;">Add Tool</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/tool-edit/1" type="button" class="btn btn-secondary" style="width: 150px; margin: auto;">Edit Tool</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/stock-add" type="button" class="btn btn-secondary" style="width: 150px; margin: auto;">Add Stock</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/stock-edit/1" type="button" class="btn btn-secondary" style="width: 150px; margin: auto;">Edit Stock</a>
+                </div>
+            </div>
+
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/part-add" type="button" class="btn btn-secondary" style="width: 150px; margin: auto;">Add Part</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/part-edit/1" type="button" class="btn btn-secondary" style="width: 150px; margin: auto;">Edit Part</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/asset-add" type="button" class="btn btn-secondary" style="width: 150px; margin: auto;">Add Asset</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/asset-edit/1" type="button" class="btn btn-secondary" style="width: 150px; margin: auto;">Edit Asset</a>
+                </div>
+            </div>
+
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <div style="padding: 10px">
+                    <a href="/workorder-add" type="button" class="btn btn-secondary" style="width: 160px; margin: auto;">Add Workorder</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/workorder-edit/1" type="button" class="btn btn-secondary" style="width: 160px; margin: auto;">Edit Workorder</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/template-add" type="button" class="btn btn-secondary" style="width: 150px; margin: auto;">Add Template</a>
+                </div>
+                <div style="padding: 10px">
+                    <a href="/template-edit/1" type="button" class="btn btn-secondary" style="width: 150px; margin: auto;">Edit Template</a>
+                </div>
+            </div>
+
             <div>
                 <label class="input-container">
                     Tenant Tasks
@@ -125,7 +185,7 @@
                 <div style="padding: 10px">
                     <a href="/upload-document" type="button" class="btn btn-success" style="width: 150px; margin: auto;">Upload</a>
                 </div>
-            </div>            
+            </div>
             <div>
                 <label class="input-container">
                     Global Overview Tasks
@@ -171,7 +231,7 @@
                 <div style="padding: 10px">
                     <a href="/global" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Stock Items</a>
                 </div>
-                
+
             </div>
             <div>
                 <label class="input-container">
@@ -312,7 +372,7 @@
         <p>Loading...</p>
     }
 </div>
-<br />
+<br/>
 </Authorized>
 </AuthorizeView>
 
@@ -322,7 +382,7 @@
 
     private bool UserHasInvites = false;
     private bool HasDbUser = false;
-    
+
     private GlobalState globalState = new();
 
     protected override async Task OnInitializedAsync()
@@ -333,20 +393,19 @@
             globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
 
             Tenants = await TenantWebRepository.GetOwnedTenantsAsync(UserState.User.Oid);
-            // Should fix the bad request of no tenants
+    // Should fix the bad request of no tenants
             InvitedUsers = await TenantWebRepository.GetInvitesAsync(UserState.User.Oid);
 
-            if(Tenants.Count == 0 && InvitedUsers.Count == 0)
+            if (Tenants.Count == 0 && InvitedUsers.Count == 0)
             {
                 NavigationManager.NavigateTo("/tenant-add");
             }
-            
+
 
             if (UserState.User.HasBeenActivated != null)
             {
                 HasDbUser = true;
             }
-            
         }
     }
 
