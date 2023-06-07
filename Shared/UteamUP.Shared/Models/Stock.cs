@@ -14,11 +14,11 @@ public class Stock : Base
     public string ShelveNumber { get; set; } = string.Empty;
     public string ShelveName { get; set; } = string.Empty;
 
-    //public virtual HashSet<Location>? Locations { get; set; }
-    //public virtual HashSet<Tag>? Tags { get; set; } = new();
-
     [ForeignKey("Tenant")] public int? TenantId { get; set; }
     public Tenant? Tenant { get; set; }
+    
+    [ForeignKey("Location")] public int? LocationId { get; set; }
+    public Location? Location { get; set; }
 
     [ForeignKey("Category")] public int? CategoryId { get; set; }
     public Category? Category { get; set; }

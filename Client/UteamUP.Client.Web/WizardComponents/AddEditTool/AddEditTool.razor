@@ -1,0 +1,245 @@
+@page "/tool-add"
+@page "/tool-edit/{id:int?}"
+@using UteamUP.Client.Web.WizardComponents.AddEditTenant.AddEditTenant.Modals
+@using UteamUP.Client.Web.WizardComponents.AddEditTool.Forms
+@using Newtonsoft.Json
+@inject HttpClient Http
+@inject IHeaderRepository _headerRepository
+@inject IMapper Mapper
+
+@inherits WizardBase<ToolForm>
+
+<Form Steps="@_steps"
+      BackUrl="/global"
+      ActiveStepIndex="@_activeStepIndex"
+      Title="@(Id == null ? "Create Tool" : "Edit Tool")"
+      OnClickBackButton="OnClickBackButton"
+      OnClickContinueButton="OnClickContinueButtonAsync"
+      OnClickSubmitButton="OnClickSubmitButtonAsync">
+    @switch (_activeStepIndex)
+    {
+        case 0:
+            <EditForm Model="@_model.ToolBasicForm">
+                <FluentValidationValidator @ref="_fluentValidationValidator" />
+                <HorizonInput Label="Tool Name" Placeholder="Type in the name of the tool" @bind-Value="@_model.ToolBasicForm.Name"/>
+                <HorizonSelect Options="@_vendorSelector" Label="Vendor" Placeholder="Select Vendor" @bind-Value="_model.ToolBasicForm.VendorName" SelectetValue="@_vendorSelected"/>
+                <HorizonSelect Options="@_categorySelector" Label="Category" Placeholder="Select Category" @bind-Value="_model.ToolBasicForm.CategoryName" SelectetValue="@_categorySelected"/>
+                <HorizonChipTag Label="Tags" @bind-Value="@_tagNames" Placeholder="Type in the tags you want to add to the location"/>
+            </EditForm>
+            break;
+        case 1:
+            <EditForm Model="@_model.ToolDetailsForm">
+                <HorizonInput Label="Notes" Placeholder="Notes" @bind-Value="@_model.ToolDetailsForm.Notes"/>
+                <HorizonInput Label="Image URL" Placeholder="Image URL" @bind-Value="@_model.ToolDetailsForm.ImageUrl"/>
+                <HorizonInput Label="Additional Info" Placeholder="Additional Info" @bind-Value="@_model.ToolDetailsForm.AdditionalInfo"/>
+            </EditForm>
+            break;
+        case 2:
+            <EditForm Model="@_model.ToolNumberForm">
+                <HorizonInput Label="Barcode Number" Placeholder="Enter Barcode Number" @bind-Value="@_model.ToolNumberForm.BarcodeNumber"/>
+                <HorizonInput Label="Serial Number" Placeholder="Enter Serial Number" @bind-Value="@_model.ToolNumberForm.SerialNumber"/>
+                <HorizonInput Label="Reference Number" Placeholder="Enter Reference Number" @bind-Value="@_model.ToolNumberForm.ReferenceNumber"/>
+                <HorizonInput Label="Model Number" Placeholder="Enter Model Number" @bind-Value="@_model.ToolNumberForm.ModelNumber"/>
+                <HorizonInput Label="Tool Number" Placeholder="Enter Tool Number" @bind-Value="@_model.ToolNumberForm.ToolNumber"/>
+            </EditForm>
+            break;
+        case 3:
+            <EditForm Model="@_model.ToolPriceForm">
+                <HorizonInput Label="Minimum Price" Placeholder="Enter what the minimum known price for this tool" @bind-Value="@_model.ToolPriceForm.MinPrice"/>
+                <HorizonInput Label="Maximum Price" Placeholder="Enter what the maximum known price for this tool" @bind-Value="@_model.ToolPriceForm.MaxPrice"/>
+                <HorizonInput Label="Average Price" Placeholder="Enter what the average known price for this tool" @bind-Value="@_model.ToolPriceForm.AvgPrice"/>
+            </EditForm>
+            break;
+        case 4:
+            <EditForm Model="@_model.ToolSizeForm">
+                <HorizonInput Label="Depth" Placeholder="Enter depth of the tool (optional)" @bind-Value="@_model.ToolSizeForm.Depth"/>
+                <HorizonInput Label="Height" Placeholder="Enter height of the tool (optional)" @bind-Value="@_model.ToolSizeForm.Height"/>
+                <HorizonInput Label="Length" Placeholder="Enter length of the tool (optional)" @bind-Value="@_model.ToolSizeForm.Length"/>
+                <HorizonInput Label="Weight" Placeholder="Enter weight of the tool (optional)" @bind-Value="@_model.ToolSizeForm.Weight"/>
+                <HorizonInput Label="Width" Placeholder="Enter width of the tool (optional)" @bind-Value="@_model.ToolSizeForm.Width"/>
+                <HorizonInput Label="Value" Placeholder="Enter value of the tool (optional)" @bind-Value="@_model.ToolSizeForm.Value"/>
+            </EditForm>
+            break;
+        case 5:
+            <EditForm Model="@_model.ToolDetailsForm">
+                <div class="input-container">
+                    <div class="rich-text-editor-container">
+                        <div class="quill-container" style="height: 300px">
+                            <BlazoredTextEditor @ref="@QuillHtml">
+                                <ToolbarContent>
+                                    <span class="ql-formats">
+                                        <button class="ql-bold"></button>
+                                        <button class="ql-italic"></button>
+                                        <button class="ql-underline"></button>
+                                        <button class="ql-strike"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-image"></button>
+                                        <button @onclick="OnClickBrowseAsync"><HorizonIcon Icon="@Icons.Attachment" Width="14" Height="14"/></button>
+                                    </span>
+                                </ToolbarContent>
+                                <EditorContent>
+                                    @((MarkupString)_description)
+                                </EditorContent>
+                            </BlazoredTextEditor>
+                        </div>
+                        <div class="buttons-container">
+                            <br/>
+                            <InputFile multiple id="@_fileInputid" OnChange="@HandleOnChange"/>
+                        </div>
+                        @if (_uploadedFiles != null)
+                        {
+                            <ul>
+                                @foreach (var file in _uploadedFiles)
+                                {
+                                    <li>
+                                        <span>@file.Name - @file.Size bytes</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </EditForm>
+            break;
+        default:
+            break;
+    }
+</Form>
+
+@code {
+    int _tenantId = 0;
+    private List<string?> _tagNames = new();
+    private string? _description;
+
+    BlazoredTextEditor QuillHtml;
+    private string _fileInputid = Guid.NewGuid().ToString();
+    private IReadOnlyList<IBrowserFile>? _uploadedFiles;
+    public EventCallback<IReadOnlyList<IBrowserFile>?> OnFileChange { get; set; }
+    private IJSObjectReference _module;
+    
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Tool Basic Information", false },
+        { "Tool Detailed Information", false },
+        { "Tool Numbers", false },
+        { "Tool Pricing", false },
+        { "Tool Sizing", false },
+        { "Tool Description", false },
+    };
+    
+    private string _vendorSelected;
+    List<Vendor>? _vendors = new();
+    private IDictionary<string, string> _vendorSelector = new Dictionary<string, string>()
+    {
+        { "", "" },
+    };
+    
+    private string _categorySelected;
+    List<Category>? _category = new();
+    private IDictionary<string, string> _categorySelector = new Dictionary<string, string>()
+    {
+        { "", "" },
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = new ToolForm();
+        Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
+        _tenantId = UserState.User.DefaultTenantId;
+
+        try
+        {
+            var resultVendors = await Http.GetAsync($"api/vendor/all");
+            if (resultVendors.IsSuccessStatusCode)
+            {
+                var content = await resultVendors.Content.ReadAsStringAsync().ConfigureAwait(false);
+                _vendors = await resultVendors.Content.ReadFromJsonAsync<List<Vendor>>();
+
+                foreach (var vendor in _vendors)
+                {
+                    Console.WriteLine(vendor);
+                    //_vendorSelector.Add(vendor.Id.ToString(), vendor.Name);
+                }
+            }
+            else
+            {
+                OpenModal("ErrorDetails", resultVendors.ReasonPhrase);
+            }
+            /*
+            var resultCategories = await Http.GetAsync($"api/category/tenant/{_tenantId}");
+            if (resultCategories.IsSuccessStatusCode)
+            {
+                _category = await resultCategories.Content.ReadFromJsonAsync<List<Category>>();
+                foreach (var category in _category)
+                {
+                    _categorySelector.Add(category.Id.ToString(), category.Name);
+                }
+            }
+            else
+            {
+                OpenModal("ErrorDetails", resultCategories.ReasonPhrase);
+            }
+            */
+        }catch(Exception e)
+        {
+            OpenModal("ErrorDetails", e.Message);
+        }
+        
+        if (Id.HasValue)
+        {
+            try
+            {
+                
+
+            }catch(Exception e)
+            {
+                OpenModal("ErrorDetails", e.Message);
+            }
+        }
+        else
+        {
+            
+        }
+        
+    }
+    
+    private void OpenModal(string ErrorTitle, string ErrorDetails)
+    {
+        var options = new ModalOptions()
+        {
+            DisableBackgroundCancel = true,
+            HideCloseButton = false,
+        };
+        
+        var parameters = new ModalParameters();
+        parameters.Add(ErrorTitle, ErrorDetails);
+
+        ModalService.Show<ErrorTenantModal>("ErrorDetails", parameters, options);
+    }
+    private void HandleOnChange(InputFileChangeEventArgs e)
+    {
+        _uploadedFiles = e.FileCount == 0 ? null : e.GetMultipleFiles(e.FileCount);
+
+        OnFileChange.InvokeAsync(_uploadedFiles);
+    }
+    
+    private async Task OnClickBrowseAsync() => await _module.InvokeVoidAsync("openFileDialog", _fileInputid);
+    
+    private async Task OnClickSubmitButtonAsync()
+    {
+        Console.WriteLine("Click Submit Button");
+    }
+    
+    private async Task OnClickContinueButtonAsync()
+    {
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+    }
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+
+}

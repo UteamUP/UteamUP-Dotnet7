@@ -106,4 +106,19 @@
         <Folder Include="wwwroot\files\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <AdditionalFiles Include="WizardComponents\AddEditStock\AddEditTemplate.razor" />
+      <AdditionalFiles Include="WizardComponents\AddEditStock\Modals\ErrorTemplateModal.razor" />
+      <AdditionalFiles Include="WizardComponents\AddEditPart\AddEditTemplate.razor" />
+      <AdditionalFiles Include="WizardComponents\AddEditPart\Modals\ErrorTemplateModal.razor" />
+      <AdditionalFiles Include="WizardComponents\AddEditAsset\AddEditTemplate.razor" />
+      <AdditionalFiles Include="WizardComponents\AddEditAsset\Modals\ErrorTemplateModal.razor" />
+      <AdditionalFiles Include="WizardComponents\AddEditPlan\AddEditTemplate.razor" />
+      <AdditionalFiles Include="WizardComponents\AddEditPlan\Modals\ErrorTemplateModal.razor" />
+      <AdditionalFiles Include="WizardComponents\AddEditReport\AddEditTemplate.razor" />
+      <AdditionalFiles Include="WizardComponents\AddEditReport\Modals\ErrorTemplateModal.razor" />
+      <AdditionalFiles Include="WizardComponents\AddEditWorkorder\AddEditTemplate.razor" />
+      <AdditionalFiles Include="WizardComponents\AddEditWorkorder\Modals\ErrorTemplateModal.razor" />
+    </ItemGroup>
+
 </Project>

@@ -1,9 +1,9 @@
 using FluentValidation;
-using UteamUP.Client.Web.WizardComponents.Template.AddEditTemplate.Forms;
+using UteamUP.Client.Web.WizardComponents.AddEditCategory.Forms;
 
 namespace UteamUP.Client.Web.WizardComponents.AddEditCategory.Validators;
 
-public class CategoryBasicValidator : AbstractValidator<TemplateBasicForm>
+public class CategoryBasicValidator : AbstractValidator<CategoryBasicForm>
 {
     public CategoryBasicValidator()
     {

@@ -117,7 +117,7 @@ public class CategoryController : ControllerBase
             return BadRequest();
 
         var result = await _category.CreateAsync(category, tenantId, oid);
-        
+        Console.WriteLine("The category was created successfully : " + result.Name);
         if (result == null)
         {
             _logger.Log(LogLevel.Error, $"{nameof(CreateCategoryAsync)}: Something went wrong while creating the category");

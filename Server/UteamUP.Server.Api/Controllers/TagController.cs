@@ -40,6 +40,18 @@ public class TagController : ControllerBase
         return Ok(await _tag.GetTagByNameAndTenantIdAsync(name, tenantId));
     }
     
+    // Get all tags by tenant id
+    [HttpGet("tenant/{tenantId}")]
+    public async Task<IActionResult> GetAllTagsByTenantIdAsync(int tenantId)
+    {
+        var result = await _tag.GetAllTagsByTenantIdAsync(tenantId);
+        if (result == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetAllTagsByTenantIdAsync)}: Something went wrong while retrieving the tags");
+            return BadRequest("Something went wrong while retrieving the tags, please review logs for more information");
+        }
+        return Ok(result);
+    }
     
     // Create the tag
     [HttpPost]

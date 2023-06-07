@@ -9,33 +9,30 @@ public class Tool : Base
     [Required(ErrorMessage = "You must specify the name before you can save.")]
     public string Name { get; set; } = string.Empty;
 
-    public string Description { get; set; } = string.Empty;
-    public float Width { get; set; }
-    public float Height { get; set; }
-    public float Length { get; set; }
-    public float Depth { get; set; }
-    public float Weight { get; set; }
-    public float Value { get; set; }
-    public string BarcodeNumber { get; set; } = string.Empty;
-    public string SerialNumber { get; set; } = string.Empty;
-    public string ReferenceNumber { get; set; } = string.Empty;
-    public string ModelNumber { get; set; } = string.Empty;
-    public string ToolNumber { get; set; } = string.Empty;
-    public string AdditionalInfo { get; set; } = string.Empty;
-    public string ImageUrl { get; set; } = string.Empty;
-    public string Notes { get; set; } = string.Empty;
-    public bool IsPrivate { get; set; }
-    public bool IsActive { get; set; }
-    public bool IsDestroyed { get; set; }
-    public bool IsLost { get; set; }
-
-    // TenantID can be empty if IsPrivate is false, if IsPrivate is true, then Tenant is required
-    [ForeignKey("Tenant")] public int? TenantId { get; set; }
+    public string? Description { get; set; }
+    public float? Width { get; set; }
+    public float? Height { get; set; }
+    public float? Length { get; set; }
+    public float? Depth { get; set; }
+    public float? Weight { get; set; }
+    public float? Value { get; set; }
+    public string? BarcodeNumber { get; set; }
+    public string? SerialNumber { get; set; }
+    public string? ReferenceNumber { get; set; }
+    public string? ModelNumber { get; set; }
+    public string? ToolNumber { get; set; }
+    public string? AdditionalInfo { get; set; }
+    public string? ImageUrl { get; set; }
+    public string? Notes { get; set; }
+    public bool IsActive { get; set; } = true;
+    public float? MinPrice { get; set; }
+    public float? MaxPrice { get; set; }
+    public float? AvgPrice { get; set; }
     
     [ForeignKey("Vendor")] public int? VendorId { get; set; }
     public Vendor? Vendor { get; set; }
     
     [ForeignKey("Category")] public int? CategoryId { get; set; }
     public Category? Category { get; set; }
-    //public virtual HashSet<Tag>? Tags { get; set; } = new();
+    public ICollection<ToolTag>? ToolTags { get; set; }
 }

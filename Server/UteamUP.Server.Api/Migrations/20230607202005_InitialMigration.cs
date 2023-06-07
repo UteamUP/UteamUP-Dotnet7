@@ -74,6 +74,7 @@ namespace UteamUP.Server.Api.Migrations
                     Deleted = table.Column<bool>(type: "boolean", nullable: false),
                     ImageUrl = table.Column<string>(type: "text", nullable: false),
                     OwnerId = table.Column<int>(type: "integer", nullable: false),
+                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -382,7 +383,7 @@ namespace UteamUP.Server.Api.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
                     TenantId = table.Column<int>(type: "integer", nullable: true),
-                    CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    CreatorId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -398,8 +399,7 @@ namespace UteamUP.Server.Api.Migrations
                         name: "FK_Categories_Users_CreatorId",
                         column: x => x.CreatorId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -482,13 +482,14 @@ namespace UteamUP.Server.Api.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     Email = table.Column<string>(type: "text", nullable: false),
                     WebSite = table.Column<string>(type: "text", nullable: false),
                     PhoneNumber = table.Column<string>(type: "text", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     Approved = table.Column<bool>(type: "boolean", nullable: false),
                     CreatorId = table.Column<int>(type: "integer", nullable: false),
+                    UpdatedById = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -501,6 +502,11 @@ namespace UteamUP.Server.Api.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Vendor_Users_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -591,26 +597,25 @@ namespace UteamUP.Server.Api.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    Width = table.Column<float>(type: "real", nullable: false),
-                    Height = table.Column<float>(type: "real", nullable: false),
-                    Length = table.Column<float>(type: "real", nullable: false),
-                    Depth = table.Column<float>(type: "real", nullable: false),
-                    Weight = table.Column<float>(type: "real", nullable: false),
-                    Value = table.Column<float>(type: "real", nullable: false),
-                    BarcodeNumber = table.Column<string>(type: "text", nullable: false),
-                    SerialNumber = table.Column<string>(type: "text", nullable: false),
-                    ReferenceNumber = table.Column<string>(type: "text", nullable: false),
-                    ModelNumber = table.Column<string>(type: "text", nullable: false),
-                    ToolNumber = table.Column<string>(type: "text", nullable: false),
-                    AdditionalInfo = table.Column<string>(type: "text", nullable: false),
-                    ImageUrl = table.Column<string>(type: "text", nullable: false),
-                    Notes = table.Column<string>(type: "text", nullable: false),
-                    IsPrivate = table.Column<bool>(type: "boolean", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Width = table.Column<float>(type: "real", nullable: true),
+                    Height = table.Column<float>(type: "real", nullable: true),
+                    Length = table.Column<float>(type: "real", nullable: true),
+                    Depth = table.Column<float>(type: "real", nullable: true),
+                    Weight = table.Column<float>(type: "real", nullable: true),
+                    Value = table.Column<float>(type: "real", nullable: true),
+                    BarcodeNumber = table.Column<string>(type: "text", nullable: true),
+                    SerialNumber = table.Column<string>(type: "text", nullable: true),
+                    ReferenceNumber = table.Column<string>(type: "text", nullable: true),
+                    ModelNumber = table.Column<string>(type: "text", nullable: true),
+                    ToolNumber = table.Column<string>(type: "text", nullable: true),
+                    AdditionalInfo = table.Column<string>(type: "text", nullable: true),
+                    ImageUrl = table.Column<string>(type: "text", nullable: true),
+                    Notes = table.Column<string>(type: "text", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    IsDestroyed = table.Column<bool>(type: "boolean", nullable: false),
-                    IsLost = table.Column<bool>(type: "boolean", nullable: false),
-                    TenantId = table.Column<int>(type: "integer", nullable: true),
+                    MinPrice = table.Column<float>(type: "real", nullable: true),
+                    MaxPrice = table.Column<float>(type: "real", nullable: true),
+                    AvgPrice = table.Column<float>(type: "real", nullable: true),
                     VendorId = table.Column<int>(type: "integer", nullable: true),
                     CategoryId = table.Column<int>(type: "integer", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -678,6 +683,78 @@ namespace UteamUP.Server.Api.Migrations
                         column: x => x.WorkorderId,
                         principalTable: "Workorders",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StockTools",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TenantId = table.Column<int>(type: "integer", nullable: false),
+                    StockId = table.Column<int>(type: "integer", nullable: false),
+                    ToolsId = table.Column<int>(type: "integer", nullable: false),
+                    QuantityAvailable = table.Column<int>(type: "integer", nullable: true),
+                    QuantityMustHave = table.Column<int>(type: "integer", nullable: true),
+                    PurchaseDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    PurchasePrice = table.Column<float>(type: "real", nullable: true),
+                    IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDamaged = table.Column<bool>(type: "boolean", nullable: false),
+                    IsLost = table.Column<bool>(type: "boolean", nullable: false),
+                    IsInUse = table.Column<bool>(type: "boolean", nullable: false),
+                    IsReserved = table.Column<bool>(type: "boolean", nullable: false),
+                    IsBroken = table.Column<bool>(type: "boolean", nullable: false),
+                    IsExpired = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockTools", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StockTools_Stocks_StockId",
+                        column: x => x.StockId,
+                        principalTable: "Stocks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StockTools_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StockTools_Tools_ToolsId",
+                        column: x => x.ToolsId,
+                        principalTable: "Tools",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ToolTag",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ToolId = table.Column<int>(type: "integer", nullable: false),
+                    TagId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ToolTag", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ToolTag_Tags_TagId",
+                        column: x => x.TagId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ToolTag_Tools_ToolId",
+                        column: x => x.ToolId,
+                        principalTable: "Tools",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -830,6 +907,21 @@ namespace UteamUP.Server.Api.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_StockTools_StockId",
+                table: "StockTools",
+                column: "StockId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockTools_TenantId",
+                table: "StockTools",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockTools_ToolsId",
+                table: "StockTools",
+                column: "ToolsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Subscriptions_PlanId",
                 table: "Subscriptions",
                 column: "PlanId");
@@ -860,6 +952,17 @@ namespace UteamUP.Server.Api.Migrations
                 name: "IX_Tools_VendorId",
                 table: "Tools",
                 column: "VendorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ToolTag_TagId",
+                table: "ToolTag",
+                column: "TagId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ToolTag_ToolId_TagId",
+                table: "ToolTag",
+                columns: new[] { "ToolId", "TagId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
@@ -893,6 +996,11 @@ namespace UteamUP.Server.Api.Migrations
                 table: "Vendor",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vendor_UpdatedById",
+                table: "Vendor",
+                column: "UpdatedById");
         }
 
         /// <inheritdoc />
@@ -920,10 +1028,10 @@ namespace UteamUP.Server.Api.Migrations
                 name: "MUserTenant");
 
             migrationBuilder.DropTable(
-                name: "Stocks");
+                name: "StockTools");
 
             migrationBuilder.DropTable(
-                name: "Tools");
+                name: "ToolTag");
 
             migrationBuilder.DropTable(
                 name: "WorkorderSchedules");
@@ -941,7 +1049,13 @@ namespace UteamUP.Server.Api.Migrations
                 name: "Locations");
 
             migrationBuilder.DropTable(
+                name: "Stocks");
+
+            migrationBuilder.DropTable(
                 name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "Tools");
 
             migrationBuilder.DropTable(
                 name: "Assets");

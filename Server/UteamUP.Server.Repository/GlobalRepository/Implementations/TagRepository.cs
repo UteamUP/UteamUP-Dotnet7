@@ -35,6 +35,12 @@ public class TagRepository : ITagRepository
         }
     }
 
+    public async Task<List<Tag>> GetAllTagsByTenantIdAsync(int tenantId)
+    {
+        if(tenantId <= 0 || tenantId == null) return new List<Tag>();
+        return await _context.Tags.Where(a => a.TenantId == tenantId).ToListAsync();
+    }
+
     public async Task<Tag> CreateAsync(Tag tag)
     {
         try

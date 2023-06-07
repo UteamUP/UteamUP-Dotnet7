@@ -33,17 +33,10 @@ public class VendorController : ControllerBase
     }
     
     // Get all vendors
-    [HttpGet("all"), AllowAnonymous]
+    [HttpGet("all")]
     public async Task<IActionResult> GetAllAsync()
     {
-        MUserDto mUser = await ValidateUser();
-        if (string.IsNullOrWhiteSpace(mUser.Email) || string.IsNullOrWhiteSpace(mUser.Oid))
-        {
-            _logger.Log(LogLevel.Error, $"{nameof(GetAllAsync)}: User is not valid");
-            return BadRequest();
-        }
-
-        _logger.Log(LogLevel.Information, $"{nameof(GetAllAsync)}: Getting all vendors for user with oid {mUser.Oid}");
+        _logger.Log(LogLevel.Information, $"{nameof(GetAllAsync)}: Getting all vendors");
         var vendors = await _vendor.GetAllAsync();
         if (vendors == null)
         {
@@ -55,17 +48,15 @@ public class VendorController : ControllerBase
     }
     
     // Get a vendor by id
-    [HttpGet("{id}"), AllowAnonymous]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetByIdAsync(int id)
     {
-        /*
         MUserDto mUser = await ValidateUser();
         if (string.IsNullOrWhiteSpace(mUser.Email) || string.IsNullOrWhiteSpace(mUser.Oid))
         {
             _logger.Log(LogLevel.Error, $"{nameof(GetByIdAsync)}: User is not valid");
             return BadRequest();
         }
-        */
         var vendor = await _vendor.GetByIdAsync(id);
         if (vendor == null)
         {

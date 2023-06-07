@@ -1,0 +1,12 @@
+<div class="invite-tenant-container">
+    <p>@ErrorDetails</p>
+    <div class="button-container">
+        <HorizonButton OnClick="OnClickSendAsync">Ok</HorizonButton>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] BlazoredModalInstance Modal { get; set; } = default!;
+    [Parameter] public string ErrorDetails { get; set; } = default!;
+    private async Task OnClickSendAsync() => Modal.CloseAsync();
+}

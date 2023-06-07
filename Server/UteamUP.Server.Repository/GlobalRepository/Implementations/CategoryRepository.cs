@@ -72,6 +72,7 @@ public class CategoryRepository : ICategoryRepository
     {
         try
         {
+            Console.WriteLine("The tenant id is: " + tenantId);
             // Check if the category already exists
             var exists = await _context.Categories.AnyAsync(x => x.Name == category.Name && x.TenantId == tenantId);
             
@@ -82,9 +83,13 @@ public class CategoryRepository : ICategoryRepository
             // Get the tenant
             var tenant = await _context.Tenants.FirstOrDefaultAsync(x => x.Id == tenantId);
             
+            Console.WriteLine("Getting tenant");
+            
             // Check if the tenant exists
-            if (string.IsNullOrWhiteSpace(tenant.Name))
-                return new Category();
+            if (tenant == null)
+                throw new Exception("Tenant does not exist tenantid : " + tenantId);
+            
+            
             
             // Get the user
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Oid == oid);

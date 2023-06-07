@@ -9,4 +9,5 @@ public class Tag : Base
     public virtual Tenant? Tenant { get; set; }
     
     public ICollection<LocationTag>? LocationTags { get; }
+    public ICollection<ToolTag>? ToolTags { get; }
 }

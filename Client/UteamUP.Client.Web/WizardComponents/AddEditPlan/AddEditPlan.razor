@@ -1,0 +1,80 @@
+@page "/plan-add"
+@page "/plan-edit/{id:int?}"
+@using UteamUP.Client.Web.WizardComponents.AddEditTenant.AddEditTenant.Modals
+@using UteamUP.Client.Web.WizardComponents.Template.AddEditTemplate.Forms
+@using UteamUP.Client.Web.WizardComponents.AddEditPlan.Forms
+@using Newtonsoft.Json
+@inject HttpClient Http
+@inject IHeaderRepository _headerRepository
+@inject IMapper Mapper
+
+@inherits WizardBase<PlanForm>
+
+<Form Steps="@_steps"
+      BackUrl="/global"
+      ActiveStepIndex="@_activeStepIndex"
+      Title="@(Id == null ? "Create Plan" : "Edit Plan")"
+      OnClickBackButton="OnClickBackButton"
+      OnClickContinueButton="OnClickContinueButtonAsync"
+      OnClickSubmitButton="OnClickSubmitButtonAsync">
+    @switch (_activeStepIndex)
+    {
+        case 0:
+            <EditForm Model="@_model.PlanBasicForm">
+                <FluentValidationValidator @ref="_fluentValidationValidator" />
+                <HorizonInput Label="Template Name" Placeholder="Type in the name of the template" @bind-Value="@_model.PlanBasicForm.Name"/>
+            </EditForm>
+            break;
+        default:
+            break;
+    }
+</Form>
+
+@code {
+    int _tenantId = 0;
+    
+    private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
+    {
+        { "Template Basic Information", false },
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = new PlanForm();
+        Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
+
+
+        _tenantId = UserState.User.DefaultTenantId;
+    }
+    
+    private void OpenModal(string ErrorTitle, string ErrorDetails)
+    {
+        var options = new ModalOptions()
+        {
+            DisableBackgroundCancel = true,
+            HideCloseButton = false,
+        };
+        
+        var parameters = new ModalParameters();
+        parameters.Add(ErrorTitle, ErrorDetails);
+
+        ModalService.Show<ErrorTenantModal>("ErrorDetails", parameters, options);
+    }
+
+    private async Task OnClickSubmitButtonAsync()
+    {
+        Console.WriteLine("Click Submit Button");
+    }
+    
+    private async Task OnClickContinueButtonAsync()
+    {
+        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
+        _activeStepIndex = _activeStepIndex + 1;
+    }
+
+    private void OnClickBackButton()
+    {
+        _activeStepIndex = _activeStepIndex - 1;
+    }
+
+}

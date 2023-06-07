@@ -20,6 +20,7 @@ public class pgContext : DbContext
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Report> Reports { get; set; }
     public DbSet<Stock> Stocks { get; set; }
+    public DbSet<StockTools> StockTools { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<Tenant> Tenants { get; set; }
@@ -46,6 +47,7 @@ public class pgContext : DbContext
             .HasIndex(mUser => new { mUser.Email })
             .IsUnique();
 
+        /* ------------ Location Tags ------------ */
         modelBuilder.Entity<Location>()
             .HasMany(l => l.LocationTags)
             .WithOne(lt => lt.Location)
@@ -59,12 +61,22 @@ public class pgContext : DbContext
         modelBuilder.Entity<LocationTag>()
             .HasIndex(lt => new { lt.LocationId, lt.TagId })
             .IsUnique();
-
         
-        //modelBuilder.Entity<LocationTag>().ToTable("LocationTags");
-        //https://medium.com/@vahidalizadeh1990/outbox-pattern-in-net-4fcdf2b7295d
-        //https://jber595.medium.com/net-core-ef-many-to-many-6cc0f9379cd4
-        //https://medium.com/@ti.ka/many-to-many-relationship-done-right-in-the-entity-framework-multi-clients-users-130ac185f667
+        /* ------------ Tool Tags ------------ */
+        modelBuilder.Entity<Tool>()
+            .HasMany(l => l.ToolTags)
+            .WithOne(lt => lt.Tool)
+            .HasForeignKey(lt => lt.ToolId);
+        
+        modelBuilder.Entity<Tag>()
+            .HasMany(l => l.ToolTags)
+            .WithOne(lt => lt.Tag)
+            .HasForeignKey(lt => lt.TagId);
+        
+        modelBuilder.Entity<ToolTag>()
+            .HasIndex(lt => new { lt.ToolId, lt.TagId })
+            .IsUnique();
+
         
         
         modelBuilder.Entity<Tenant>().HasIndex(b => b.Name).IsUnique();

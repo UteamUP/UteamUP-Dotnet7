@@ -2,6 +2,10 @@
 @page "/template-edit/{id:int?}"
 @using UteamUP.Client.Web.WizardComponents.AddEditTenant.AddEditTenant.Modals
 @using UteamUP.Client.Web.WizardComponents.Template.AddEditTemplate.Forms
+@using Newtonsoft.Json
+@inject HttpClient Http
+@inject IHeaderRepository _headerRepository
+@inject IMapper Mapper
 
 @inherits WizardBase<TemplateForm>
 
@@ -36,6 +40,8 @@
     protected override async Task OnInitializedAsync()
     {
         _model = new TemplateForm();
+        Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
+
 
         _tenantId = UserState.User.DefaultTenantId;
     }
@@ -51,7 +57,7 @@
         var parameters = new ModalParameters();
         parameters.Add(ErrorTitle, ErrorDetails);
 
-        ModalService.Show<ErrorTenantModal>("Error", parameters, options);
+        ModalService.Show<ErrorTenantModal>("ErrorDetails", parameters, options);
     }
 
     private async Task OnClickSubmitButtonAsync()
