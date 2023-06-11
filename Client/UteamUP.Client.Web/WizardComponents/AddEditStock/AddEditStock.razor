@@ -1,19 +1,19 @@
 @page "/stock-add"
 @page "/stock-edit/{id:int?}"
 @using UteamUP.Client.Web.WizardComponents.AddEditTenant.AddEditTenant.Modals
-@using UteamUP.Client.Web.WizardComponents.Template.AddEditTemplate.Forms
 @using UteamUP.Client.Web.WizardComponents.AddEditStock.Forms
 @using Newtonsoft.Json
 @inject HttpClient Http
 @inject IHeaderRepository _headerRepository
 @inject IMapper Mapper
+@inject ICategoryWebRepository CategoryWebRepository
 
 @inherits WizardBase<StockForm>
 
 <Form Steps="@_steps"
       BackUrl="/global"
       ActiveStepIndex="@_activeStepIndex"
-      Title="@(Id == null ? "Create Template" : "Edit Template")"
+      Title="@(Id == null ? "Create Stock" : "Edit Stock")"
       OnClickBackButton="OnClickBackButton"
       OnClickContinueButton="OnClickContinueButtonAsync"
       OnClickSubmitButton="OnClickSubmitButtonAsync">
@@ -21,8 +21,17 @@
     {
         case 0:
             <EditForm Model="@_model.StockBasicForm">
-                <FluentValidationValidator @ref="_fluentValidationValidator" />
-                <HorizonInput Label="Template Name" Placeholder="Type in the name of the template" @bind-Value="@_model.StockBasicForm.Name"/>
+                <HorizonInput Label="Stock Name" Placeholder="Type in the name of the stock" @bind-Value="@_model.StockBasicForm.Name"/>
+                <HorizonSelect Options="@_locationList" Label="Select Location" Placeholder="Select here" @bind-Value="_model.StockBasicForm.Location"/>
+                <HorizonSelect Options="@_categoryList" Label="Select Category" Placeholder="Select here" @bind-Value="_model.StockBasicForm.Category"/>
+                <HorizonChipTag Label="Tags" @bind-Value="_tagNames" Placeholder="Type in the tags you want to add to the stock"/>
+            </EditForm>
+            break;
+        case 1:
+            <EditForm Model="@_model.StockBasicForm">
+                <HorizonInput Label="Shelve Name" Placeholder="Type in the shelve name" @bind-Value="@_model.StockBasicForm.ShelveName"/>
+                <HorizonInput Label="Shelve Number" Placeholder="Type in the shelve number" @bind-Value="@_model.StockBasicForm.ShelveNumber"/>
+                <HorizonInput Label="Rack Bar Number" Placeholder="Type in the rack bar number" @bind-Value="@_model.StockBasicForm.RackBarNumber"/>
             </EditForm>
             break;
         default:
@@ -32,10 +41,23 @@
 
 @code {
     int _tenantId = 0;
+    private List<string> _tagNames = new();
+    List<Category> _categories = new();
     
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
         { "Stock Basic Information", false },
+        { "Stock Number Information", false },
+    };
+    
+    private IDictionary<string, string> _categoryList = new Dictionary<string, string>()
+    {
+        { "", "" }
+    };
+    
+    private IDictionary<string, string> _locationList = new Dictionary<string, string>()
+    {
+        { "", "" }
     };
 
     protected override async Task OnInitializedAsync()
@@ -43,10 +65,72 @@
         _model = new StockForm();
         Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
 
+        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+        if (globalState.DefaultTenantId == null || globalState.DefaultTenantId == 0)
+            throw new Exception("No tenant selected");
 
+        var resultCategory = await Http.GetAsync($"api/category/tenant/{globalState.DefaultTenantId}");
+        resultCategory.EnsureSuccessStatusCode();
+        if (resultCategory.IsSuccessStatusCode)
+        {
+            var content = await resultCategory.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var responseCategory = JsonConvert.DeserializeObject<List<Category>>(content);
+                
+            _categoryList = responseCategory.ToDictionary(x => x.Name, x => x.Id.ToString());
+        }
+
+        var resultLocation = await Http.GetAsync($"api/location/tenant/{globalState.DefaultTenantId}");
+        resultLocation.EnsureSuccessStatusCode();
+        if (resultLocation.IsSuccessStatusCode)
+        {
+            var content = await resultLocation.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var responseLocation = JsonConvert.DeserializeObject<List<Location>>(content);
+                
+            _locationList = responseLocation.ToDictionary(x => x.Name, x => x.Id.ToString());
+        }
+        
         _tenantId = UserState.User.DefaultTenantId;
+
+        if (Id.HasValue)
+        {
+            try
+            {
+                var result = await Http.GetAsync($"api/category/{Id.Value}/tenant/{_tenantId}");
+                result.EnsureSuccessStatusCode();
+                if (result.IsSuccessStatusCode)
+                {
+                    var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var response = JsonConvert.DeserializeObject<Category>(content);
+                
+                    _model.StockBasicForm.Category = response.Name;
+                }
+                
+                var resultStock = await Http.GetAsync($"api/stock/{Id.Value}/tenant/{_tenantId}");
+                resultStock.EnsureSuccessStatusCode();
+                if (resultStock.IsSuccessStatusCode)
+                {
+                    var content = await resultStock.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var response = JsonConvert.DeserializeObject<StockTagDto>(content);
+                
+                    _model.StockBasicForm.Name = response.Stock.Name;
+                    _model.StockBasicForm.ShelveName = response.Stock.ShelveName;
+                    _model.StockBasicForm.ShelveNumber = response.Stock.ShelveNumber;
+                    _model.StockBasicForm.RackBarNumber = response.Stock.RackBarNumber;
+                    
+                    _model.StockBasicForm.Category = response.Category;
+                    _model.StockBasicForm.Location = response.Location;
+                    
+                    _tagNames = response.Tags.Select(x => x.Name).ToList();
+                    
+                }
+            }
+            catch (Exception e)
+            {
+                OpenModal("ErrorDetails", e.Message);
+            }
+        }
     }
-    
+
     private void OpenModal(string ErrorTitle, string ErrorDetails)
     {
         var options = new ModalOptions()
@@ -63,7 +147,62 @@
 
     private async Task OnClickSubmitButtonAsync()
     {
-        Console.WriteLine("Click Submit Button");
+        var selectedCategory = _categoryList.FirstOrDefault(x => x.Value == _model.StockBasicForm.Category);
+        var selectedLocation = _locationList.FirstOrDefault(x => x.Value == _model.StockBasicForm.Location);
+        
+        
+        var stock = new StockDto()
+        {
+            Name = _model.StockBasicForm.Name,
+            ShelveName = _model.StockBasicForm.ShelveName,
+            ShelveNumber = _model.StockBasicForm.ShelveNumber,
+            RackBarNumber = _model.StockBasicForm.RackBarNumber,
+            CategoryId = int.Parse(selectedCategory.Value),
+            LocationId = int.Parse(selectedLocation.Value),
+            TenantId = _tenantId
+        };
+        
+        var tags = _tagNames.Select(x => new TagDto()
+        {
+            Name = x,
+            TenantId = _tenantId
+        }).ToList();
+        
+        var stockTag = new StockTagDto()
+        {
+            Stock = stock,
+            Tags = tags
+        };
+
+        if (Id == null)
+        {
+            var result = await Http.PostAsJsonAsync($"api/stock", stockTag);
+            result.EnsureSuccessStatusCode();
+            if (result.IsSuccessStatusCode)
+            {
+                var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var response = JsonConvert.DeserializeObject<StockTagDto>(content);
+                
+                //NavigationManager.NavigateTo($"/stock/{response.Stock.Id}");
+                OpenModal("ErrorDetails", "The cateogry selected is : " + selectedCategory.Value + " and the location selected is : " + selectedLocation.Value + ". The tags that where selected are : " + string.Join(",", _tagNames));
+            }
+        }
+        else
+        {
+            var result = await Http.PutAsJsonAsync($"api/stock/{Id.Value}", stockTag);
+            result.EnsureSuccessStatusCode();
+            if (result.IsSuccessStatusCode)
+            {
+                var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var response = JsonConvert.DeserializeObject<StockTagDto>(content);
+                
+                //NavigationManager.NavigateTo($"/stock/{response.Stock.Id}");
+                OpenModal("ErrorDetails", "The cateogry selected is : " + selectedCategory.Value + " and the location selected is : " + selectedLocation.Value + ". The tags that where selected are : " + string.Join(",", _tagNames));
+            }
+            
+        }
+        
+        
     }
     
     private async Task OnClickContinueButtonAsync()

@@ -20,6 +20,7 @@ public class pgContext : DbContext
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Report> Reports { get; set; }
     public DbSet<Stock> Stocks { get; set; }
+    public DbSet<StockTag> StockTags { get; set; }
     public DbSet<StockTools> StockTools { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Tag> Tags { get; set; }
@@ -75,6 +76,21 @@ public class pgContext : DbContext
         
         modelBuilder.Entity<ToolTag>()
             .HasIndex(lt => new { lt.ToolId, lt.TagId })
+            .IsUnique();
+
+        /* ------------ Stock Tags ------------ */
+        modelBuilder.Entity<Stock>()
+            .HasMany(l => l.StockTags)
+            .WithOne(lt => lt.Stock)
+            .HasForeignKey(lt => lt.StockId);
+        
+        modelBuilder.Entity<Tag>()
+            .HasMany(l => l.StockTags)
+            .WithOne(lt => lt.Tag)
+            .HasForeignKey(lt => lt.TagId);
+        
+        modelBuilder.Entity<StockTag>()
+            .HasIndex(lt => new { lt.StockId, lt.TagId })
             .IsUnique();
 
         

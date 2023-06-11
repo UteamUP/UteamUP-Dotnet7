@@ -1,4 +1,5 @@
 namespace UteamUP.Server.Api.Controllers;
+
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]

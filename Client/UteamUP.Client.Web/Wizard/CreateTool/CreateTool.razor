@@ -1,9 +1,11 @@
 @page "/create-tool"
 @using UteamUP.Client.Wizard.ActivateUser.Forms
+@using UteamUP.Client.Web.WizardComponents.AddEditTool.Forms
 @using UteamUP.Client.Components.Enums
 @using UteamUP.Client.Web.Repository.Interfaces
 
 @inject ICategoryWebRepository CategoryWebRepository
+@inherits WizardBase<ToolForm>
 
 <Form Steps="@_steps"
       BackUrl="/global"
@@ -161,6 +163,17 @@
         _categories = await CategoryWebRepository.GetAllCategoriesByTenantIdAsync(globalState.DefaultTenantId);
         if (_categories.Count != 0)
             _categoryList = _categories.ToDictionary(x => x.Name, x => x.Id.ToString());
+
+        if (Id.HasValue)
+        {
+            try
+            {
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
     }
 
     private async Task OnClickSubmitButtonAsync()

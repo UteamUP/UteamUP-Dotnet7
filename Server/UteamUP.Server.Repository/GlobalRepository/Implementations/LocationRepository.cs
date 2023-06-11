@@ -41,6 +41,15 @@ public class LocationRepository : ILocationRepository
         return locations;
     }
 
+    public Task<List<Location>> GetLocationsByTenantId(int tenantId)
+    {
+        if(tenantId == 0) throw new Exception("TenantId cannot be 0.");
+        
+        return _context.Locations
+            .Where(l => l.TenantId == tenantId)
+            .ToListAsync();
+    }
+
     // Check if the location already exists by name and tenant
     private async Task<bool> LocationExistsByNameAndTenantAsync(string name, int tenantId)
     {

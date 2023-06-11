@@ -10,4 +10,5 @@ public class Tag : Base
     
     public ICollection<LocationTag>? LocationTags { get; }
     public ICollection<ToolTag>? ToolTags { get; }
+    public ICollection<StockTag>? StockTags { get; }
 }

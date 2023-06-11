@@ -1,4 +1,4 @@
-namespace UteamUP.Server.Controllers;
+namespace UteamUP.Server.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

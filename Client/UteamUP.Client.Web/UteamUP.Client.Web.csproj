@@ -38,7 +38,6 @@
         <PackageReference Include="System.Runtime.Caching" Version="7.0.0" />
     </ItemGroup>
 
-
     <ItemGroup>
         <ProjectReference Include="..\..\Shared\UteamUP.Shared\UteamUP.Shared.csproj" />
         <ProjectReference Include="..\UteamUP.Client.Components\UteamUP.Client.Components.csproj" />
@@ -107,8 +106,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="WizardComponents\AddEditStock\AddEditTemplate.razor" />
-      <AdditionalFiles Include="WizardComponents\AddEditStock\Modals\ErrorTemplateModal.razor" />
       <AdditionalFiles Include="WizardComponents\AddEditPart\AddEditTemplate.razor" />
       <AdditionalFiles Include="WizardComponents\AddEditPart\Modals\ErrorTemplateModal.razor" />
       <AdditionalFiles Include="WizardComponents\AddEditAsset\AddEditTemplate.razor" />

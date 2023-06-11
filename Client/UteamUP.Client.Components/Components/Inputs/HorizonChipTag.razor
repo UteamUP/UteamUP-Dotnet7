@@ -6,7 +6,7 @@
     @if (!string.IsNullOrEmpty(Label))
     {
         <label class="form-label">@Label</label>
-        <i><label> (Enter/Tab on keyboard for new tag)</label></i>
+        <i><label> (Enter/Comma on keyboard for new tag)</label></i>
     }
 
     <div class="input-chip-wrapper">
@@ -45,7 +45,7 @@
     
     private void ValidateEnteredItem()
     {
-        //_inputValue = Regex.Replace(_inputValue, @"\s+", "");
+        _inputValue = Regex.Replace(_inputValue, @",", "");
         
         // Check if the input value is empty or already exists in the list
         if (string.IsNullOrEmpty(_inputValue) || Value.Contains(_inputValue))
@@ -81,7 +81,7 @@
             UpdatePlaceHolder();
         }
         
-        if(e.Key == "Tab" || e.Key == "Enter")
+        if(e.Key == "Tab" || e.Key == "Enter" || e.Key == ",")
         {
             ValidateEnteredItem();
         }

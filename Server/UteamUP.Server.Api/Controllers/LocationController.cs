@@ -1,9 +1,7 @@
-using Microsoft.Graph;
 using Newtonsoft.Json;
-using UteamUP.Server.Repository.GenericRepository.Interfaces;
 using Location = UteamUP.Shared.Models.Location;
 
-namespace UteamUP.Server.Controllers;
+namespace UteamUP.Server.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -84,6 +82,24 @@ public class LocationController : ControllerBase
         return Ok(result); // Return a success response
     }
 
+    // Get all locations based on tenantId
+    [HttpGet("tenant/{tenantId}")]
+    public async Task<IActionResult> GetLocationsByTenantIdAsync(int tenantId)
+    {
+        // Validate the user
+        var user = await ValidateUser();
+        
+        // if unautorized return the error
+        if (user.GetType() == typeof(UnauthorizedObjectResult))
+            return new UnauthorizedResult();
+        
+        // Get the locations
+        var result = await _location.GetLocationsByTenantId(tenantId);
+        
+        if(result == null) return NotFound("Locations not found");
+        
+        return Ok(result);
+    }
 
     // Get location by id
     [HttpGet("{id}")]

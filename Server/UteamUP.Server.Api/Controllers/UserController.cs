@@ -1,7 +1,4 @@
-using System.Net;
-using Microsoft.AspNetCore.Http.HttpResults;
-
-namespace UteamUP.Server.Controllers;
+namespace UteamUP.Server.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

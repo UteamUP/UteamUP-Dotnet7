@@ -1,4 +1,3 @@
-using UteamUP.Server.Controllers;
 using UteamUP.Server.Repository.GenericRepository.Interfaces;
 
 namespace UteamUP.Server.Api.Controllers;

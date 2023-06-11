@@ -14,7 +14,7 @@ public class Stock : Base
     public string ShelveNumber { get; set; } = string.Empty;
     public string ShelveName { get; set; } = string.Empty;
 
-    [ForeignKey("Tenant")] public int? TenantId { get; set; }
+    [ForeignKey("Tenant")] public int TenantId { get; set; }
     public Tenant? Tenant { get; set; }
     
     [ForeignKey("Location")] public int? LocationId { get; set; }
@@ -22,4 +22,6 @@ public class Stock : Base
 
     [ForeignKey("Category")] public int? CategoryId { get; set; }
     public Category? Category { get; set; }
+    
+    public ICollection<StockTag> StockTags { get; set; }
 }
