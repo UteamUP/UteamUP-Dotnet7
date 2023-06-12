@@ -89,7 +89,7 @@
             _locationList = responseLocation.ToDictionary(x => x.Name, x => x.Id.ToString());
         }
         
-        _tenantId = UserState.User.DefaultTenantId;
+        _tenantId = globalState.DefaultTenantId;
 
         if (Id.HasValue)
         {
@@ -149,20 +149,6 @@
         _model.StockBasicForm.LocationId = 1;
         _model.StockBasicForm.TenantId = _tenantId;
         
-    }
-
-    private void OpenModal(string ErrorTitle, string ErrorDetails)
-    {
-        var options = new ModalOptions()
-        {
-            DisableBackgroundCancel = true,
-            HideCloseButton = false,
-        };
-        
-        var parameters = new ModalParameters();
-        parameters.Add(ErrorTitle, ErrorDetails);
-
-        ModalService.Show<ErrorTenantModal>("ErrorDetails", parameters, options);
     }
 
     private async Task OnClickSubmitButtonAsync()
@@ -228,21 +214,6 @@
             {
                 OpenModal("ErrorDetails", "Unable to update stock, please try again later.");
             }
-            
         }
-        
-        
     }
-    
-    private async Task OnClickContinueButtonAsync()
-    {
-        _steps[_steps.ElementAt(_activeStepIndex).Key] = true;
-        _activeStepIndex = _activeStepIndex + 1;
-    }
-
-    private void OnClickBackButton()
-    {
-        _activeStepIndex = _activeStepIndex - 1;
-    }
-
 }
