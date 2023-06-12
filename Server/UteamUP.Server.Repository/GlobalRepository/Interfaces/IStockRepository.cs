@@ -7,5 +7,5 @@ public interface IStockRepository
 
     Task<Stock> UpdateStockWithTags(StockTagDto stockItems, int stockId);
 
-    Task<Stock?> CreateStockWithTags(StockTagDto stockItems);
+    Task<Stock?> CreateStockWithTags(Stock stock, List<string> tags);
 }

@@ -129,6 +129,26 @@
                 OpenModal("ErrorDetails", e.Message);
             }
         }
+        else
+        {
+            GenerateText();
+        }
+    }
+    
+    private void GenerateText()
+    {
+        _tagNames.Add("Tools");
+        _tagNames.Add("Hammers");
+        
+        _model.StockBasicForm.Name = "Stock One";
+        _model.StockBasicForm.ShelveName = "Shelve One";
+        _model.StockBasicForm.ShelveNumber = "Shelve Number";
+        _model.StockBasicForm.RackBarNumber = "Rack Bar Number";
+        
+        _model.StockBasicForm.CategoryId = 1;
+        _model.StockBasicForm.LocationId = 1;
+        _model.StockBasicForm.TenantId = _tenantId;
+        
     }
 
     private void OpenModal(string ErrorTitle, string ErrorDetails)
@@ -177,6 +197,7 @@
         if (Id == null)
         {
             var result = await Http.PostAsJsonAsync($"api/stock", stockTag);
+            
             result.EnsureSuccessStatusCode();
             if (result.IsSuccessStatusCode)
             {
@@ -185,6 +206,10 @@
                 
                 //NavigationManager.NavigateTo($"/stock/{response.Stock.Id}");
                 OpenModal("ErrorDetails", "The cateogry selected is : " + selectedCategory.Value + " and the location selected is : " + selectedLocation.Value + ". The tags that where selected are : " + string.Join(",", _tagNames));
+            }
+            else
+            {
+                OpenModal("ErrorDetails", "Unable to create stock, please try again later.");
             }
         }
         else
@@ -198,6 +223,10 @@
                 
                 //NavigationManager.NavigateTo($"/stock/{response.Stock.Id}");
                 OpenModal("ErrorDetails", "The cateogry selected is : " + selectedCategory.Value + " and the location selected is : " + selectedLocation.Value + ". The tags that where selected are : " + string.Join(",", _tagNames));
+            }
+            else
+            {
+                OpenModal("ErrorDetails", "Unable to update stock, please try again later.");
             }
             
         }

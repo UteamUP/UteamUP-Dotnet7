@@ -13,4 +13,6 @@ public class StockDto
     public int? LocationId { get; set; }
 
     public int? CategoryId { get; set; }
+    
+    public List<string?>? Tags { get; set; }
 }

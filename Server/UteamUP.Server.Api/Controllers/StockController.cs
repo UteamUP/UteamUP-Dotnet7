@@ -8,7 +8,8 @@ public class StockController : ControllerBase
     private readonly ILogger<StockController> _logger;
     private readonly IStockRepository _category;
     private readonly IMUserRepository _user;
-    
+    private readonly IMapper _mapper;
+
     public StockController(
         IStockRepository category, 
         ILogger<StockController> logger, 
@@ -35,14 +36,23 @@ public class StockController : ControllerBase
     
     // Post new stock
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] StockTagDto stockItems)
+    public async Task<IActionResult> Post([FromBody] StockDto stockDto)
     {
-        var user = await ValidateUser();
-        if(user is UnauthorizedResult)
-            return user;
+        //var user = await ValidateUser();
+        //if(user is UnauthorizedResult)
+        //    return user;
         
-        var stock = await _category.CreateStockWithTags(stockItems);
-        return Ok(stock);
+        // Check if stockItems.Stock is null
+        //if(string.IsNullOrWhiteSpace(stockItems.Stock.Name))
+        //    return BadRequest("Stock cannot be null");
+
+        Stock? stock = new Stock();
+        stock = _mapper.Map<Stock>(stockDto);
+
+        var result = await _category.CreateStockWithTags(stock, stockDto.Tags);
+        if(result == null) return NotFound("Stock not created");
+
+        return Ok(result);
     }
     
     // Update stock
@@ -52,6 +62,14 @@ public class StockController : ControllerBase
         var user = await ValidateUser();
         if(user is UnauthorizedResult)
             return user;
+
+        // Check if stockItems.Stock is null
+        if(string.IsNullOrWhiteSpace(stockItems.Stock.Name))
+            return BadRequest("Stock cannot be null");
+        
+        // Check if stockId is 0
+        if(stockId == 0)
+            return BadRequest("StockId cannot be 0.");
         
         var stock = await _category.UpdateStockWithTags(stockItems, stockId);
         return Ok(stock);
@@ -65,6 +83,9 @@ public class StockController : ControllerBase
         if(user is UnauthorizedResult)
             return user;
         
+        if(tenantId == 0)
+            return BadRequest("TenantId cannot be 0.");
+        
         var stock = await _category.GetStockByTenantId(tenantId);
         return Ok(stock);
     }
@@ -76,6 +97,9 @@ public class StockController : ControllerBase
         var user = await ValidateUser();
         if(user is UnauthorizedResult)
             return user;
+
+        if (stockId == 0)
+            return BadRequest("StockId cannot be 0.");
         
         var stock = await _category.GetByStockId(stockId);
         return Ok(stock);

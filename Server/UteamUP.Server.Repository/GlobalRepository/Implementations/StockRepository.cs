@@ -135,32 +135,21 @@ public class StockRepository : IStockRepository
         return updatedStock;
     }
 
-    public async Task<Stock?> CreateStockWithTags(StockTagDto stockItems)
+    public async Task<Stock?> CreateStockWithTags(Stock stock, List<string> tags)
     {
         // Check if the stock already exists
-        var stockExists = await StockExistsByNameAndTenantAsync(stockItems.Stock.Name, stockItems.Stock.TenantId);
+        var stockExists = await StockExistsByNameAndTenantAsync(stock.Name, stock.TenantId);
         if(stockExists)
-            return _context.Stocks.FirstOrDefault(x => x.Name == stockItems.Stock.Name && x.TenantId == stockItems.Stock.TenantId);
+            return _context.Stocks.FirstOrDefault(x => x.Name == stock.Name && x.TenantId == stock.TenantId);
         
         // Map stockItems.Stock to Stock
-        var stock = _mapper.Map<Stock>(stockItems.Stock);
+        var stockMapped = _mapper.Map<Stock>(stock);
         
         stock.Guid = Guid.NewGuid().ToString();
-        
-        // Map stockItems.Tags to List<Tag>
-        var tags = _mapper.Map<List<Tag>>(stockItems.Tags);
         
         // set the created at and updated at on stock
         stock.CreatedAt = DateTime.Now.ToUniversalTime();
         stock.UpdatedAt = DateTime.Now.ToUniversalTime();
-        
-        // set the created at and updated at on tags
-        tags.ForEach(x =>
-        {
-            x.TenantId = stock.TenantId;
-            x.CreatedAt = DateTime.Now.ToUniversalTime();
-            x.UpdatedAt = DateTime.Now.ToUniversalTime();
-        });
         
         // Add the stock
         await _context.Stocks.AddAsync(stock);
@@ -172,15 +161,15 @@ public class StockRepository : IStockRepository
         var existingStock = await _context.Stocks
             .Include(s => s.StockTags)
             .ThenInclude(st => st.Tag)
-            .FirstOrDefaultAsync(s => s.Id == stock.Id && s.TenantId == stockItems.Stock.TenantId);
+            .FirstOrDefaultAsync(s => s.Id == stock.Id && s.TenantId == stock.TenantId);
         
         // Loop through existingStock.Tags and check if the tag exists in the database, if exists create it, if not add it to the stock.
-        foreach (var tag in stockItems.Tags)
+        foreach (var tag in tags)
         {
-            if (!_context.Tags.Any(t => t.Name == tag.Name && t.TenantId == stockItems.Stock.TenantId))
+            if (!_context.Tags.Any(t => t.Name == tag && t.TenantId == stock.TenantId))
             {
                 Tag newTag = new();
-                newTag.Name = tag.Name;
+                newTag.Name = tag;
                 newTag.TenantId = stock.TenantId;
                 newTag.CreatedAt = DateTime.Now.ToUniversalTime();
                 newTag.UpdatedAt = DateTime.Now.ToUniversalTime();
@@ -189,9 +178,9 @@ public class StockRepository : IStockRepository
                 await _context.SaveChangesAsync();
             }
 
-            if (!existingStock.StockTags.Any(t => t.Tag.Name == tag.Name))
+            if (!existingStock.StockTags.Any(t => t.Tag.Name == tag))
             {
-                Tag newTag = await _context.Tags.FirstOrDefaultAsync(t => t.Name == tag.Name && t.TenantId == stockItems.Stock.TenantId);
+                Tag newTag = await _context.Tags.FirstOrDefaultAsync(t => t.Name == tag && t.TenantId == stock.TenantId);
                 
                 StockTag stockTag = new();
                 
@@ -205,9 +194,6 @@ public class StockRepository : IStockRepository
             return existingStock;
 
         }
-        
-
-
 
         return new Stock();
     }
