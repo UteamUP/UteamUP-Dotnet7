@@ -8,7 +8,8 @@ using UteamUP.Client.Web.WizardComponents.AddEditVendor.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add localization
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 // Adding generic repository services.
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

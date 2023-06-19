@@ -1,0 +1,83 @@
+.workorder-details-modal-container {
+  .header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 40px;
+
+    .buttons {
+      display: flex;
+      gap: 20px;
+    }
+
+    .name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      button {
+        background: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: inherit;
+      }
+
+      h4 {
+        margin: 0;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 50px;
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      width: 100%;
+      margin-top: 30px;
+      margin-bottom: 30px;
+
+      a {
+        color: #206bb5;
+        text-decoration: underline;
+        font-weight: bolder;
+        cursor: pointer;
+      }
+
+      .label {
+        width: 25%;
+        font-size: 16px;
+        font-weight: 500;
+        color: #aaa;
+        line-height: 24px;
+      }
+    }
+
+    .footer {
+      border-top: 3px dashed rgba(0, 0, 0, 0.13);
+
+      .label {
+        display: block;
+        width: 100%;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #aaa;
+        line-height: 24px;
+      }
+
+      .description {
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 24px;
+      }
+    }
+  }
+}

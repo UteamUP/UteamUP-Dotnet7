@@ -1,0 +1,60 @@
+@using UteamUP.Client.Components.Enums
+@inject NavigationManager NavigationManager
+
+<div class="workorder-details-modal-container">
+    <div class="header">
+        <div class="name">
+            <h4>@_location.Name</h4>
+            <button @onclick="OnClickEditLocation">
+                <HorizonIcon Icon="@Icons.Modify" Width="28" Height="28" />
+            </button>
+        </div>
+
+        <div class="buttons">
+            <HorizonButton Appearance="ButtonAppearance.Light" OnClick="OnClickPartsForLocation">Parts List</HorizonButton>
+            <HorizonButton OnClick="OnClickWorkordersForLocation">Workorders for asset</HorizonButton>
+        </div>
+    </div>
+
+    <div class="modal-body">
+        <div class="info-row">
+            <span class="label">State</span>
+            <HorizonActiveStatusPill Status="true" />
+        </div>
+        <div class="info-row">
+            <span class="label">Tenant</span>
+            <a>@_location.Tenant?.Name</a>
+        </div>
+
+        <div class="footer">
+            <span class="label">
+                Asset Description
+            </span>
+
+            <HorizonRichTextEditor ReadOnly>
+                <EditorContent>
+                    @((MarkupString)_location.Description)
+                </EditorContent>
+            </HorizonRichTextEditor>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private Location _location;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private void OnClickPartsForLocation() => NavigationManager.NavigateTo($"location-details/{_location.Id}?tab=parts");
+
+    private void OnClickWorkordersForLocation() => NavigationManager.NavigateTo($"location-details/{_location.Id}?tab=workorders");
+
+    private void OnClickEditLocation() => NavigationManager.NavigateTo($"location-edit/{_location.Id}");
+
+    protected override async Task OnInitializedAsync()
+    {
+        //_asset = await AssetRepository.GetAsset(Id, GlobalState.Value.Oid, GlobalState.Value.ActiveTenant.Id);
+    }
+}

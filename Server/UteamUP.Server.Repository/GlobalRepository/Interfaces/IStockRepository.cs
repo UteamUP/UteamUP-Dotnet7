@@ -2,10 +2,10 @@ namespace UteamUP.Server.Repository.GlobalRepository.Interfaces;
 
 public interface IStockRepository
 {
-    Task<StockTagDto?> GetByStockId(int stockId);
+    Task<StockTagDto?> GetByStockId(int stockId, int tenantId);
     Task<List<Stock>> GetStockByTenantId(int tenantId);
 
-    Task<Stock> UpdateStockWithTags(StockTagDto stockItems, int stockId);
+    Task<Stock> UpdateStockWithTags(StockDto stockItem, int stockId);
 
-    Task<Stock?> CreateStockWithTags(Stock stock, List<string> tags);
+    Task<Stock?> CreateStockWithTags(StockDto stockDto);
 }

@@ -1,14 +1,14 @@
 {
   "SourceFolder": "wwwroot",
   "TargetFolder": "wwwroot",
-  "Arguments": "--style=compressed",
+  "Arguments": "--style=compressed --source-map",
   "GenerateScopedCss": true,
-  "ScopedCssFolders": [ "Views", "Pages", "Shared", "Components" ],
+  "ScopedCssFolders": [ "Views", "Pages", "Shared", "Components", "WizardComponents", "TableComponents" ],
   "IncludePaths": [],
 
   "Configurations": {
     "Debug": { 
-      "Arguments": "--style=expanded"
+      "Arguments": "--style=expanded --source-map"
     }
   }
 }

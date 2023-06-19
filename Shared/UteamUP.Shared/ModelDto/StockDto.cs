@@ -3,7 +3,7 @@ namespace UteamUP.Shared.ModelDto;
 public class StockDto
 {
     public string Name { get; set; }
-    public string Guid { get; set; }
+    public string? Guid { get; set; }
     public string RackBarNumber { get; set; }
     public string ShelveNumber { get; set; }
     public string ShelveName { get; set; }

@@ -38,40 +38,37 @@ public class StockController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] StockDto stockDto)
     {
-        //var user = await ValidateUser();
-        //if(user is UnauthorizedResult)
-        //    return user;
+        var user = await ValidateUser();
+        if(user is UnauthorizedResult)
+            return user;
         
         // Check if stockItems.Stock is null
-        //if(string.IsNullOrWhiteSpace(stockItems.Stock.Name))
-        //    return BadRequest("Stock cannot be null");
+        if(string.IsNullOrWhiteSpace(stockDto.Name))
+            return BadRequest("Stock cannot be null");
 
-        Stock? stock = new Stock();
-        stock = _mapper.Map<Stock>(stockDto);
-
-        var result = await _category.CreateStockWithTags(stock, stockDto.Tags);
+        var result = await _category.CreateStockWithTags(stockDto);
         if(result == null) return NotFound("Stock not created");
-
+        
         return Ok(result);
     }
     
     // Update stock
     [HttpPut("{stockId}")]
-    public async Task<IActionResult> Put(int stockId, [FromBody] StockTagDto stockItems)
+    public async Task<IActionResult> Put(int stockId, [FromBody] StockDto stockItem)
     {
         var user = await ValidateUser();
         if(user is UnauthorizedResult)
             return user;
 
         // Check if stockItems.Stock is null
-        if(string.IsNullOrWhiteSpace(stockItems.Stock.Name))
+        if(string.IsNullOrWhiteSpace(stockItem.Name))
             return BadRequest("Stock cannot be null");
         
         // Check if stockId is 0
         if(stockId == 0)
             return BadRequest("StockId cannot be 0.");
         
-        var stock = await _category.UpdateStockWithTags(stockItems, stockId);
+        var stock = await _category.UpdateStockWithTags(stockItem, stockId);
         return Ok(stock);
     }
     
@@ -91,8 +88,8 @@ public class StockController : ControllerBase
     }
     
     // Get stock by stock id
-    [HttpGet("{stockId}")]
-    public async Task<IActionResult> GetByStockId(int stockId)
+    [HttpGet("{stockId}/tenant/{tenantId}")]
+    public async Task<IActionResult> GetByStockId(int stockId, int tenantId)
     {
         var user = await ValidateUser();
         if(user is UnauthorizedResult)
@@ -101,7 +98,10 @@ public class StockController : ControllerBase
         if (stockId == 0)
             return BadRequest("StockId cannot be 0.");
         
-        var stock = await _category.GetByStockId(stockId);
+        if (tenantId == 0)
+            return BadRequest("TenantId cannot be 0.");
+        
+        var stock = await _category.GetByStockId(stockId, tenantId);
         return Ok(stock);
     }
     

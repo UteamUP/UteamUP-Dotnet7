@@ -1,0 +1,76 @@
+@page "/location-details/{id:int}"
+@using BlazorStrap.V5
+
+
+@inject NavigationManager NavigationManager
+@inject IModalService ModalService
+
+<div class="locations-container">
+    <Header OnClickButton="@(() => NavigationManager.NavigateTo("/location-add"))" Title="Location Details" ShowButtons />
+    <BSNav IsTabs="true" id="overview-tab" @ref="@_tabWrapper">
+        <BSNavItem @ref="@_workordersTab">
+            <TabLabel>Workorders (@_workorders.Count)</TabLabel>
+            <TabContent>
+                <main class="panel-container">
+                    <WorkorderTable Workorders="_workorders" EmptyDescription="List is empty" />
+                </main>
+            </TabContent>
+        </BSNavItem>
+        <BSNavItem @ref="@_partsTab">
+            <TabLabel>Parts (@_parts.Count)</TabLabel>
+            <TabContent>
+                <PartTable Parts="@_parts" EnableGrouping=false />
+            </TabContent>
+        </BSNavItem>
+    </BSNav>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "tab")]
+    public string? Tab { get; set; }
+
+    private List<Workorder> _workorders;
+    private List<Part> _parts;
+
+    private BSNav? _tabWrapper;
+    private BSNavItem? _workordersTab, _partsTab;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //ActionSubscriber.SubscribeToAction<SetActiveTenantAction>(this, OnActiveTenantChanged);
+
+        await GetPartsAndWorkordersAsync();
+    }
+
+    private async Task GetPartsAndWorkordersAsync()
+    {
+        /*
+        if (GlobalState.Value.ActiveTenant?.Id == null)
+            return;
+
+        _parts = await AssetPartRepository.GetAssetPartByAssetId(Id);
+        _workorders = await WorkorderRepository.GetAssetWorkorders(Id, GlobalState.Value.Oid, GlobalState.Value.ActiveTenant.Id);
+        */
+        StateHasChanged();
+    }
+
+    protected override void OnParametersSet()
+    {
+        switch (Tab)
+        {
+            case "workorders":
+                _tabWrapper?.Invoke(_workordersTab!);
+                break;
+            case "parts":
+                _tabWrapper?.Invoke(_partsTab!);
+                break;
+            default:
+                _tabWrapper?.Invoke(_workordersTab!);
+                break;
+        }
+    }
+}

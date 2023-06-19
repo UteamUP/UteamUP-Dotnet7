@@ -22,7 +22,7 @@
         case 0:
             <EditForm Model="@_model.PlanBasicForm">
                 <FluentValidationValidator @ref="_fluentValidationValidator" />
-                <HorizonInput Label="Template Name" Placeholder="Type in the name of the template" @bind-Value="@_model.PlanBasicForm.Name"/>
+                <HorizonInput Label="Plan Name" Placeholder="Type in the name of the plan" @bind-Value="@_model.PlanBasicForm.Name"/>
             </EditForm>
             break;
         default:

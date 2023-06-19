@@ -1,0 +1,13 @@
+.locations-container {
+  flex: 1;
+}
+.locations-container .main-container {
+  padding: 33px;
+}
+.locations-container .main-container ::deep .table-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/*# sourceMappingURL=LocationDetails.razor.css.map */

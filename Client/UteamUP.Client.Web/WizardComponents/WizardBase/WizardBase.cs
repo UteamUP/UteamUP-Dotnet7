@@ -10,10 +10,10 @@ namespace UteamUP.Client.Web.WizardComponents.WizardBase;
 public class WizardBase<TModel> : ComponentBase
 {
     [Inject]
-    public IModalService ModalService { get; set; } = null!;
-    public UserState UserState { get; set; } = null!;
-    public CustomAuthenticationStateProvider CustomAuthStateProvider { get; set; } = null!;
-    
+    public IModalService ModalService { get; set; }
+    public UserState UserState { get; set; }
+    public CustomAuthenticationStateProvider CustomAuthStateProvider { get; set; }
+    public IMapper Mapper { get; set; }
 
     [Parameter]
     public int? Id { get; set; }

@@ -1,0 +1,67 @@
+@using UteamUP.Client.Web.TableComponents.Location.Modals
+@using static UteamUP.Client.Web.TableComponents.Location.Menus.LocationActionMenu;
+@using UteamUP.Client.Web.TableComponents.Location.Menus
+@using UteamUP.Shared.Models Location
+
+
+@inject NavigationManager NavigationManager
+@inject IModalService ModalService
+
+<div class="main-container">
+    <HorizonTable EnableGrouping TableItem="Location" Items="@Locations">
+        <HorizonColumn Title="Aa Name" Field="@(x => x.Name)" TableItem="Location" />
+        <HorizonColumn Title="Description" Field="@(x => x.Description)" TableItem="Location" />
+        <HorizonColumn Title="" TableItem="Location">
+            <Template>
+                <LocationActionMenu OnClick="@((action) => OnActionMenuActionClickedAsync(action, context))" />
+            </Template>
+        </HorizonColumn>
+    </HorizonTable>
+</div>
+
+@code {
+    [Parameter]
+    public List<Location> Locations { get; set; }
+
+    private async Task HandleDeleteModalAsync(Location location)
+    {
+        ModalService.Show<DeleteConfirmationModal>(string.Empty);
+    }
+
+    private async Task HandleDetailModalAsync(Location location)
+    {
+        var modalParams = new ModalParameters();
+        modalParams.Add("Id", location.Id);
+
+        await ModalService.Show<LocationDetailsModal>(string.Empty, modalParams, new()
+        {
+            Size = ModalSize.Large
+        }).Result;
+    }
+
+    private void HandleEditLocation(Location location) => NavigationManager.NavigateTo($"location-edit/{location.Id}");
+
+    private async Task OnActionMenuActionClickedAsync(LocationActionMenuAction action, Location location)
+    {
+        switch (action)
+        {
+            case LocationActionMenuAction.Delete:
+                await HandleDeleteModalAsync(location);
+                break;
+            case LocationActionMenuAction.Detail:
+                await HandleDetailModalAsync(location);
+                break;
+            case LocationActionMenuAction.Edit:
+                HandleEditLocation(location);
+                break;
+            case LocationActionMenuAction.Workorders:
+                NavigationManager.NavigateTo($"location-details/{location.Id}?tab=workorders");
+                break;
+            case LocationActionMenuAction.PartList:
+                NavigationManager.NavigateTo($"location-details/{location.Id}?tab=parts");
+                break;
+            default:
+                break;
+        }
+    }
+}

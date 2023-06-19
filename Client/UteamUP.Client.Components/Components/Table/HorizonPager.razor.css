@@ -1,39 +1,35 @@
 .pager {
-    align-items: center;
+  align-items: center;
 }
-
 .pager .page-item {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
-
 .pager .page-item a {
-    background: transparent;
-    outline: none;
-    border: none;
-    color: #2b357f;
-    font-weight: 700;
+  background: transparent;
+  outline: none;
+  border: none;
+  color: #2b357f;
+  font-weight: 700;
 }
-
 .pager .page-number {
-    cursor: pointer;
-    padding: 10px;
-    margin: 0px 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 400;
-    font-size: 16px;
-    background: #ffffff;
-    color: #040921;
-    border-radius: 6px;
-    height: 32px;
+  cursor: pointer;
+  padding: 10px;
+  margin: 0px 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 400;
+  font-size: 16px;
+  background: #ffffff;
+  color: #040921;
+  border-radius: 6px;
+  height: 32px;
 }
-
 .pager .page-number.active {
-    color: #fff;
-    background-color: #2b357f;
-    border: none;
+  color: #fff;
+  background-color: #2b357f;
+  border: none;
 }
 
 /*# sourceMappingURL=HorizonPager.razor.css.map */

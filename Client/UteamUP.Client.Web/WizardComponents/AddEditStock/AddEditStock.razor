@@ -1,11 +1,10 @@
 @page "/stock-add"
 @page "/stock-edit/{id:int?}"
-@using UteamUP.Client.Web.WizardComponents.AddEditTenant.AddEditTenant.Modals
 @using UteamUP.Client.Web.WizardComponents.AddEditStock.Forms
 @using Newtonsoft.Json
 @inject HttpClient Http
+
 @inject IHeaderRepository _headerRepository
-@inject IMapper Mapper
 @inject ICategoryWebRepository CategoryWebRepository
 
 @inherits WizardBase<StockForm>
@@ -22,8 +21,16 @@
         case 0:
             <EditForm Model="@_model.StockBasicForm">
                 <HorizonInput Label="Stock Name" Placeholder="Type in the name of the stock" @bind-Value="@_model.StockBasicForm.Name"/>
-                <HorizonSelect Options="@_locationList" Label="Select Location" Placeholder="Select here" @bind-Value="_model.StockBasicForm.Location"/>
-                <HorizonSelect Options="@_categoryList" Label="Select Category" Placeholder="Select here" @bind-Value="_model.StockBasicForm.Category"/>
+                @if (Id.HasValue && string.IsNullOrWhiteSpace(_selectedLocation) && string.IsNullOrWhiteSpace(_selectedCategory))
+                {
+                    <HorizonSelect Options="@_locationList" Label="Select Location" Placeholder="Select here" @bind-Value="_model.StockBasicForm.Location" SelectetValue="@_selectedLocation"/>
+                    <HorizonSelect Options="@_categoryList" Label="Select Category" Placeholder="Select here" @bind-Value="_model.StockBasicForm.Category" SelectetValue="@_selectedCategory"/>
+                }
+                else
+                {
+                    <HorizonSelect Options="@_locationList" Label="Select Location" Placeholder="Select here" @bind-Value="_model.StockBasicForm.Location"/>
+                    <HorizonSelect Options="@_categoryList" Label="Select Category" Placeholder="Select here" @bind-Value="_model.StockBasicForm.Category"/>
+                }
                 <HorizonChipTag Label="Tags" @bind-Value="_tagNames" Placeholder="Type in the tags you want to add to the stock"/>
             </EditForm>
             break;
@@ -43,6 +50,9 @@
     int _tenantId = 0;
     private List<string> _tagNames = new();
     List<Category> _categories = new();
+    
+    private string _selectedLocation = "";
+    private string _selectedCategory = "";
     
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
@@ -120,8 +130,24 @@
                     _model.StockBasicForm.Category = response.Category;
                     _model.StockBasicForm.Location = response.Location;
                     
-                    _tagNames = response.Tags.Select(x => x.Name).ToList();
+                    _selectedCategory = response.Category;
+                    _selectedLocation = response.Location;
                     
+                    // Get the id of the _selectedCategory from the _categoryList
+                    //if(string.IsNullOrWhiteSpace(_selectedCategory))
+                    //    throw new Exception("The category is empty");
+                    //Console.WriteLine("The selected category is: " + _selectedCategory);
+                    //Console.WriteLine("I found: " + _categoryList.FirstOrDefault(x => x.Key.ToLower() == _selectedCategory.ToLower()).Value);
+                    
+                    //_model.StockBasicForm.CategoryId = categoryId;
+                    //Console.WriteLine("The category id is: " + categoryId);
+                    // Get the id of the _selectedLocation from the _locationList
+                    //int locationId = Convert.ToInt32(_locationList.FirstOrDefault(x => x.Value == _selectedLocation).Key);
+                    //_model.StockBasicForm.LocationId = locationId;
+                    //Console.WriteLine("The location id is: " + locationId);
+                    
+                    _tagNames = response.Tags.Select(x => x.Name).ToList();
+                    StateHasChanged();
                 }
             }
             catch (Exception e)
@@ -134,6 +160,19 @@
             GenerateText();
         }
     }
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Console.WriteLine("The selected category is: " + _model.StockBasicForm.Category);
+            //int categoryId = Convert.ToInt32(_locationList.FirstOrDefault(x => x.Value.ToLower() == _selectedCategory.ToLower()).Key);
+            //_model.StockBasicForm.CategoryId = categoryId;
+            //Console.WriteLine("The category id is: " + categoryId);
+            StateHasChanged();
+        }
+    }
+    
     
     private void GenerateText()
     {
@@ -156,7 +195,6 @@
         var selectedCategory = _categoryList.FirstOrDefault(x => x.Value == _model.StockBasicForm.Category);
         var selectedLocation = _locationList.FirstOrDefault(x => x.Value == _model.StockBasicForm.Location);
         
-        
         var stock = new StockDto()
         {
             Name = _model.StockBasicForm.Name,
@@ -167,22 +205,12 @@
             LocationId = int.Parse(selectedLocation.Value),
             TenantId = _tenantId
         };
-        
-        var tags = _tagNames.Select(x => new TagDto()
-        {
-            Name = x,
-            TenantId = _tenantId
-        }).ToList();
-        
-        var stockTag = new StockTagDto()
-        {
-            Stock = stock,
-            Tags = tags
-        };
+
+        stock.Tags = _tagNames;
 
         if (Id == null)
         {
-            var result = await Http.PostAsJsonAsync($"api/stock", stockTag);
+            var result = await Http.PostAsJsonAsync($"api/stock", stock);
             
             result.EnsureSuccessStatusCode();
             if (result.IsSuccessStatusCode)
@@ -200,7 +228,7 @@
         }
         else
         {
-            var result = await Http.PutAsJsonAsync($"api/stock/{Id.Value}", stockTag);
+            var result = await Http.PutAsJsonAsync($"api/stock/{Id.Value}", stock);
             result.EnsureSuccessStatusCode();
             if (result.IsSuccessStatusCode)
             {

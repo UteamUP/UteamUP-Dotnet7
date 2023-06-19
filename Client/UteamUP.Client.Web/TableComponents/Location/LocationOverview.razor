@@ -1,0 +1,55 @@
+@page "/locations"
+
+@using UteamUP.Client.TableComponents.Location.Forms
+@using UteamUP.Client.Web.TableComponents.TableBase
+@using Newtonsoft.Json
+@inject IHeaderRepository _headerRepository
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IModalService ModalService
+
+@inherits TableBase<Location>
+@if(_locations != null)
+{
+    <div class="locations-container">
+        <Header OnClickButton="@(() => NavigationManager.NavigateTo("/location-add"))" Title="Locations" ShowButtons />
+
+        <div class="main-container">
+            <LocationTable Locations="@_locations" />
+        </div>
+    </div>
+}
+else
+{
+    <div>Loading...</div>
+}
+
+@code {
+    private List<Location>? _locations;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+
+        // Update the Id from the userState
+        Id = globalState.ActiveTenant?.Id;
+        
+        Console.WriteLine("Tenant id is :" + Id);
+        Console.WriteLine($"api/location/tenant/{Id}");
+        
+        Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
+        var result = await Http.GetAsync($"api/location/tenant/{Id}");
+        
+        if (result.IsSuccessStatusCode)
+        {
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            _locations = JsonConvert.DeserializeObject<List<Location>>(content);
+        }
+        
+        if(_locations == null)
+        {
+            Console.WriteLine("Its empty");
+        }
+    }
+
+}
