@@ -1,4 +1,4 @@
-clean:
+remove:
 	rm -rf Client/UteamUP.Client.Web/bin
 	rm -rf Client/UteamUP.Client.Web/obj
 	rm -rf 'Client/UteamUP.Client.Web/bin 2'
@@ -33,7 +33,8 @@ clean:
 	rm -rf Server/UteamUP.Server.Services/obj
 	rm -rf 'Server/UteamUP.Server.Services/bin 2'
 	rm -rf 'Server/UteamUP.Server.Services/obj 2'
-
+clean:
+	make remove
 	dotnet clean
 watch:
 	dotnet watch --project Server/UteamUP.Server.Api/Uteamup.Server.Api.csproj --launch-profile https

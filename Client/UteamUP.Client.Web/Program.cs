@@ -26,7 +26,7 @@ builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped(typeof(IWebRepository<>), typeof(WebRepository<>));
 
 // Add Localization
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+//builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 // Add Repositories
 builder.Services.AddScoped<ITenantWebRepository, TenantWebRepository>();

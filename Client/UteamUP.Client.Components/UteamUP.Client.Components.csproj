@@ -25,7 +25,6 @@
       <PackageReference Include="Blazored.TextEditor" Version="1.0.8" />
       <PackageReference Include="BlazorStrap" Version="5.1.102.51923" />
       <PackageReference Include="BlazorStrap.V5" Version="5.1.102.51723" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.4" />
       <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.7" />
     </ItemGroup>
 
