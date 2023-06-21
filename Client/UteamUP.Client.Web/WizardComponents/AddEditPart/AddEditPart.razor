@@ -18,26 +18,63 @@
       OnClickContinueButton="OnClickContinueButtonAsync"
       OnClickSubmitButton="OnClickSubmitButtonAsync">
     @switch (_activeStepIndex)
-    {
-        case 0:
-            <EditForm Model="@_model.PartBasicForm">
-                <FluentValidationValidator @ref="_fluentValidationValidator" />
-                <HorizonInput Label="Part Name" Placeholder="Type in the name of the part" @bind-Value="@_model.PartBasicForm.Name"/>
-            </EditForm>
-            break;
-        default:
-            break;
-    }
+        {
+            case 0:
+                <EditForm Model="@_model.PartBasicForm">
+                    <FluentValidationValidator @ref="_fluentValidationValidator" />
+                    <HorizonInput Label="Part Name" Placeholder="Type here" @bind-Value="_model.PartBasicForm.Name" />
+                    <HorizonSelect Label="Vendor" Placeholder="Type here" Options="@_vendorList" @bind-Value="_model.PartBasicForm.Vendor" SelectetValue="@_selectedVendor"/>
+                    <HorizonSelect Label="Select Category" Placeholder="Select here" Options="@_categoryList" @bind-Value="_model.PartBasicForm.Category" SelectetValue="@_selectedCategory"/>
+                </EditForm>
+                break;
+            case 1:
+                <EditForm Model="@_model.PartDetailsForm">
+                    <FluentValidationValidator @ref="_fluentValidationValidator" />
+                    <HorizonInput Label="Serial Number" Placeholder="Type here" @bind-Value="_model.PartDetailsForm.SerialNumber" />
+                    <HorizonInput Label="Reference Number" Placeholder="Type here" @bind-Value="_model.PartDetailsForm.ReferenceNumber" />
+                    <HorizonInput Label="Part Number" Placeholder="Type here" @bind-Value="_model.PartDetailsForm.PartNumber" />
+                    <HorizonInput Label="Model Number" Placeholder="Type here" @bind-Value="_model.PartDetailsForm.ModelNumber" />
+                </EditForm>
+                break;
+            case 2:
+                <div class="input-container">
+                    <HorizonFileUpload />
+                </div>
+                break;
+            default:
+                <div class="input-container">
+                    <label>Write Description</label>
+                    <HorizonRichTextEditor>
+                        <EditorContent>
+                            @((MarkupString)@_model.PartDetailsForm.Description)
+                        </EditorContent>
+                    </HorizonRichTextEditor>
+                </div>
+                break;
+        }
 </Form>
 
 @code {
+    
     int _tenantId = 0;
+    private string _selectedVendor = "";
+    private string _selectedCategory = "";
     
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
         { "Template Basic Information", false },
     };
-
+    
+    private IDictionary<string, string> _categoryList = new Dictionary<string, string>()
+    {
+        { "", "" }
+    };
+    
+    private IDictionary<string, string> _vendorList = new Dictionary<string, string>()
+    {
+        { "", "" }
+    };
+    
     protected override async Task OnInitializedAsync()
     {
         _model = new PartForm();

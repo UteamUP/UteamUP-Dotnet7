@@ -8,5 +8,7 @@ public class PartBasicValidator : AbstractValidator<PartBasicForm>
     public PartBasicValidator()
     {
         RuleFor(x => x.Name).NotEmpty();
+        RuleFor(x => x.Category).NotEmpty();
+        RuleFor(x => x.Vendor).NotEmpty();
     }
 }

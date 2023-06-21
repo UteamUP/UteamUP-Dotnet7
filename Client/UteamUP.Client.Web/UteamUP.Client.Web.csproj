@@ -111,6 +111,8 @@
 
     <ItemGroup>
       <AdditionalFiles Include="WizardComponents\AddEditAsset\Modals\ErrorTemplateModal.razor" />
+      <AdditionalFiles Include="WizardComponents\AddEditStockItem\AddEditTemplate\AddEditTemplate.razor" />
+      <AdditionalFiles Include="WizardComponents\AddEditStockItem\AddEditTemplate\Modals\ErrorTemplateModal.razor" />
     </ItemGroup>
 
     <ItemGroup>
