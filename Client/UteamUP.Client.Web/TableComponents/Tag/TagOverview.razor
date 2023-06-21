@@ -1,0 +1,128 @@
+@page "/tags"
+@inject IHeaderRepository _headerRepository
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@using UteamUP.Client.Web.TableComponents.TableBase
+@using Newtonsoft.Json
+@using UteamUP.Shared.Results
+
+@inherits TableBase<Tag>
+
+<div class="panel-container">
+    <RadzenDataGrid
+        style="height: 335px; border-radius: 10px;"
+        @ref="grid"
+        IsLoading="@isLoading"
+        Count="@count"
+        Data="@_tags"
+        LoadData="@LoadData"
+        AllowSorting="true"
+        AllowFiltering="true"
+        AllowPaging="true"
+        PageSize="4"
+        PagerHorizontalAlign="HorizontalAlign.Center"
+        TItem="Tag"
+        ColumnWidth="200px"
+        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+        ShowPagingSummary="true"
+        PageNumbersCount="@count"
+        AllowGrouping="true"
+        FilterMode="FilterMode.Simple">
+        <Columns>
+            <RadzenDataGridColumn
+                TItem="Tag"
+                Property="Name"
+                Title="Name"
+                TextAlign="TextAlign.Center"
+                HeaderCssClass="header-data-table"
+                CssClass="body-table"
+                FooterCssClass="footer-data-table"/>
+            <RadzenDataGridColumn TItem="Tag" Title="Actions" TextAlign="TextAlign.Center">
+                <Template Context="item">
+                    
+                    <select @onchange="@(args => HandleAction(args, item))">
+                        <option value="Edit">
+                            <i class="fas fa-edit"></i> Edit
+                        </option>
+                        <option value="Delete">
+                            <i class="fas fa-trash"></i> Delete
+                        </option>
+                    </select>
+
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+    <RadzenContextMenu @ref="ContextMenu">
+        <Items>
+            <RadzenMenuItem Text="Edit" Click="@(args => EditItem(contextMenuItemId))"/>
+            <RadzenMenuItem Text="Delete" Click="@(args => DeleteItem(contextMenuItemId))"/>
+        </Items>
+    </RadzenContextMenu>
+
+</div>
+
+@code {
+    IEnumerable<Tag>? _tags;
+    int count;
+    bool isLoading = false;
+    RadzenDataGrid<Tag> grid;
+    RadzenContextMenu ContextMenu;
+    int contextMenuItemId;
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    void HandleAction(object action, Tag item)
+    {
+        switch (action.ToString())
+        {
+            case "Edit":
+                EditItem(item.Id);
+                break;
+            case "Delete":
+                DeleteItem(item.Id);
+                break;
+        }
+    }
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+        Id = globalState.ActiveTenant?.Id;
+        Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
+
+    // Send filter, sort, and paging parameters to the server.
+        var url = $"api/tag/tenant/{Id}?filter={args.Filters.FirstOrDefault()?.FilterValue}&sort={args.OrderBy}&skip={args.Skip}&top={args.Top}";
+        Console.WriteLine(url);
+        var result = await Http.GetAsync(url);
+
+        if (result.IsSuccessStatusCode)
+        {
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var data = JsonConvert.DeserializeObject<TagDataResult<Tag>>(content);
+
+            count = data.Count;
+            _tags = data.Data;
+        }
+    }
+
+    void ShowContextMenu(MouseEventArgs args, Tag item)
+    {
+        contextMenuItemId = item.Id;
+        ContextMenu.Open(args, new ContextMenuOptions());
+    }
+
+    void EditItem(int itemId)
+    {
+    // Your edit logic here
+        NavigationManager.NavigateTo($"/edit-tag/{itemId}");
+    }
+
+    void DeleteItem(int itemId)
+    {
+    // Your delete logic here
+    }
+
+}

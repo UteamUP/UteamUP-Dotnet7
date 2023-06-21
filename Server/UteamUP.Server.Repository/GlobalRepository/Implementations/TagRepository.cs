@@ -1,3 +1,5 @@
+using UteamUP.Shared.Results;
+
 namespace UteamUP.Server.Repository.GlobalRepository.Implementations;
 
 public class TagRepository : ITagRepository
@@ -35,10 +37,46 @@ public class TagRepository : ITagRepository
         }
     }
 
-    public async Task<List<Tag>> GetAllTagsByTenantIdAsync(int tenantId)
+    public async Task<TagDataResult<Tag>> GetAllTagsByTenantIdAsync(int tenantId, string filter, string sort, int skip, int top)
     {
-        if(tenantId <= 0 || tenantId == null) return new List<Tag>();
-        return await _context.Tags.Where(a => a.TenantId == tenantId).ToListAsync();
+        // Start with a query that selects from the Tags set where TenantId matches.
+        var query = _context.Tags.Where(a => a.TenantId == tenantId);
+    
+        if (!string.IsNullOrEmpty(filter))
+        {
+            Console.WriteLine("The filter in repostiory is : " + filter);
+            // Apply the filter to the query.
+            // Here we're assuming the filter is a simple equality filter on the Name property.
+            // Adjust this to your actual needs.
+            
+            // set filter to lowercase
+            filter = filter.ToLower();
+            
+            // search all the names but search by contains with lowercase
+            query = query.Where(t => t.Name.ToLower().Contains(filter));
+        }
+
+        // Get the total count for the paged result.
+        var count = await query.CountAsync();
+
+        if (!string.IsNullOrEmpty(sort))
+        {
+            // Apply the sort to the query.
+            // Here we're assuming the sort is either "Name" for ascending or "Name desc" for descending.
+            // Adjust this to your actual needs.
+            query = sort.EndsWith(" desc") 
+                ? query.OrderByDescending(t => t.Name) 
+                : query.OrderBy(t => t.Name);
+        }
+
+        // Apply paging to the query.
+        query = query.Skip(skip).Take(top);
+
+        // Execute the query and get the result.
+        var data = await query.ToListAsync();
+
+        // Return the paged result.
+        return new TagDataResult<Tag> { Data = data, Count = count };
     }
 
     public async Task<Tag> CreateAsync(Tag tag)

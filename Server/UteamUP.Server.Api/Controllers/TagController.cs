@@ -27,7 +27,6 @@ public class TagController : ControllerBase
     {
         Console.WriteLine("Trying to find tag by name: " + name + " and tenant id: " + tenantId);
         // Get the tag
-        //return Ok(_tagRepository.GetByNameAndTenantId(name, tenantId));
         return Ok(await _tag.GetTagByNameAndTenantIdAsync(name, tenantId));
     }
     
@@ -41,9 +40,10 @@ public class TagController : ControllerBase
     
     // Get all tags by tenant id
     [HttpGet("tenant/{tenantId}")]
-    public async Task<IActionResult> GetAllTagsByTenantIdAsync(int tenantId)
+    public async Task<IActionResult> GetAllTagsByTenantIdAsync(int tenantId, [FromQuery] string filter = "", [FromQuery] string sort = "Id asc", [FromQuery] int skip = 0, [FromQuery] int top = 10)
     {
-        var result = await _tag.GetAllTagsByTenantIdAsync(tenantId);
+        Console.WriteLine("The filter is : " + filter);
+        var result = await _tag.GetAllTagsByTenantIdAsync(tenantId, filter, sort, skip, top);
         if (result == null)
         {
             _logger.Log(LogLevel.Error, $"{nameof(GetAllTagsByTenantIdAsync)}: Something went wrong while retrieving the tags");
@@ -51,7 +51,7 @@ public class TagController : ControllerBase
         }
         return Ok(result);
     }
-    
+
     // Create the tag
     [HttpPost]
     public async Task<IActionResult> CreateTagAsync([FromBody] Tag tag)

@@ -24,9 +24,10 @@ builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 
 // Adding generic repository services.
 builder.Services.AddScoped(typeof(IWebRepository<>), typeof(WebRepository<>));
+builder.Services.AddScoped<Radzen.ContextMenuService>();
 
 // Add Localization
-//builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 // Add Repositories
 builder.Services.AddScoped<ITenantWebRepository, TenantWebRepository>();
