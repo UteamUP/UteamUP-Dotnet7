@@ -8,7 +8,6 @@ global using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 global using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 // All the 3rd party imports
-global using Fluxor;
 global using Blazored.Modal;
 global using BlazorStrap;
 global using AutoMapper;

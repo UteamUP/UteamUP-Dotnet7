@@ -1,5 +1,6 @@
 @page "/global"
 @inject ITenantWebRepository TenantWebRepository
+@inject ILogger<Global> _Logger
 
 <AuthorizeView>
 <Authorized>
@@ -162,7 +163,7 @@
     </div>
     <div class="btn-group btn-group-toggle" data-toggle="buttons">
         <div style="padding: 10px">
-            <a href="/global" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Vendors</a>
+            <a href="/vendors" type="button" class="btn btn-primary" style="width: 150px; margin: auto;">Vendors</a>
         </div>
         <div style="padding: 10px">
             <a href="/locations" type="button" class="btn btn-danger" style="width: 150px; margin: auto;">Locations</a>
@@ -301,9 +302,9 @@
                 </tr>
                 <tr>
                     <td>Invites Count</td>
-                    @if (@InvitedUsers.Count != 0)
+                    @if (InvitesCount != 0)
                     {
-                        <td>@InvitedUsers.Count</td>
+                        <td>@InvitesCount</td>
                     }
                     else
                     {
@@ -313,9 +314,9 @@
 
                 <tr>
                     <td>Tenant Count</td>
-                    @if (Tenants.Count != 0)
+                    @if (TenantsCount != 0)
                     {
-                        <td>@Tenants.Count</td>
+                        <td>@TenantsCount</td>
                     }
                     else
                     {
@@ -343,6 +344,9 @@
 @code {
     private List<Tenant> Tenants = new();
     private List<Tenant> InvitedUsers = new();
+    
+    private int InvitesCount = 0;
+    private int TenantsCount = 0;
 
     private bool UserHasInvites = false;
     private bool HasDbUser = false;
@@ -352,24 +356,38 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        if (UserState?.User?.Oid != null)
+        try{
+            if (UserState?.User?.Oid != null)
+            {
+                globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+                
+                if(globalState.TenantsInvited != null) InvitesCount = globalState.TenantsInvited.Count;
+                if(globalState.Tenants != null) TenantsCount = globalState.Tenants.Count;
+
+                if (TenantsCount == 0 && InvitesCount == 0)
+                {
+                    NavigationManager.NavigateTo("/tenant-add");
+                }
+                
+                if(InvitesCount > 0)
+                {
+                    NavigationManager.NavigateTo("/accept-invite");
+                }
+                
+                if (TenantsCount == 0)
+                {
+                    NavigationManager.NavigateTo("/tenant-add");
+                }
+
+                if (UserState.User.HasBeenActivated != null)
+                {
+                    HasDbUser = true;
+                }
+            }
+        }
+        catch(Exception ex)
         {
-            globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
-
-            Tenants = await TenantWebRepository.GetOwnedTenantsAsync(UserState.User.Oid);
-    // Should fix the bad request of no tenants
-            InvitedUsers = await TenantWebRepository.GetInvitesAsync(UserState.User.Oid);
-
-            if (Tenants.Count == 0 && InvitedUsers.Count == 0)
-            {
-                NavigationManager.NavigateTo("/tenant-add");
-            }
-
-
-            if (UserState.User.HasBeenActivated != null)
-            {
-                HasDbUser = true;
-            }
+            _Logger.LogError(ex, "Error in OnInitializedAsync");
         }
     }
 

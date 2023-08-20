@@ -6,7 +6,6 @@ public class Location : Base
     {
         LocationTags = new List<LocationTag>();
     }
-    
     [Key] public int Id { get; set; }
 
     [MaxLength(512)]
@@ -17,5 +16,4 @@ public class Location : Base
     [ForeignKey("Tenant")] public int TenantId { get; set; }
     public virtual Tenant? Tenant { get; set; }
     public ICollection<LocationTag> LocationTags { get; set; }
-    
 }

@@ -145,6 +145,8 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
                 // if the global state does not exist, create it and update it with the user information
                 if (globalState == null)
                 {
+                    _logger.Log(LogLevel.Information,
+                        $"{nameof(UpdateAppStateWithUserAsync)}: The global state does not exist, creating a new one");
                     var newMUserDto = new MUserDto
                     {
                         Name = nameClaim.Value,
@@ -172,23 +174,31 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
                     if (string.IsNullOrWhiteSpace(muser.Oid))
                     {
                         // Updating tenant information
+                        _logger.Log(LogLevel.Information,
+                            $"{nameof(UpdateAppStateWithUserAsync)}: Updating tenant information based on the oid: {muser.Oid}");
                         var defaultTenant = await GetDefaultTenantByIdAsync(muser.DefaultTenantId);
                         var allMyTenants = await GetMyTenantsAsync(muser.Oid);
 
                         if (muser.DefaultTenantId != 0)
                         {
+                            _logger.Log(LogLevel.Information,
+                                $"{nameof(UpdateAppStateWithUserAsync)}: Setting default tenant id to: {muser.DefaultTenantId} and active tenant to: {muser.DefaultTenantId}");
                             newGlobalState.DefaultTenantId = muser.DefaultTenantId;
                             newGlobalState.ActiveTenant = muser.Tenants.FirstOrDefault(t => t.Id == muser.DefaultTenantId);
                         }
 
                         if (defaultTenant != null || defaultTenant.Id != 0 || newGlobalState.DefaultTenantId != 0)
                         {
+                            _logger.Log(LogLevel.Information,
+                                $"{nameof(UpdateAppStateWithUserAsync)}: Setting default tenant id to: {defaultTenant.Id} and active tenant to: {defaultTenant.Id}");
                             newGlobalState.ActiveTenant = defaultTenant;
                             newGlobalState.DefaultTenantId = defaultTenant.Id;
                         }
 
                         if (newGlobalState.ActiveTenant.Id == 0 && newGlobalState.DefaultTenantId == 0 && allMyTenants != null && allMyTenants.Count >= 1)
                         {
+                            _logger.Log(LogLevel.Information,
+                                $"{nameof(UpdateAppStateWithUserAsync)}: Setting default tenant id to: {allMyTenants[0].Id} and active tenant to: {allMyTenants[0].Id} since there is no default tenant id");
                             // get the first tenant from allMyTenants and set it as the default tenant
                             newGlobalState.ActiveTenant = allMyTenants[0];
                             newGlobalState.DefaultTenantId = allMyTenants[0].Id;
@@ -246,7 +256,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         var muser = await GetUserInformationFromDB(globalState.Oid);
         var allMyTenants = await GetMyTenantsAsync(muser.Oid);
         
-        Console.WriteLine("mæ tenant neim is:" + allMyTenants.FirstOrDefault().Name);
+        //Console.WriteLine("mæ tenant neim is:" + allMyTenants.FirstOrDefault().Name);
         
         if (muser.DefaultTenantId != 0)
         {
@@ -287,6 +297,8 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         try
         {
             Console.WriteLine("Getting my tenants for the oid: " + oid);
+            _logger.Log(LogLevel.Information,
+                $"{nameof(GetMyTenantsAsync)}: Getting all tenants for the oid: {oid}");
             var results = await _tenantWebRepository.GetAllTenantsByOidAsync(oid);
             if (results != null)
                 return results;
@@ -294,6 +306,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
                 return new List<Tenant>();
         }
         catch(Exception e){
+            _logger.Log(LogLevel.Error, e, $"{nameof(GetMyTenantsAsync)} failed. Error message: {e.Message}");
             Console.WriteLine("Error getting tenants: " + e.Message);
             return new List<Tenant>();
         }

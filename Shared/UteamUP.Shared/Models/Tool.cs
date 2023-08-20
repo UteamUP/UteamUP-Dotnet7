@@ -28,10 +28,9 @@ public class Tool : Base
     public float? MinPrice { get; set; }
     public float? MaxPrice { get; set; }
     public float? AvgPrice { get; set; }
-    
     [ForeignKey("Vendor")] public int? VendorId { get; set; }
     public Vendor? Vendor { get; set; }
-    
+
     [ForeignKey("Category")] public int? CategoryId { get; set; }
     public Category? Category { get; set; }
     public ICollection<ToolTag>? ToolTags { get; set; }

@@ -1,5 +1,3 @@
-public async Task<IActionResult> Get()
-
 namespace UteamUP.Server.Api.Controllers;
 
 [Route("api/[controller]")]

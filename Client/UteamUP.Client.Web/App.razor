@@ -37,10 +37,11 @@
         if (authState.User.Identity.IsAuthenticated)
         {
             var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
-
+            Console.WriteLine("The user is authenticated, lets check if the global state is up to date");
             if(globalState != null){
                 if (!globalState.IsUpToDate)
                 {
+                    Console.WriteLine("Lets try to update the users state, since it is not up to date");
                     await CustomAuthStateProvider.UpdateAppStateWithUserAsync(authState.User);
                     await CustomAuthStateProvider.UpdateDateAsync();
                 }
@@ -48,11 +49,13 @@
                 // If globalState.LastUpdated is 10 hours from now or more then update the global state
                 if (globalState.LastUpdated.AddHours(1) < DateTime.Now.ToUniversalTime())
                 {
+                    Console.WriteLine("Lets try to update the global state, since the last update was more than 10 hours ago");
                     await CustomAuthStateProvider.UpdateAppStateWithUserAsync(authState.User);
                     await CustomAuthStateProvider.UpdateDateAsync();
                 }
                 if(globalState.ActiveTenant == null)
                 {
+                    Console.WriteLine("Lets try to update the global state, since the active tenant is null");
                     await CustomAuthStateProvider.UpdateTenantStateAsync();
                     await CustomAuthStateProvider.UpdateDateAsync();
                 }

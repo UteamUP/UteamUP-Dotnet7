@@ -35,16 +35,15 @@ public class MUser : Base
     public string ActivationCode { get; set; } = string.Empty;
     [MaxLength(50)] [MinLength(2)] public string DefaultLanguage { get; set; } = "en";
     //public virtual HashSet<Tag>? Tags { get; set; } = new();
-    
     // Address information
     public string? Country { get; set; } = string.Empty;
     public string? StreetName { get; set; } = string.Empty;
     public string? City { get; set; } = string.Empty;
     public string? PostalCode { get; set; } = string.Empty;
-    
+
     // Other information
     public string Website { get; set; } = string.Empty;
-    
+
     [JsonIgnore]
     public virtual ICollection<Tenant>? Tenants { get; set; }
 }

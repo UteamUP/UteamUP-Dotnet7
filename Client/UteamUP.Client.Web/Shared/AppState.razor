@@ -35,9 +35,12 @@
         {
             var savedStateJson = await LocalStorageService.GetItemAsStringAsync("globalState");
             
+            Console.WriteLine("The user is authenticated");
+            
             // Check if the savedState is null or empty
             if (!string.IsNullOrEmpty(savedStateJson))
             {
+                Console.WriteLine("The user has a saved state");
                 // Load the savedState into the GlobalState
                 GlobalState newGlobal = await LocalStorageService.GetItemAsync<GlobalState>("globalState");
                 
@@ -49,6 +52,7 @@
             }
             else
             {
+                Console.WriteLine("The user did not have a saved state");
                 username = user.FindFirst("name")?.Value;
                 oid = user.FindFirst("oid")?.Value;
                 email = user.FindFirst("signInNames.emailAddress")?.Value;

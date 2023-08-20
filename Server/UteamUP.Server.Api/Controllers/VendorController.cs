@@ -33,11 +33,11 @@ public class VendorController : ControllerBase
     }
     
     // Get all vendors
-    [HttpGet("all")]
+    [HttpGet("all"),AllowAnonymous]
     public async Task<IActionResult> GetAllAsync()
     {
         _logger.Log(LogLevel.Information, $"{nameof(GetAllAsync)}: Getting all vendors");
-        var vendors = await _vendor.GetAllAsync();
+        List<Vendor> vendors = await _vendor.GetAllAsync();
         if (vendors == null)
         {
             _logger.Log(LogLevel.Error, $"{nameof(GetAllAsync)}: Vendors were not found");

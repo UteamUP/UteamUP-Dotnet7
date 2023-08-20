@@ -15,13 +15,12 @@ public class MUserUpdateDto
     public bool HasAcceptedLicenseAgreement { get; set; }
 
     public string? ActivationCode { get; set; }
-    
+
     // Address information
     public string? Country { get; set; } = string.Empty;
     public string? StreetName { get; set; } = string.Empty;
     public string? City { get; set; } = string.Empty;
     public string? PostalCode { get; set; } = string.Empty;
-    
     // Other information
     public string? Website { get; set; } = string.Empty;
 }

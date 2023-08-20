@@ -138,7 +138,14 @@ public class VendorRepository : IVendorRepository
 
     public async Task<List<Vendor>> GetAllAsync()
     {
-        return await _context.Vendor.ToListAsync();
+
+        var vendors = await _context.Vendor.ToListAsync();
+        if (vendors == null)
+        {
+            _logger.Log(LogLevel.Error, $"{nameof(GetAllAsync)}: Vendors were not found");
+            return new List<Vendor>();
+        }
+        return vendors;
     }
 
     public async Task<VendorDto> GetByIdAsync(int id)

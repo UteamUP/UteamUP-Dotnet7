@@ -1,0 +1,35 @@
+@page "/vendors"
+
+@inject IHeaderRepository _headerRepository
+@using Newtonsoft.Json
+
+
+<p>Here are some thingy, total amount of vendors are @_totalVendors</p>
+
+@code {
+    private List<Vendor>? _vendors;
+    private int _totalVendors;
+    protected override async Task OnInitializedAsync()
+    {
+        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+
+        Console.WriteLine($"api/vendor/all");
+
+        Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
+        var result = await Http.GetAsync($"api/vendor/all");
+        
+        if (result.IsSuccessStatusCode)
+        {
+            var content = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            _vendors = JsonConvert.DeserializeObject<List<Vendor>>(content);
+            _totalVendors = _vendors.Count;
+        }
+        
+        if(_vendors == null)
+        {
+            Console.WriteLine("Its empty");
+        }
+
+    }
+}

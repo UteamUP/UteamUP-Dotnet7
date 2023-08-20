@@ -10,12 +10,19 @@ using UteamUP.Client.Web.Repository.Interfaces;
 using UteamUP.Client.Web.Services;
 using UteamUP.Client.Web.Shared;
 using UteamUP.Shared.States;
+using Fluxor;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 var currentAssembly = typeof(Program).Assembly;
 
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
+
+// Add Fluxor
+builder.Services.AddFluxor(options =>
+{
+    options.ScanAssemblies(currentAssembly);
+});
 
 // Add Base Component Services
 builder.Services.AddScoped<UserState>();
@@ -77,6 +84,8 @@ builder.Services.AddMsalAuthentication(options =>
     builder.Configuration.Bind("AzureAdB2C", options.ProviderOptions.Authentication);
     options.ProviderOptions.DefaultAccessTokenScopes.Add(builder.Configuration.GetSection("ServerApi")["Scopes"]);
 });
+
+builder.Services.AddLogging();
 
 builder.Services.AddMemoryCache();
 
