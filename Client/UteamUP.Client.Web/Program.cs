@@ -50,6 +50,7 @@ builder.Services.AddScoped<IPartWebRepository, PartWebRepository>();
 builder.Services.AddScoped<IAssetWebRepository, AssetWebRepository>();
 builder.Services.AddScoped<ILocationWebRepository, LocationWebRepository>();
 builder.Services.AddScoped<ISubscriptionWebRepository, SubscriptionWebRepository>();
+builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 
 // Add Services
 builder.Services.AddScoped<IBlobStorageWebService, BlobStorageWebService>();

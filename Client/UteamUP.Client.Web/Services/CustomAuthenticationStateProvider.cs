@@ -35,11 +35,24 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     // Retrieves the authentication state asynchronously
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        try
+        _logger.Log(LogLevel.Information,
+            $"{nameof(GetAuthenticationStateAsync)}: Getting authentication claims state");
+        var claims = await GetClaimsFromLocalStorageAsync();
+        //if(string.IsNullOrWhiteSpace(claims.FirstOrDefault(x => x.Type == "oid").Value)) claims = await GetClaimsFromTokenAsync();
+        //if(string.IsNullOrWhiteSpace(claims.FirstOrDefault(x => x.Type == "oid").Value)) return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            
+        var identity = new ClaimsIdentity(claims, "Authentication");
+        var user = new ClaimsPrincipal(identity);
+        return new AuthenticationState(user);
+        
+        /*try
         {
             _logger.Log(LogLevel.Information,
                 $"{nameof(GetAuthenticationStateAsync)}: Getting authentication claims state");
-            var claims = await GetClaimsFromLocalStorageAsync() ?? await GetClaimsFromTokenAsync();
+            var claims = await GetClaimsFromLocalStorageAsync();
+            if(string.IsNullOrWhiteSpace(claims.FirstOrDefault(x => x.Type == "oid").Value)) claims = await GetClaimsFromTokenAsync();
+            if(string.IsNullOrWhiteSpace(claims.FirstOrDefault(x => x.Type == "oid").Value)) return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            
             var identity = new ClaimsIdentity(claims, "Authentication");
             var user = new ClaimsPrincipal(identity);
             return new AuthenticationState(user);
@@ -48,7 +61,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         {
             _logger.Log(LogLevel.Error, ex, $"{nameof(GetAuthenticationStateAsync)} failed");
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
-        }
+        }*/
     }
 
     // Retrieves claims from local storage asynchronously
@@ -76,7 +89,13 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         }catch(Exception ex)
         {
             _logger.Log(LogLevel.Error, ex, $"{nameof(GetClaimsFromLocalStorageAsync)} failed");
-            return null;
+            // Returns an empty claim
+            return new[]
+            {
+                new Claim("name", ""),
+                new Claim("email", ""),
+                new Claim("oid", "")
+            };
         }
     }
 
@@ -112,7 +131,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
             Name = globalState.Name,
             Email = globalState.Email,
             Oid = globalState.Oid,
-            Tenants = globalState.Tenants,
+            //Tenants = globalState.Tenants,
             DefaultTenantId = globalState.DefaultTenantId,
             HasBeenActivated = globalState.IsActivated,
             IsFirstLogin = globalState.FirstLogin
@@ -184,14 +203,16 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
                             _logger.Log(LogLevel.Information,
                                 $"{nameof(UpdateAppStateWithUserAsync)}: Setting default tenant id to: {muser.DefaultTenantId} and active tenant to: {muser.DefaultTenantId}");
                             newGlobalState.DefaultTenantId = muser.DefaultTenantId;
-                            newGlobalState.ActiveTenant = muser.Tenants.FirstOrDefault(t => t.Id == muser.DefaultTenantId);
+                            // Commented for GlobalStateTenant
+                            // newGlobalState.ActiveTenant = muser.Tenants.FirstOrDefault(t => t.Id == muser.DefaultTenantId);
                         }
 
                         if (defaultTenant != null || defaultTenant.Id != 0 || newGlobalState.DefaultTenantId != 0)
                         {
                             _logger.Log(LogLevel.Information,
                                 $"{nameof(UpdateAppStateWithUserAsync)}: Setting default tenant id to: {defaultTenant.Id} and active tenant to: {defaultTenant.Id}");
-                            newGlobalState.ActiveTenant = defaultTenant;
+                            // Commented for GlobalStateTenant
+                            //newGlobalState.ActiveTenant = defaultTenant;
                             newGlobalState.DefaultTenantId = defaultTenant.Id;
                         }
 
@@ -200,13 +221,15 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
                             _logger.Log(LogLevel.Information,
                                 $"{nameof(UpdateAppStateWithUserAsync)}: Setting default tenant id to: {allMyTenants[0].Id} and active tenant to: {allMyTenants[0].Id} since there is no default tenant id");
                             // get the first tenant from allMyTenants and set it as the default tenant
-                            newGlobalState.ActiveTenant = allMyTenants[0];
+                            // Commented for GlobalStateTenant
+
+                            //newGlobalState.ActiveTenant = allMyTenants[0];
                             newGlobalState.DefaultTenantId = allMyTenants[0].Id;
                             // Save the default tenant id to the database
                             await _userWebRepository.UpdateDefaultTenantId(newGlobalState.DefaultTenantId, muser.Oid);
                         }
-
-                        if (allMyTenants != null && allMyTenants.Count > 0) newGlobalState.Tenants = allMyTenants;
+                        // Commented for GlobalStateTenant
+                        //if (allMyTenants != null && allMyTenants.Count > 0) newGlobalState.Tenants = allMyTenants;
                     }
 
                     newGlobalState.LastUpdated = DateTime.Now.ToUniversalTime();
@@ -245,6 +268,13 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
         // Get the global state and update the date
         var globalState = await GetGlobalStateAsync();
+        // Does the global state exist?
+        if (globalState == null)
+        {
+            _logger.Log(LogLevel.Information,
+                $"{nameof(UpdateDateAsync)}: The global state does not exist, creating a new one");
+            globalState = new GlobalState();
+        }
         globalState.LastUpdated = DateTime.Now.ToUniversalTime();
         await _localStorageService.SetItemAsync("globalState", globalState);
         OnGlobalStateChanged?.Invoke();
@@ -261,16 +291,21 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         if (muser.DefaultTenantId != 0)
         {
             globalState.DefaultTenantId = muser.DefaultTenantId;
-            globalState.ActiveTenant = allMyTenants.FirstOrDefault(x => x.Id == muser.DefaultTenantId);
+            // Commented for GlobalStateTenant
+
+            //globalState.ActiveTenant = allMyTenants.FirstOrDefault(x => x.Id == muser.DefaultTenantId);
         }
 
-        if(allMyTenants != null && allMyTenants.Count > 0) globalState.Tenants = allMyTenants;
+        // Commented for GlobalStateTenant
+        //if(allMyTenants != null && allMyTenants.Count > 0) globalState.Tenants = allMyTenants;
         
         // if allmytenants is not null and defaulttenantid is 0, set the first tenant as the default tenant
         if (allMyTenants != null && allMyTenants.Count >= 1 && globalState.DefaultTenantId == 0)
         {
             globalState.DefaultTenantId = allMyTenants[0].Id;
-            globalState.ActiveTenant = allMyTenants[0];
+            // Commented for GlobalStateTenant
+
+            //globalState.ActiveTenant = allMyTenants[0];
             await _userWebRepository.UpdateDefaultTenantId(globalState.DefaultTenantId, globalState.Oid);
         }
         

@@ -1,5 +1,8 @@
 ﻿@namespace UteamUP.Client
-@inject CustomAuthenticationStateProvider CustomAuthStateProvider
+@inject IUserProfileRepository UserProfileRepository
+@using JsonSerializer = System.Text.Json.JsonSerializer
+@using Blazored.LocalStorage
+@inject ILocalStorageService LocalStorageService
 
 <CascadingAuthenticationState>
     <CascadingBlazoredModal HideCloseButton="true">
@@ -30,8 +33,23 @@
 </CascadingAuthenticationState>
 
 @code {
+    public GlobalState myGlobal { get; set; }
+
+    public async Task<GlobalState> GetClaimsPrincipalDataOnlyFromDB()
+    {
+        GlobalState profile = await UserProfileRepository.GetUserProfile();
+        
+    // Save the global state to the local storage
+        //var profileJson = JsonSerializer.Serialize(profile);
+        await LocalStorageService.SetItemAsync("globalState", profile);
+
+        return profile;
+    }
     protected override async Task OnInitializedAsync()
     {
+        myGlobal = await this.GetClaimsPrincipalDataOnlyFromDB();
+        Console.WriteLine("Initialized for : " + myGlobal.Email);
+        /*
         var authState = await CustomAuthStateProvider.GetAuthenticationStateAsync();
 
         if (authState.User.Identity.IsAuthenticated)
@@ -68,6 +86,9 @@
             }
         }
         CustomAuthStateProvider.OnGlobalStateChanged += RefreshPage;
+        */
+        
+        
     }
     
     private void RefreshPage()

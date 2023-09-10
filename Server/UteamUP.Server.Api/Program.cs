@@ -5,7 +5,8 @@ using UteamUP.Server.Repository.GenericRepository.Implementations;
 using UteamUP.Server.Repository.GenericRepository.Interfaces;
 //using EFCoreSecondLevelCacheInterceptor;
 using UteamUP.Client.Web.WizardComponents.AddEditVendor.Profiles;
-
+using UteamUP.Server.Api.Helpers;
+using Newtonsoft.Json;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add localization
@@ -28,6 +29,9 @@ builder.Services.AddScoped<IStockRepository, StockRepository>();
 
 // Adding Global Services.
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
+
+// Adding Helpers
+builder.Services.AddScoped<IProfileBuilder, ProfileBuilder>();
 
 // Add Database Cache Service
 builder.Services.AddMemoryCache();
@@ -54,9 +58,17 @@ builder.Services.AddAutoMapper(
     );
 
 // Configure the Controllers
+builder.Services.AddControllers();
+/*
 builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve
-);
+);*/
+
+/*
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+*/
 builder.Services.AddControllersWithViews();
 
 // Add the Razor Pages

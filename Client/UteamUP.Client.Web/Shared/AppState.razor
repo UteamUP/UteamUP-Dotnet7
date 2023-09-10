@@ -5,6 +5,7 @@
 @using Blazor.SubtleCrypto
 
 @using Blazored.LocalStorage
+@using UteamUP.Client.Web.Repository.Implementations
 @using UteamUP.Client.Web.Repository.Interfaces
 @using UteamUP.Shared.States
 @using JsonSerializer = System.Text.Json.JsonSerializer
@@ -12,6 +13,7 @@
 @inject ILocalStorageService LocalStorageService
 @inject ICryptoService Crypto
 @inject IUserWebRepository UserWebRepository
+@inject IUserProfileRepository UserProfileRepository
 
 <CascadingValue Value="@myGlobal">
     @ChildContent
@@ -93,10 +95,25 @@
         }
     }
 
+    public async Task<GlobalState> GetClaimsPrincipalDataOnlyFromDB()
+    {
+        GlobalState profile = await UserProfileRepository.GetUserProfile();
+        
+        // Save the global state to the local storage
+        var profileJson = JsonSerializer.Serialize(profile);
+        await LocalStorageService.SetItemAsStringAsync("globalState", profileJson);
+
+        return profile;
+    }
+    
     protected override async void OnInitialized()
     {
-        myGlobal = await this.GetClaimsPrincipalData();
+        //myGlobal = await this.GetClaimsPrincipalData();
+        //Console.WriteLine("Initialized for : " + myGlobal.Email);
+        
+        myGlobal = await this.GetClaimsPrincipalDataOnlyFromDB();
         Console.WriteLine("Initialized for : " + myGlobal.Email);
+
     }
     
     private async Task<MUser> GetUserInformationFromDB(string oid)

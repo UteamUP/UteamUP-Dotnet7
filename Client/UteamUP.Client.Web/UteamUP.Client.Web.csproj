@@ -79,6 +79,7 @@
         <Folder Include="TableComponents\Tag\Forms\" />
         <Folder Include="TableComponents\Tag\Menus\" />
         <Folder Include="TableComponents\Tag\Modals\" />
+        <Folder Include="TableComponents\Tenant\" />
         <Folder Include="WizardComponents\AddEditCategory\Profiles\" />
         <Folder Include="Wizard\AcceptInvite\Forms\" />
         <Folder Include="Wizard\AcceptInvite\Modals\" />

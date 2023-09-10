@@ -26,8 +26,8 @@ namespace UteamUP.Shared.States
                 NotifyInitialized();
             }
         }
-        private Tenant? _activeTenant;
-        public Tenant? ActiveTenant {
+        private GlobalStateTenant? _activeTenant;
+        public GlobalStateTenant? ActiveTenant {
             get => _activeTenant;
             set
             {
@@ -36,9 +36,9 @@ namespace UteamUP.Shared.States
             }
         }
         
-        public List<Tenant> Tenants { get; set; }
-        public List<Tenant> _tenantsInvited;
-        public List<Tenant> TenantsInvited {
+        public List<GlobalStateTenant> Tenants { get; set; }
+        public List<GlobalStateTenant> _tenantsInvited;
+        public List<GlobalStateTenant> TenantsInvited {
             get => _tenantsInvited;
             set
             {
