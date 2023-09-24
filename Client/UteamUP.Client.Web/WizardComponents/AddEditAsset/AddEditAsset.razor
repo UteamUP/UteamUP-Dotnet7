@@ -32,6 +32,11 @@
 
 @code {
     int _tenantId = 0;
+    private GlobalState globalState = new();
+    private async Task<GlobalState> GetGlobalState()
+    {
+        return await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+    }
     
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
@@ -43,8 +48,9 @@
         _model = new AssetForm();
         Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
 
+        globalState = await GetGlobalState();
 
-        _tenantId = UserState.User.DefaultTenantId;
+        _tenantId = globalState.DefaultTenantId;
     }
     
     private void OpenModal(string ErrorTitle, string ErrorDetails)

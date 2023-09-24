@@ -51,7 +51,11 @@
     int _tenantId = 0;
 
     protected int _activeStepIndex = 0;
-
+    private GlobalState globalState = new();
+    private async Task<GlobalState> GetGlobalState()
+    {
+        return await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+    }
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
         { "Location Basic Information", false },
@@ -63,11 +67,12 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        globalState = await GetGlobalState();
 
         _model.Name = "Section One";
         _model.Description = "Section One Description";
         _tagNames.AddRange(new List<string>() { "TeamField 1", "TeamField 2", "TeamField 3" });
-        _tenantId = UserState.User.DefaultTenantId;
+        _tenantId = globalState.DefaultTenantId;
     }
     
     

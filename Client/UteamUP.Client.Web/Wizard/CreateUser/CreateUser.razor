@@ -121,7 +121,11 @@
     AddNewUserForm _model = new AddNewUserForm();
     
     protected int _activeStepIndex = 0;
-
+    private GlobalState globalState = new();
+    private async Task<GlobalState> GetGlobalState()
+    {
+        return await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+    }
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
         { "Basic User Information", false },
@@ -134,10 +138,11 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        globalState = await GetGlobalState();
 
-        _oid = UserState.User.Oid;
-        _name = UserState.User.Name;
-        _email = UserState.User.Email;
+        _oid = globalState.Oid;
+        _name = globalState.Name;
+        _email = globalState.Email;
         
         _model.BasicUserDetailsForm.Name = _name;
         _model.BasicUserDetailsForm.Email = _email;

@@ -130,6 +130,8 @@
     
     private string _vendorSelected;
     List<Vendor>? _vendors = new();
+    private GlobalState globalState = new();
+
     private IDictionary<string, string> _vendorSelector = new Dictionary<string, string>()
     {
         { "", "" },
@@ -141,12 +143,17 @@
     {
         { "", "" },
     };
-
+    private async Task<GlobalState> GetGlobalState()
+    {
+        return await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+    }
     protected override async Task OnInitializedAsync()
     {
         _model = new ToolForm();
         Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
-        _tenantId = UserState.User.DefaultTenantId;
+        globalState = await GetGlobalState();
+
+        _tenantId = globalState.DefaultTenantId;
 
         try
         {

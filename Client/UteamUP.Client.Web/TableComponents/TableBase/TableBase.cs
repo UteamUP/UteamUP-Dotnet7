@@ -8,8 +8,8 @@ public class TableBase<TModel> : ComponentBase
 {
     [Inject]
     public IModalService ModalService { get; set; }
-    public UserState UserState { get; set; }
-    public CustomAuthenticationStateProvider CustomAuthStateProvider { get; set; }
+    public GlobalState GlobalState { get; set; }
+    
     public IMapper Mapper { get; set; }
 
     [Parameter]

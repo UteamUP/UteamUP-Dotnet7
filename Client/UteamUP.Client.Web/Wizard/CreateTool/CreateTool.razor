@@ -155,11 +155,11 @@
 
         _tagNames.AddRange(new List<string>() { "TeamField 1", "TeamField 2", "TeamField 3" });
 
-    // Get selected tenant
-        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
-        if (globalState.DefaultTenantId == null || globalState.DefaultTenantId == 0)
+        // Get selected tenant
+        var globalState = await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+        if(globalState.DefaultTenantId == null || globalState.DefaultTenantId == 0)
             throw new Exception("No tenant selected");
-
+        
         _categories = await CategoryWebRepository.GetAllCategoriesByTenantIdAsync(globalState.DefaultTenantId);
         if (_categories.Count != 0)
             _categoryList = _categories.ToDictionary(x => x.Name, x => x.Id.ToString());

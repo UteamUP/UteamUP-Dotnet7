@@ -32,6 +32,8 @@ public class ProfileBuilder : IProfileBuilder
             return new GlobalState();
         }
         
+        // Check if the user state already exists
+        
         // Get the user
         _logger.Log(LogLevel.Information, $"{nameof(GetUserProfile)}: Trying to get user by oid {oid}");
         var user = await _userRepository.GetByOidAsync(oid);
@@ -80,6 +82,45 @@ public class ProfileBuilder : IProfileBuilder
         
         return globalState;
     }
-    
-    
+
+    public async Task<GlobalState?> UpdateUserProfile(GlobalState globalState, string oid)
+    {
+        // if the oid is empty throw an exception
+        if (string.IsNullOrWhiteSpace(oid))
+        {
+            _logger.Log(LogLevel.Warning, $"{nameof(GetUserProfile)}: Oid is null or empty");
+            return new GlobalState();
+        }
+        
+        // Check if the user state is empty
+        if (globalState == null)
+        {
+            _logger.Log(LogLevel.Warning, $"{nameof(GetUserProfile)}: GlobalState is null");
+            return new GlobalState();
+        }
+        
+        // Update the state to now
+        globalState.LastUpdated = DateTime.Now.ToUniversalTime();
+
+        // Get invites
+        var invites = await _tenantRepository.GetInvitesAsync(oid);
+        // Map invites to GlobalStateTenant list
+        var invitesMapped = _mapper.Map<List<GlobalStateTenant>>(invites);
+        
+        // Get all the user tenasnts
+        var tenants = await _tenantRepository.GetAllTenantsByOidAsync(oid);
+        // Map tenants to GlobalStateTenant list
+        var tenantsMapped = _mapper.Map<List<GlobalStateTenant>>(tenants);
+        
+        // Build the profile
+        GlobalState globalStateUpdated = new GlobalState();
+        
+        // Replace the invites and tenants to the new ones
+        globalStateUpdated.TenantsInvited = invitesMapped;
+        globalStateUpdated.Tenants = tenantsMapped;
+        globalState.HasTenantInvites = invites.Any();
+
+        // Return the updated state
+        return globalStateUpdated;
+    }
 }

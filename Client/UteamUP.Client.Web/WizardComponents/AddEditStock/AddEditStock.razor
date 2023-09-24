@@ -74,11 +74,11 @@
     {
         _model = new StockForm();
         Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
-
-        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
-        if (globalState.DefaultTenantId == null || globalState.DefaultTenantId == 0)
+        
+        var globalState = await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+        if(globalState.DefaultTenantId == null || globalState.DefaultTenantId == 0)
             throw new Exception("No tenant selected");
-
+        
         var resultCategory = await Http.GetAsync($"api/category/tenant/{globalState.DefaultTenantId}");
         resultCategory.EnsureSuccessStatusCode();
         if (resultCategory.IsSuccessStatusCode)

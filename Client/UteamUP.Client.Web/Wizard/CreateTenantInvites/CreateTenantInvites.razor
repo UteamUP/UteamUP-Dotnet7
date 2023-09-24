@@ -43,7 +43,11 @@
     AddNewTenantInviteForm _model = new();
 
     protected int _activeStepIndex = 0;
-
+    private GlobalState globalState = new();
+    private async Task<GlobalState> GetGlobalState()
+    {
+        return await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+    }
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
         { "Select Tenant", false },
@@ -62,10 +66,11 @@
     {
     //await base.OnParametersSetAsync();
         await base.OnInitializedAsync();
+        globalState = await GetGlobalState();
 
-        _oid = UserState.User.Oid;
-        _name = UserState.User.Name;
-        _email = UserState.User.Email;
+        _oid = globalState.Oid;
+        _name = globalState.Name;
+        _email = globalState.Email;
 
     // Get all the tenants for the user
         var tenants = await TenantWebRepository.GetOwnedTenantsAsync(_oid);
@@ -87,7 +92,7 @@
         Console.WriteLine("Submit button clicked");
 
     // Save create the plan and redirect to global page
-    //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, UserState.User.Oid);
+    //var results = await UserWebRepository.ActivateUser(_model.ActivationNumber, globalState.Oid);
     //if (results == false)
     //    // TODO: Should popup an error box in the client
     //    throw new Exception("Could not activate the user");

@@ -31,7 +31,12 @@
     private string _oid;
     private new readonly CategoryForm _model = new();
     MUser? _mUser = new();
-
+    private GlobalState globalState = new();
+    private async Task<GlobalState> GetGlobalState()
+    {
+        return await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+    }
+    
     private readonly IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
         { "Category Names", false },
@@ -40,7 +45,9 @@
     protected override async Task OnInitializedAsync()
     {
         Http.DefaultRequestHeaders.Authorization = await HeaderRepository.GetHeaderAsync();
-        _tenantId = UserState.User.DefaultTenantId;
+        globalState = await GetGlobalState();
+
+        _tenantId = globalState.DefaultTenantId;
         
         //_mUser = await Http.GetFromJsonAsync<MUser>($"api/user/{UserState.User.Id}");
         
@@ -57,8 +64,8 @@
             }
         }
         
-        _tenantId = UserState.User.DefaultTenantId;
-        _oid = UserState.User.Oid;
+        _tenantId = globalState.DefaultTenantId;
+        _oid = globalState.Oid;
     }
     
     private void OpenModal(string errorTitle, string errorDetails)
@@ -76,6 +83,8 @@
 
     private async Task OnClickSubmitButtonAsync()
     {
+        Http.DefaultRequestHeaders.Authorization = await HeaderRepository.GetHeaderAsync();
+
         var category = new CategoryDto()
         {
             Name = _model.CategoryBasicForm.Name,

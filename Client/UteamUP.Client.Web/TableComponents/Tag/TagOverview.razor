@@ -89,7 +89,9 @@
 
     async Task LoadData(LoadDataArgs args)
     {
-        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+        var globalState = await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+        if(globalState.DefaultTenantId == null || globalState.DefaultTenantId == 0)
+            throw new Exception("No tenant selected");
         Id = globalState.ActiveTenant?.Id;
         Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
 

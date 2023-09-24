@@ -92,18 +92,24 @@
     private IReadOnlyList<IBrowserFile>? _uploadedFiles;
     public EventCallback<IReadOnlyList<IBrowserFile>?> OnFileChange { get; set; }
     private IJSObjectReference _module;
-    
+    private GlobalState globalState = new();
+
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
         { "Location Basic Information", false },
         { "Tags", false },
         { "Location Details", false }
     };
+    private async Task<GlobalState> GetGlobalState()
+    {
+        return await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+    }
     
     protected override async Task OnInitializedAsync()
     {
         _model = new AddEditLocationForm();
         Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
+        globalState = await GetGlobalState();
 
         if (Id.HasValue)
         {
@@ -122,9 +128,9 @@
 
                     location = Mapper.Map<Location>(_model);
 
-                    if (UserState.User.DefaultTenantId != 0)
+                    if (globalState.DefaultTenantId != 0)
                     {
-                        location.TenantId = UserState.User.DefaultTenantId;
+                        location.TenantId = globalState.DefaultTenantId;
                     }
 
                     if (response.Tags != null)
@@ -154,13 +160,13 @@
         location.Description = _description;
         _model.LocationDetailsForm.Description = _description;
 
-        if (UserState.User.DefaultTenantId != 0)
+        if (globalState.DefaultTenantId != 0)
         {
-            location.TenantId = UserState.User.DefaultTenantId;
+            location.TenantId = globalState.DefaultTenantId;
         }
         else
         {
-            var tenant = UserState.User.Tenants.FirstOrDefault()!.Id;
+            var tenant = globalState.Tenants.FirstOrDefault()!.Id;
             location.TenantId = tenant;
         }
 

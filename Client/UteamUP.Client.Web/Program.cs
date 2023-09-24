@@ -24,9 +24,6 @@ builder.Services.AddFluxor(options =>
     options.ScanAssemblies(currentAssembly);
 });
 
-// Add Base Component Services
-builder.Services.AddScoped<UserState>();
-builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 //builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<CustomAuthenticationStateProvider>());
 
 // Adding generic repository services.

@@ -1,6 +1,6 @@
 ﻿@page "/"
 
-@inject CustomAuthenticationStateProvider CustomAuthStateProvider
+
 
 <div style="width: 800px; margin-left: auto; margin-right: auto;">
     <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
@@ -8,9 +8,9 @@
     </div>
     <br />
     <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center;">
-    @if(UserState.User != null)
+    @if(globalState != null)
     {
-        <p>Welcome @UserState.User.Name to development board.</p>
+        <p>Welcome @globalState.Name to development board.</p>
     }
     else
     {
@@ -20,16 +20,18 @@
 </div>
 
 @code {
+    private GlobalState globalState = new();
+    private async Task<GlobalState> GetGlobalState()
+    {
+        var state = await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+        RefreshPage();
+        return state;
+    }
+    
     protected override async Task OnInitializedAsync()
     {
-        var authState = await CustomAuthStateProvider.GetAuthenticationStateAsync();
-
-        if (authState.User.Identity.IsAuthenticated)
-        {
-            await CustomAuthStateProvider.UpdateAppStateWithUserAsync(authState.User);
-        }
-        CustomAuthStateProvider.OnGlobalStateChanged += RefreshPage;
-
+        globalState = await GetGlobalState();
+        RefreshPage();
     }
     
     private void RefreshPage()

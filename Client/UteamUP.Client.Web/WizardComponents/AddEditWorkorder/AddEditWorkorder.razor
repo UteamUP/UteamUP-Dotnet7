@@ -32,19 +32,22 @@
 
 @code {
     int _tenantId = 0;
+    private GlobalState globalState = new();
     
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
         { "Template Basic Information", false },
     };
-
+    private async Task<GlobalState> GetGlobalState()
+    {
+        return await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+    }
     protected override async Task OnInitializedAsync()
     {
         _model = new WorkorderForm();
         Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
 
-
-        _tenantId = UserState.User.DefaultTenantId;
+        _tenantId = globalState.DefaultTenantId;
     }
     
     private void OpenModal(string ErrorTitle, string ErrorDetails)

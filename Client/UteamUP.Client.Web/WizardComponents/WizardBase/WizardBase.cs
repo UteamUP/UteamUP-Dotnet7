@@ -1,7 +1,5 @@
-using System.Reflection.Metadata;
 using Blazored.FluentValidation;
 using Blazored.Modal.Services;
-using UteamUP.Client.Web.Services;
 using UteamUP.Client.Web.WizardComponents.AddEditTenant.AddEditTenant.Modals;
 using UteamUP.Shared.States;
 
@@ -11,8 +9,7 @@ public class WizardBase<TModel> : ComponentBase
 {
     [Inject]
     public IModalService ModalService { get; set; }
-    public UserState UserState { get; set; }
-    public CustomAuthenticationStateProvider CustomAuthStateProvider { get; set; }
+    public GlobalState GlobalState { get; set; }
     public IMapper Mapper { get; set; }
 
     [Parameter]

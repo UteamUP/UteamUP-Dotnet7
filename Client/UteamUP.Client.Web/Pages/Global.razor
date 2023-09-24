@@ -243,9 +243,9 @@
 </div>
 </div>
 <div style="margin-left: auto; margin-right: auto; align-content: center; text-align: center; padding-top: 40px;">
-    @if (UserState != null)
+    @if (globalState != null)
     {
-        @if (!string.IsNullOrWhiteSpace(UserState.User.Oid))
+        @if (!string.IsNullOrWhiteSpace(globalState.Oid))
         {
             <table class="table table-striped" style="width: 700px; margin: auto;">
                 <thead>
@@ -257,26 +257,26 @@
                 <tbody>
                 <tr>
                     <td>Name</td>
-                    <td>@UserState.User.Name</td>
+                    <td>@globalState.Name</td>
                 </tr>
                 <tr>
                     <td>Oid</td>
-                    <td>@UserState.User.Oid</td>
+                    <td>@globalState.Oid</td>
                 </tr>
                 <tr>
                     <td>Email</td>
-                    <td>@UserState.User.Email</td>
+                    <td>@globalState.Email</td>
                 </tr>
 
                 <tr>
                     <td>First Login</td>
-                    <td>@UserState.User.IsFirstLogin</td>
+                    <td>@globalState.FirstLogin</td>
                 </tr>
 
                 <tr>
                     <td>Is activated</td>
                     <td>
-                        <p>@UserState.User.HasBeenActivated</p>
+                        <p>@globalState.IsActivated</p>
                     </td>
                 </tr>
 
@@ -352,14 +352,22 @@
     private bool HasDbUser = false;
 
     private GlobalState globalState = new();
-
+    private async Task<GlobalState> GetGlobalState()
+    {
+        var state = await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+        StateHasChanged();
+        return state;
+    }
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        var state = await GetGlobalState();
+        globalState = state;
+
         try{
-            if (UserState?.User?.Oid != null)
+            if (globalState.Oid != null)
             {
-                globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+                
                 
                 if(globalState.TenantsInvited != null) InvitesCount = globalState.TenantsInvited.Count;
                 if(globalState.Tenants != null) TenantsCount = globalState.Tenants.Count;
@@ -379,7 +387,7 @@
                     NavigationManager.NavigateTo("/tenant-add");
                 }
 
-                if (UserState.User.HasBeenActivated != null)
+                if (globalState.IsActivated != null)
                 {
                     HasDbUser = true;
                 }

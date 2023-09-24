@@ -59,7 +59,7 @@
         await base.OnInitializedAsync();
         
         // Get selected tenant
-        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+        var globalState = await LocalStorageService.GetItemAsync<GlobalState>("globalState");
         if(globalState.DefaultTenantId == null || globalState.DefaultTenantId == 0)
             throw new Exception("No tenant selected");
 

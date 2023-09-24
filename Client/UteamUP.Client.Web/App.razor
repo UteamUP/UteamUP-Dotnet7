@@ -1,8 +1,9 @@
 ﻿@namespace UteamUP.Client
 @inject IUserProfileRepository UserProfileRepository
-@using JsonSerializer = System.Text.Json.JsonSerializer
+@inject IUserWebRepository UserWebRepository
 @using Blazored.LocalStorage
 @inject ILocalStorageService LocalStorageService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <CascadingAuthenticationState>
     <CascadingBlazoredModal HideCloseButton="true">
@@ -37,57 +38,44 @@
 
     public async Task<GlobalState> GetClaimsPrincipalDataOnlyFromDB()
     {
-        GlobalState profile = await UserProfileRepository.GetUserProfile();
+        // Check if the user state is already in the local storage
+        var globalState = await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+        if (globalState != null)
+        {
+            // Check if the user state is still valid by checking the LastUpdated is less than two hours
+            if (globalState.LastUpdated.AddHours(2) > DateTime.Now)
+            {
+                return globalState;
+            }
+        }
         
-    // Save the global state to the local storage
-        //var profileJson = JsonSerializer.Serialize(profile);
+        GlobalState profile = await UserProfileRepository.GetUserProfile(); 
         await LocalStorageService.SetItemAsync("globalState", profile);
+        StateHasChanged();
 
         return profile;
     }
     protected override async Task OnInitializedAsync()
     {
-        myGlobal = await this.GetClaimsPrincipalDataOnlyFromDB();
-        Console.WriteLine("Initialized for : " + myGlobal.Email);
-        /*
-        var authState = await CustomAuthStateProvider.GetAuthenticationStateAsync();
+        // Check if the user is authenticated
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-        if (authState.User.Identity.IsAuthenticated)
+        if (user.Identity.IsAuthenticated)
         {
-            var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
-            Console.WriteLine("The user is authenticated, lets check if the global state is up to date");
-            if(globalState != null){
-                if (!globalState.IsUpToDate)
-                {
-                    Console.WriteLine("Lets try to update the users state, since it is not up to date");
-                    await CustomAuthStateProvider.UpdateAppStateWithUserAsync(authState.User);
-                    await CustomAuthStateProvider.UpdateDateAsync();
-                }
-                
-                // If globalState.LastUpdated is 10 hours from now or more then update the global state
-                if (globalState.LastUpdated.AddHours(1) < DateTime.Now.ToUniversalTime())
-                {
-                    Console.WriteLine("Lets try to update the global state, since the last update was more than 10 hours ago");
-                    await CustomAuthStateProvider.UpdateAppStateWithUserAsync(authState.User);
-                    await CustomAuthStateProvider.UpdateDateAsync();
-                }
-                if(globalState.ActiveTenant == null)
-                {
-                    Console.WriteLine("Lets try to update the global state, since the active tenant is null");
-                    await CustomAuthStateProvider.UpdateTenantStateAsync();
-                    await CustomAuthStateProvider.UpdateDateAsync();
-                }
-            }
-            else
-            {
-                Console.WriteLine("Lets try to create the users state");
-                await CustomAuthStateProvider.UpdateAppStateWithUserAsync(authState.User);
-                await CustomAuthStateProvider.UpdateDateAsync();
-            }
+            myGlobal = await this.GetClaimsPrincipalDataOnlyFromDB();
         }
-        CustomAuthStateProvider.OnGlobalStateChanged += RefreshPage;
-        */
-        
+        else
+        {
+            // If the user is not authenticated and the globalState exists in the local storage, remove it
+            var globalState = await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+            if (globalState != null)
+            {
+                await LocalStorageService.RemoveItemAsync("globalState");
+            }
+            
+            Console.WriteLine("User is not authenticated");
+        }
         
     }
     

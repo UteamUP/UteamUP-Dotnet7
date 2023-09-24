@@ -19,6 +19,7 @@
 
 @* Injections *@
 @inject HttpClient Http
+@inject ILocalStorageService LocalStorageService
 
 @* Custom Imports *@
 @using ChartJs.Blazor;
@@ -32,6 +33,7 @@
 @using Blazored.Modal;
 @using Blazored.Modal.Services;
 @using Blazored.TextEditor
+@using Blazored.LocalStorage
 
 @using Blazored.Modal
 @using Blazored.Modal.Services
@@ -69,8 +71,6 @@
 @* UteamUP injections *@
 @inject NavigationManager NavigationManager
 @inject IMapper Mapper
-@inject UserState UserState
-@inject CustomAuthenticationStateProvider CustomAuthStateProvider
 @inject IModalService ModalService
 
 @using Microsoft.AspNetCore.Components.Authorization

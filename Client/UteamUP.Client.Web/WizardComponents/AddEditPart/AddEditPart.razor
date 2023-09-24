@@ -59,7 +59,8 @@
     int _tenantId = 0;
     private string _selectedVendor = "";
     private string _selectedCategory = "";
-    
+    private GlobalState globalState = new();
+
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
         { "Template Basic Information", false },
@@ -74,14 +75,18 @@
     {
         { "", "" }
     };
-    
+    private async Task<GlobalState> GetGlobalState()
+    {
+        return await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+    }
     protected override async Task OnInitializedAsync()
     {
         _model = new PartForm();
         Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
 
+        globalState = await GetGlobalState();
 
-        _tenantId = UserState.User.DefaultTenantId;
+        _tenantId = globalState.DefaultTenantId;
     }
     
     private void OpenModal(string ErrorTitle, string ErrorDetails)

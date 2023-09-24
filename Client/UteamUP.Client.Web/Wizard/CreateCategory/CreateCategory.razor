@@ -27,7 +27,7 @@
     string? _email = "";
     Tenant? _activeTenant;
     int _defaultTenantId;
-    
+
     private List<string> _categoryNames = new();
     private List<CategoryDto> _categories = new();
 
@@ -35,22 +35,26 @@
 
     protected int _activeStepIndex = 0;
 
+    
     private IDictionary<string, bool> _steps = new Dictionary<string, bool>()
     {
         { "Category Names", false },
     };
 
     FluentValidationValidator? _fluentValidationValidator;
-
+    private GlobalState globalState = new();
+    private async Task<GlobalState> GetGlobalState()
+    {
+        return await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+    }
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        var globalState = await GetGlobalState();
 
-        _oid = UserState.User.Oid;
-        _name = UserState.User.Name;
-        _email = UserState.User.Email;
-        
-        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+        _oid = globalState.Oid;
+        _name = globalState.Name;
+        _email = globalState.Email;
         
         _defaultTenantId = globalState.DefaultTenantId;
         if(_defaultTenantId == 0)

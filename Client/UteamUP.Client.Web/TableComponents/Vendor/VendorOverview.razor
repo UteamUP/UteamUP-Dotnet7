@@ -11,7 +11,9 @@
     private int _totalVendors;
     protected override async Task OnInitializedAsync()
     {
-        var globalState = await CustomAuthStateProvider.GetGlobalStateAsync();
+        var globalState = await LocalStorageService.GetItemAsync<GlobalState>("globalState");
+        if(globalState.DefaultTenantId == null || globalState.DefaultTenantId == 0)
+            throw new Exception("No tenant selected");
 
         Console.WriteLine($"api/vendor/all");
 
