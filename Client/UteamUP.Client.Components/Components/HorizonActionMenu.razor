@@ -1,0 +1,23 @@
+@namespace UteamUP.Client.Components
+
+<div class="action-menu-container">
+    <BSDropdown Class="drop-down-menu" IsDiv Placement="BlazorStrap.Placement.Bottom">
+        <Toggler>
+            <BSToggle NoDropdownToggleClass="true" Class="btn-show-drop" IsButton="true">
+                <HorizonIcon Icon="@Icons.Icons.ThreeDots" Width="17" Height="5" />
+                Actions
+            </BSToggle>
+        </Toggler>
+        <Content>
+            <div class="title-container">
+                Actions
+            </div>
+            @ChildContent
+        </Content>
+    </BSDropdown>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

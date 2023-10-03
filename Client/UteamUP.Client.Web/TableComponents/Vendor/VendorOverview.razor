@@ -1,21 +1,39 @@
+@namespace UteamUP.Client.Web.TableComponents.Vendor
+
 @page "/vendors"
 
 @inject IHeaderRepository _headerRepository
 @using Newtonsoft.Json
+@using UteamUP.Client.Web.TableComponents.Vendor.Menus
+@using UteamUP.Client.Web.TableComponents.Vendor.Modals
+@using static UteamUP.Client.Web.TableComponents.Vendor.Menus.VendorsActionMenu
 
+<div class="vendors-container">
+    <Header OnClickButton="@(() => NavigationManager.NavigateTo("/global-vendor-add"))" Title="Global Vendors - Wiki" ShowButtons />
 
-<p>Here are some thingy, total amount of vendors are @_totalVendors</p>
+    <div class="main-container">
+        <HorizonTable EnableGrouping TableItem="Vendor" Items="@_vendors">
+            <HorizonColumn Title="Name" Field="@(x => x.Name)" TableItem="Vendor" />
+            <HorizonColumn Title="Email" Field="@(x => x.Email)" TableItem="Vendor" />
+            <HorizonColumn Title="Phone Number" Field="@(x => x.PhoneNumber)" TableItem="Vendor" />
+            <HorizonColumn Title="Web Site" Field="@(x => x.WebSite)" TableItem="Vendor" />
+            <HorizonColumn Title="" TableItem="Vendor">
+                <Template>
+                    <VendorsActionMenu OnClick="@((action) => OnActionMenuActionClickedAsync(action, context))" />
+                </Template>
+            </HorizonColumn>
+        </HorizonTable>
+    </div>
+</div>
 
 @code {
-    private List<Vendor>? _vendors;
+    private List<Vendor> _vendors;
     private int _totalVendors;
     protected override async Task OnInitializedAsync()
     {
         var globalState = await LocalStorageService.GetItemAsync<GlobalState>("globalState");
         if(globalState.DefaultTenantId == null || globalState.DefaultTenantId == 0)
             throw new Exception("No tenant selected");
-
-        Console.WriteLine($"api/vendor/all");
 
         Http.DefaultRequestHeaders.Authorization = await _headerRepository.GetHeaderAsync();
         var result = await Http.GetAsync($"api/vendor/all");
@@ -32,6 +50,42 @@
         {
             Console.WriteLine("Its empty");
         }
-
     }
+    
+    private async Task HandleDetailModalAsync(Vendor vendor)
+    {
+        var modalParams = new ModalParameters();
+        modalParams.Add("Id", vendor.Id);
+
+        await ModalService.Show<VendorsDetailsModal>(string.Empty, modalParams, new()
+        {
+            Size = ModalSize.Large
+        }).Result;
+    }
+
+    private async Task HandleDeleteModalAsync(Vendor vendor)
+    {
+        ModalService.Show<DeleteConfirmationModal>(string.Empty);
+    }
+
+    private void HandleEditVendor(Vendor vendor) => NavigationManager.NavigateTo($"global-vendor-edit/{vendor.Id}");
+
+    private async Task OnActionMenuActionClickedAsync(VendorsActionMenuAction action, Vendor vendor)
+    {
+        switch (action)
+        {
+            case VendorsActionMenuAction.Detail:
+                await HandleDetailModalAsync(vendor);
+                break;
+            case VendorsActionMenuAction.Delete:
+                await HandleDeleteModalAsync(vendor);
+                break;
+            case VendorsActionMenuAction.Edit:
+                HandleEditVendor(vendor);
+                break;
+            default:
+                break;
+        }
+    }
+
 }

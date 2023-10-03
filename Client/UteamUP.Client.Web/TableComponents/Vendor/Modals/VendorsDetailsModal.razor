@@ -1,0 +1,57 @@
+@namespace UteamUP.Client.Web.TableComponents.Vendor.Modals
+
+<div class="workorder-details-modal-container">
+    <div class="header">
+        <div class="name">
+            <h4>@_vendor.Name</h4>
+            <button @onclick="OnClickEditVendor">
+                <HorizonIcon Icon="@Icons.Modify" Width="28" Height="28"/>
+            </button>
+        </div>
+
+        <HorizonButton OnClick="OnClickVendorPartInventory">Vendor Part Inventory</HorizonButton>
+    </div>
+
+    <div class="modal-body">
+        <div class="info-row">
+            <span class="label">Email</span>
+            <a>@_vendor.Email</a>
+        </div>
+        <div class="info-row">
+            <span class="label">Website</span>
+            <a>@_vendor.WebSite</a>
+        </div>
+        <div class="info-row">
+            <span class="label">Phone</span>
+            <span>@_vendor.PhoneNumber</span>
+        </div>
+
+        <div class="footer">
+            <span class="label">
+                Vendor Description
+            </span>
+
+            <span class="description">
+                @_vendor.Description
+            </span>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private Vendor _vendor;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private void OnClickEditVendor() => NavigationManager.NavigateTo($"global-vendor-edit/{_vendor.Id}");
+
+    private void OnClickVendorPartInventory() => NavigationManager.NavigateTo($"assets");
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Should return a vendor to the variable _vendor
+        //_ = await VendorRepository.GetVendor(Id);
+    }
+}

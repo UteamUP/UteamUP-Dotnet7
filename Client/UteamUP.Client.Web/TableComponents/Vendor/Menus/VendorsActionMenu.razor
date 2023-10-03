@@ -1,0 +1,24 @@
+@namespace UteamUP.Client.Web.TableComponents.Vendor.Menus
+
+<HorizonActionMenu>
+    <BSDropdownItem OnClick="@(() => HandleOnClickAsync(VendorsActionMenuAction.Detail))" style="color: rgb(25, 103, 54);" Class="item-text-drop"><HorizonIcon Icon="@Icons.Detail" Width="16" Height="18"/> Detail</BSDropdownItem>
+    <BSDropdownItem OnClick="@(() => HandleOnClickAsync(VendorsActionMenuAction.Delete))" style="color: rgb(235, 87, 87);" Class="item-log-out"><HorizonIcon Icon="@Icons.Delete" Width="16" Height="18"/> Delete</BSDropdownItem>
+    <BSDropdownItem OnClick="@(() => HandleOnClickAsync(VendorsActionMenuAction.Edit))" style="color: rgb(32, 107, 181);" Class="item-log-out"><HorizonIcon Icon="@Icons.Edit" Width="16" Height="18"/> Edit</BSDropdownItem>
+</HorizonActionMenu>
+
+@code {
+    public enum VendorsActionMenuAction
+    {
+        Detail,
+        Delete,
+        Edit,
+    }
+
+    private async Task HandleOnClickAsync(VendorsActionMenuAction action)
+    {
+        await OnClick.InvokeAsync(action);
+    }
+
+    [Parameter]
+    public EventCallback<VendorsActionMenuAction> OnClick { get; set; }
+}
